@@ -22,6 +22,19 @@ class GigViewSet(viewsets.ModelViewSet):
         qs = Gig.objects.select_related('venue').prefetch_related('lineups__artist__genres')
         params = self.request.query_params
 
+        # Filter by search keyword
+        search_param = params.get('search')
+        if search_param:
+            search_param = search_param.strip()
+            qs = qs.filter(
+                Q(title__icontains=search_param) |
+                Q(description__icontains=search_param) |
+                Q(venue__name__icontains=search_param) |
+                Q(venue__city__icontains=search_param) |
+                Q(lineups__artist__name__icontains=search_param) |
+                Q(lineups__artist__genres__name__icontains=search_param)
+            )
+
         # Filter by specific date (YYYY-MM-DD)
         date_param = params.get('date')
         if date_param:

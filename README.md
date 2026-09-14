@@ -1,75 +1,131 @@
-# 🎸 GigTrack - Live Music & Gigs Radar
+# GigTrack — Live Music & Indie Gigs Radar
 
-Platform pelacak gig dan konser musik live untuk menemukan jadwal band yang tampil **hari ini**, besok, maupun jadwal mendatang berdasarkan genre, musisi, venue, dan kota.
-
----
-
-## 🛠️ Tech Stack
-
-- **Backend**: Python 3, Django 5.x, Django REST Framework (DRF), `django-filter`, `django-cors-headers`
-- **Frontend**: React.js, Vite, Vanilla CSS Modern (Dark Mode Aesthetic)
-- **Database**: SQLite (Local Development) & PostgreSQL (Production/Docker Ready)
-- **Container**: Docker & Docker Compose
+> Platform pelacak gig dan konser musik langsung (*live music radar*) berskala nasional untuk memantau jadwal band yang tampil **hari ini**, jadwal akhir pekan, rundown susunan panggung, dan tiket di berbagai kota (Jakarta, Bandung, Bali, dll).
 
 ---
 
-## 🚀 Panduan Menjalankan (Local Development Tanpa Docker)
+## Architecture & Tech Stack
 
-### 1. Jalankan Backend (Django)
+Proyek ini dibangun dengan menerapkan prinsip **Separation of Concerns (SoC)** dan **Clean Layered Architecture**:
 
-Buka terminal PowerShell baru, masuk ke folder `backend`:
+```text
+[ React Frontend (Vite) ]  ←── HTTP/JSON (CORS) ──→  [ Django REST Framework ]
+         :                                                      :
+    LocalStorage                                          Django ORM
+  (Saved Bookmarks)                                             :
+                                                    [ SQLite / PostgreSQL ]
+```
+
+- **Backend**: Python 3.14, Django 5.x, Django REST Framework (DRF), `django-cors-headers`, `django-filter`, Pillow.
+- **Frontend**: React.js 18, Vite, Vanilla CSS Design System (*Glassmorphism, Dark-mode music festival theme, SVG Vector Icons*).
+- **Database**: SQLite (Zero-config local development) & PostgreSQL (Production/Docker Ready).
+- **DevOps & QA**: Docker, Docker Compose, Automated Unit Testing (`django.test.TestCase`).
+
+---
+
+## Fitur Utama
+
+1. **Real-time Live Radar**: Deteksi otomatis konser yang berlangsung malam ini berdasarkan tanggal server lokal (`timezone.localdate()`).
+2. **Pencarian & Multi-Filter**: Pencarian nama band (*The Adams, .Feast, Reality Club, dll*), nama venue, filter kota dinamis, filter genre musik, dan filter tiket gratis (*Free Entry*).
+3. **Rundown Timetable**: Modal detail yang menyajikan susunan jam tampil (*set time*) tiap band, status headliner, alamat venue, dan tautan Google Maps.
+4. **Bookmark Favorit**: Kemampuan menyimpan konser ke daftar favorit pengguna menggunakan `localStorage` browser.
+5. **Django Admin CMS**: Dashboard pengelolaan data band, venue, poster konser, dan rundown susunan acara secara terintegrasi.
+6. **Automated Unit Testing**: Pengujian otomatis untuk memvalidasi akurasi query tanggal, filter wilayah, dan pencarian band.
+
+---
+
+## Struktur Repositori
+
+```text
+GigTrack/
+├── backend/
+│   ├── apps/
+│   │   ├── artists/          # Model Genre & Artist, Serializer, ViewSet, Admin
+│   │   ├── venues/           # Model Venue, Alamat, Kota, Serializer, ViewSet
+│   │   └── gigs/             # Model Gig & GigLineup, Views (/today/, /cities/), Tests
+│   ├── config/               # Settings, Routing URLs, WSGI, ASGI
+│   ├── seed_data.py          # Script seeder data konser realistis
+│   ├── requirements.txt      # Dependensi Python
+│   └── Dockerfile
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/       # Navbar, TodayRadar, FilterBar, GigCard, GigModal, Footer
+│   │   ├── services/         # API HTTP Client (fetch wrapper)
+│   │   ├── App.jsx           # State management & layout
+│   │   └── index.css         # Custom Design System
+│   ├── package.json
+│   └── Dockerfile
+│
+├── docker-compose.yml        # Orkestrasi Docker (Postgres, Django, React)
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Panduan Menjalankan (Local Development)
+
+### 1. Menjalankan Backend (Django)
+
+Buka terminal di folder `backend`:
 
 ```powershell
 cd backend
 
-# Buat virtual environment (opsional tapi direkomendasikan)
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+# 1. Jalankan migrasi database
+.\venv\Scripts\python.exe manage.py makemigrations
+.\venv\Scripts\python.exe manage.py migrate
 
-# Install dependencies
-pip install -r requirements.txt
+# 2. Masukkan data konser awal (Data Hari Ini, Besok, & Mendatang)
+.\venv\Scripts\python.exe seed_data.py
 
-# Jalankan migrasi database
-python manage.py makemigrations
-python manage.py migrate
-
-# Masukkan data dummy realistis (Gigs hari ini & mendatang)
-python seed_data.py
-
-# Buat superuser untuk akses Django Admin (opsional)
-python manage.py createsuperuser
-
-# Jalankan server backend
-python manage.py runserver 8000
+# 3. Jalankan server backend
+.\venv\Scripts\python.exe manage.py runserver
 ```
-Backend API akan berjalan di: `http://127.0.0.1:8000/api/`
-Django Admin Panel di: `http://127.0.0.1:8000/admin/`
+* Backend API aktif di: `http://127.0.0.1:8000/api/`
+* Django Admin Portal: `http://127.0.0.1:8000/admin/`
 
 ---
 
-### 2. Jalankan Frontend (React + Vite)
+### 2. Menjalankan Frontend (React + Vite)
 
-Buka terminal baru lainnya, masuk ke folder `frontend`:
+Buka terminal di folder `frontend`:
 
 ```powershell
 cd frontend
 
-# Install dependencies
+# Install dependensi
 npm install
 
-# Jalankan development server
+# Jalankan server frontend
 npm run dev
 ```
-Buka browser di: `http://localhost:5173/`
+* Akses aplikasi web di browser: **`http://localhost:5173/`**
 
 ---
 
-## 🐳 Panduan Menjalankan dengan Docker (Opsional)
+## Menjalankan Automated Unit Tests
 
-Jika Docker Desktop sudah terpasang di komputer kamu:
+Untuk memverifikasi keandalan API, filter tanggal, dan logika pencarian:
 
 ```powershell
-# Jalankan seluruh stack (PostgreSQL + Django + React)
-docker compose up --build
+cd backend
+.\venv\Scripts\python.exe manage.py test apps.gigs
 ```
-Semua service (database, backend, frontend) akan otomatis menyala dan saling terhubung!
+
+Hasil pengujian otomatis:
+```text
+Creating test database for alias 'default'...
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.127s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+---
+
+## Lisensi
+Proyek ini dibuat untuk keperluan portofolio Software Engineering dan bersifat Open Source di bawah lisensi MIT.

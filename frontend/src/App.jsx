@@ -148,21 +148,21 @@ export default function App() {
       {/* Main Gigs Listing */}
       <main className="container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
             {dateFilter === 'today'
-              ? '🔥 Konser & Gigs Hari Ini'
+              ? 'Konser & Gig Malam Ini'
               : dateFilter === 'saved'
-              ? '⭐ Konser Favorit Tersimpan'
-              : '🎸 Eksplorasi Jadwal Gigs'}
+              ? 'Konser Tersimpan'
+              : 'Jadwal & Agenda Konser'}
           </h2>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            Menampilkan {gigs.length} acara
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            {gigs.length} acara ditemukan
           </span>
         </div>
 
         {loading ? (
           <div style={{ padding: '80px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            <div style={{ fontSize: '1.4rem', marginBottom: '10px' }}>⚡ Menghubungkan ke radar konser...</div>
+            <div style={{ fontSize: '1.1rem', marginBottom: '10px' }}>Memuat radar jadwal konser...</div>
           </div>
         ) : gigs.length > 0 ? (
           <div className="gigs-grid">
@@ -178,12 +178,17 @@ export default function App() {
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-state-icon">{dateFilter === 'saved' ? '⭐' : '🎸'}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--text-muted)' }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+            </div>
             <h3>{dateFilter === 'saved' ? 'Belum Ada Konser Tersimpan' : 'Tidak Ada Gig Ditemukan'}</h3>
             <p>
               {dateFilter === 'saved'
-                ? 'Klik ikon bintang pada kartu konser untuk menyimpannya ke daftar favoritmu!'
-                : 'Coba reset filter kota atau ubah kata kunci pencarian untuk menemukan konser musik lainnya.'}
+                ? 'Klik ikon bookmark pada kartu konser untuk menyimpannya ke daftar agendamu.'
+                : 'Coba reset filter wilayah atau ubah kata kunci pencarian untuk menemukan konser musik lainnya.'}
             </p>
             <button
               className="btn-primary"

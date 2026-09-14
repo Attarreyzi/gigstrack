@@ -1,7 +1,6 @@
 import React from 'react';
 
 export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleBookmark = () => {} }) {
-  // Format datetime
   const formatEventDate = (datetimeStr) => {
     try {
       const dt = new Date(datetimeStr);
@@ -39,8 +38,9 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
 
         <div className="card-top-badges">
           {gig.is_happening_today ? (
-            <span className="badge-today">
-              🔥 HARI INI
+            <span className="badge-today" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fff', display: 'inline-block' }}></span>
+              <span>LIVE TONIGHT</span>
             </span>
           ) : (
             <span></span>
@@ -48,7 +48,7 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className={`badge-price ${gig.is_free ? 'free' : ''}`}>
-              {gig.is_free ? 'FREE ENTRY' : `Rp ${gig.ticket_price.toLocaleString('id-ID')}`}
+              {gig.is_free ? 'FREE ENTRY' : `IDR ${gig.ticket_price.toLocaleString('id-ID')}`}
             </span>
             <button
               className={`btn-card-bookmark ${isBookmarked ? 'active' : ''}`}
@@ -59,7 +59,9 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
               title={isBookmarked ? "Hapus dari favorit" : "Simpan ke favorit"}
               aria-label="Bookmark gig"
             >
-              {isBookmarked ? '★' : '☆'}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
             </button>
           </div>
         </div>
@@ -86,7 +88,7 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
 
         {/* Venue & City */}
         <div className="gig-meta-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
             <circle cx="12" cy="10" r="3"></circle>
           </svg>
@@ -95,7 +97,7 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
 
         {/* Date & Time */}
         <div className="gig-meta-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
             <line x1="16" y1="2" x2="16" y2="6"></line>
             <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -117,7 +119,11 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
                 >
                   <img src={artist.image} alt={artist.name} />
                   <span>{artist.name}</span>
-                  {artist.is_headliner && <span style={{ color: 'var(--accent-pink)', fontSize: '0.65rem' }}>★</span>}
+                  {artist.is_headliner && (
+                    <span style={{ color: 'var(--accent-pink)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.04em' }}>
+                      HEADLINER
+                    </span>
+                  )}
                 </span>
               ))}
             </div>
