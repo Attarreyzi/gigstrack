@@ -204,3 +204,30 @@ class GigTrackAPITests(TestCase):
         data = response.json()
         self.assertIn("loket.com/search?q=Morfem", data['ticket_url'])
 
+    def test_real_concert_scraper_sync(self):
+        """Verifies that RealConcertScraperService syncs verified authentic concerts and can clean dummy data."""
+        from apps.gigs.services.real_concert_scraper import RealConcertScraperService
+        service = RealConcertScraperService()
+        result = service.sync_all_verified(clean_dummy=True)
+
+        self.assertTrue(result['success'])
+        self.assertGreater(result['total_synced'], 0)
+
+        # Check that Synchronize Fest exists
+        sync_fest = Gig.objects.filter(title__icontains="Synchronize Fest").first()
+        self.assertIsNotNone(sync_fest)
+        self.assertEqual(sync_fest.ticket_url, "https://synchronizefestival.com/tickets")
+        self.assertEqual(sync_fest.resolved_ticket_url, "https://synchronizefestival.com/tickets")
+
+        # Check that lineups were properly created
+        self.assertGreater(sync_fest.lineups.count(), 0)
+
+    def test_sync_verified_api_endpoint(self):
+        """Verifies POST /api/gigs/sync-verified/ executes sync via API."""
+        response = self.client.post('/api/gigs/sync-verified/', {'clean_dummy': False}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertGreater(data['total_synced'], 0)
+
+

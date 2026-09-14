@@ -231,3 +231,19 @@ class GigViewSet(viewsets.ModelViewSet):
             "message": f"Berhasil menyinkronkan {len(synced)} konser nyata Jabodetabek.",
             "events": synced
         })
+
+    @action(detail=False, methods=['post'], url_path='sync-verified')
+    def sync_verified(self, request):
+        """
+        Endpoint untuk menyinkronkan konser musik nyata terverifikasi
+        dan opsi membersihkan data dummy lama.
+        Body JSON:
+        {
+            "clean_dummy": true  # Opsional, default false
+        }
+        """
+        from apps.gigs.services.real_concert_scraper import RealConcertScraperService
+        clean_dummy = request.data.get('clean_dummy', False)
+        service = RealConcertScraperService()
+        result = service.sync_all_verified(clean_dummy=clean_dummy)
+        return Response(result)
