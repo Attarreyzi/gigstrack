@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function GigCard({ gig, onSelect }) {
+export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleBookmark = () => {} }) {
   // Format datetime
   const formatEventDate = (datetimeStr) => {
     try {
@@ -46,9 +46,22 @@ export default function GigCard({ gig, onSelect }) {
             <span></span>
           )}
 
-          <span className={`badge-price ${gig.is_free ? 'free' : ''}`}>
-            {gig.is_free ? 'FREE ENTRY' : `Rp ${gig.ticket_price.toLocaleString('id-ID')}`}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className={`badge-price ${gig.is_free ? 'free' : ''}`}>
+              {gig.is_free ? 'FREE ENTRY' : `Rp ${gig.ticket_price.toLocaleString('id-ID')}`}
+            </span>
+            <button
+              className={`btn-card-bookmark ${isBookmarked ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleBookmark(gig.id);
+              }}
+              title={isBookmarked ? "Hapus dari favorit" : "Simpan ke favorit"}
+              aria-label="Bookmark gig"
+            >
+              {isBookmarked ? '★' : '☆'}
+            </button>
+          </div>
         </div>
       </div>
 

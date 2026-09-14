@@ -12,7 +12,8 @@ export default function FilterBar({
   isFreeOnly,
   setIsFreeOnly,
   cities = [],
-  genres = []
+  genres = [],
+  savedCount = 0
 }) {
   return (
     <section className="filter-section">
@@ -83,6 +84,12 @@ export default function FilterBar({
             onClick={() => setDateFilter('weekend')}
           >
             Weekend Ini
+          </button>
+          <button
+            className={`date-tab-btn ${dateFilter === 'saved' ? 'active' : ''}`}
+            onClick={() => setDateFilter('saved')}
+          >
+            ⭐ Tersimpan {savedCount > 0 ? `(${savedCount})` : ''}
           </button>
         </div>
 

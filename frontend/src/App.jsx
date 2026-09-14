@@ -25,6 +25,30 @@ export default function App() {
   // Modal
   const [selectedGigId, setSelectedGigId] = useState(null);
 
+  // Bookmarks (Local Storage)
+  const [bookmarks, setBookmarks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('gigtrack_bookmarks');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const toggleBookmark = (gigId) => {
+    setBookmarks((prev) => {
+      const next = prev.includes(gigId)
+        ? prev.filter((id) => id !== gigId)
+        : [...prev, gigId];
+      try {
+        localStorage.setItem('gigtrack_bookmarks', JSON.stringify(next));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+  };
+
   // Load initial today's radar data & metadata
   useEffect(() => {
     Promise.all([
@@ -82,6 +106,10 @@ export default function App() {
             return dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
           });
         }
+        // Client side filtering for 'saved'
+        if (dateFilter === 'saved') {
+          results = results.filter((gig) => bookmarks.includes(gig.id));
+        }
         setGigs(results);
       })
       .catch((err) => {
@@ -89,7 +117,7 @@ export default function App() {
         setGigs([]);
       })
       .finally(() => setLoading(false));
-  }, [search, selectedCity, selectedGenre, dateFilter, isFreeOnly, getDateQueryParam]);
+  }, [search, selectedCity, selectedGenre, dateFilter, isFreeOnly, bookmarks, getDateQueryParam]);
 
   return (
     <div className="app-layout">
@@ -114,13 +142,18 @@ export default function App() {
         setIsFreeOnly={setIsFreeOnly}
         cities={cities}
         genres={genres}
+        savedCount={bookmarks.length}
       />
 
       {/* Main Gigs Listing */}
       <main className="container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>
-            {dateFilter === 'today' ? '🔥 Konser & Gigs Hari Ini' : '🎸 Eksplorasi Jadwal Gigs'}
+            {dateFilter === 'today'
+              ? '🔥 Konser & Gigs Hari Ini'
+              : dateFilter === 'saved'
+              ? '⭐ Konser Favorit Tersimpan'
+              : '🎸 Eksplorasi Jadwal Gigs'}
           </h2>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             Menampilkan {gigs.length} acara
@@ -138,15 +171,19 @@ export default function App() {
                 key={gig.id}
                 gig={gig}
                 onSelect={(selected) => setSelectedGigId(selected.id)}
+                isBookmarked={bookmarks.includes(gig.id)}
+                onToggleBookmark={toggleBookmark}
               />
             ))}
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-state-icon">🎸</div>
-            <h3>Tidak Ada Gig Ditemukan</h3>
+            <div className="empty-state-icon">{dateFilter === 'saved' ? '⭐' : '🎸'}</div>
+            <h3>{dateFilter === 'saved' ? 'Belum Ada Konser Tersimpan' : 'Tidak Ada Gig Ditemukan'}</h3>
             <p>
-              Coba reset filter kota atau ubah kata kunci pencarian untuk menemukan konser musik lainnya.
+              {dateFilter === 'saved'
+                ? 'Klik ikon bintang pada kartu konser untuk menyimpannya ke daftar favoritmu!'
+                : 'Coba reset filter kota atau ubah kata kunci pencarian untuk menemukan konser musik lainnya.'}
             </p>
             <button
               className="btn-primary"
@@ -170,6 +207,8 @@ export default function App() {
         <GigModal
           gigId={selectedGigId}
           onClose={() => setSelectedGigId(null)}
+          isBookmarked={bookmarks.includes(selectedGigId)}
+          onToggleBookmark={toggleBookmark}
         />
       )}
 

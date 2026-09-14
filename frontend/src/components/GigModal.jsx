@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchGigDetail } from '../services/api';
 
-export default function GigModal({ gigId, onClose }) {
+export default function GigModal({ gigId, onClose, isBookmarked = false, onToggleBookmark = () => {} }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -155,9 +155,17 @@ export default function GigModal({ gigId, onClose }) {
                     rel="noreferrer"
                     className="btn-secondary"
                   >
-                    <span>🗺️ Buka Google Maps</span>
+                    <span>🗺️ Google Maps</span>
                   </a>
                 )}
+
+                <button
+                  className="btn-secondary"
+                  onClick={() => onToggleBookmark(detail.id)}
+                  style={isBookmarked ? { borderColor: 'var(--accent-pink)', color: 'var(--accent-pink)' } : {}}
+                >
+                  <span>{isBookmarked ? '★ Tersimpan' : '☆ Simpan'}</span>
+                </button>
               </div>
             </div>
           </>
