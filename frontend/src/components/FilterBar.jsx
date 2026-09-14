@@ -40,7 +40,7 @@ export default function FilterBar({
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
             >
-              <option value="">Semua Wilayah</option>
+              <option value="">Semua Wilayah (Jabodetabek)</option>
               {cities.map((city) => (
                 <option key={city} value={city}>
                   {city}

@@ -35,14 +35,19 @@ class GigViewSet(viewsets.ModelViewSet):
                 Q(lineups__artist__genres__name__icontains=search_param)
             )
 
-        # Filter by specific date (YYYY-MM-DD)
+        # Filter by specific date (YYYY-MM-DD), or default to today onwards (sembunyikan konser kemarin)
         date_param = params.get('date')
+        include_past = params.get('include_past', 'false').lower() in ['true', '1']
         if date_param:
             try:
                 parsed_date = timezone.datetime.strptime(date_param, '%Y-%m-%d').date()
                 qs = qs.filter(start_datetime__date=parsed_date)
             except ValueError:
                 pass
+        elif not include_past:
+            # Otomatis sembunyikan konser yang sudah lewat kemarin
+            local_today = timezone.localdate()
+            qs = qs.filter(start_datetime__date__gte=local_today)
 
         # Filter by city
         city_param = params.get('city')
@@ -98,10 +103,23 @@ class GigViewSet(viewsets.ModelViewSet):
             start_datetime__date=today_date
         ).exclude(status=GigStatus.CANCELLED).order_by('start_datetime')
 
+        day_names = {
+            'Monday': 'Senin', 'Tuesday': 'Selasa', 'Wednesday': 'Rabu',
+            'Thursday': 'Kamis', 'Friday': 'Jumat', 'Saturday': 'Sabtu', 'Sunday': 'Minggu'
+        }
+        month_names = {
+            'January': 'Januari', 'February': 'Februari', 'March': 'Maret', 'April': 'April',
+            'May': 'Mei', 'June': 'Juni', 'July': 'Juli', 'August': 'Agustus',
+            'September': 'September', 'October': 'Oktober', 'November': 'November', 'December': 'Desember'
+        }
+        eng_day = today_date.strftime('%A')
+        eng_month = today_date.strftime('%B')
+        date_display = f"{day_names.get(eng_day, eng_day)}, {today_date.strftime('%d')} {month_names.get(eng_month, eng_month)} {today_date.strftime('%Y')}"
+
         serializer = GigListSerializer(today_gigs, many=True, context={'request': request})
         return Response({
             'date': today_date.strftime('%Y-%m-%d'),
-            'date_display': today_date.strftime('%A, %d %B %Y'),
+            'date_display': date_display,
             'total_gigs_today': today_gigs.count(),
             'gigs': serializer.data
         })
@@ -132,4 +150,84 @@ class GigViewSet(viewsets.ModelViewSet):
             'total_artists': Artist.objects.filter(is_active=True).count(),
             'total_venues': Venue.objects.filter(is_active=True).count(),
             'total_upcoming': Gig.objects.filter(start_datetime__date__gt=today_date).exclude(status=GigStatus.CANCELLED).count(),
+        })
+
+    @action(detail=False, methods=['post', 'get'])
+    def sync_live(self, request):
+        """Endpoint untuk memicu sinkronisasi jadwal gig secara otomatis."""
+        from django.core.management import call_command
+        import io
+        out = io.StringIO()
+        call_command('sync_live_gigs', stdout=out)
+        return Response({
+            'status': 'success',
+            'message': 'Sinkronisasi gig live berhasil dijalankan.',
+            'log': out.getvalue()
+        })
+
+    @action(detail=False, methods=['post'], url_path='sync-bandsintown')
+    def sync_bandsintown(self, request):
+        """
+        Endpoint untuk menyinkronkan jadwal konser dari Bandsintown API.
+        Body JSON:
+        {
+            "artist": "Reality Club",  # Opsional jika sync_all=True
+            "all": false,              # Jika True, sync semua artis di DB
+            "app_id": "YOUR_KEY",      # Opsional
+            "use_mock": false          # Opsional
+        }
+        """
+        from apps.gigs.services.bandsintown import BandsintownService
+        artist = request.data.get('artist')
+        sync_all = request.data.get('all', False)
+        app_id = request.data.get('app_id')
+        use_mock = request.data.get('use_mock', False)
+
+        if not artist and not sync_all:
+            return Response(
+                {"error": "Wajib menyertakan parameter 'artist' (nama band) atau 'all': true."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        service = BandsintownService(app_id=app_id)
+        results = []
+
+        if artist:
+            res = service.sync_artist_events(artist.strip(), app_id=app_id, use_mock=use_mock)
+            results.append(res)
+        elif sync_all:
+            db_artists = list(Artist.objects.values_list('name', flat=True))
+            for name in db_artists:
+                res = service.sync_artist_events(name, app_id=app_id, use_mock=use_mock)
+                results.append(res)
+
+        return Response({
+            "status": "success",
+            "total_artists_synced": len(results),
+            "results": results
+        })
+
+    @action(detail=False, methods=['post'], url_path='import-real-event')
+    def import_real_event(self, request):
+        """
+        Endpoint untuk memasukkan pengumuman konser nyata (teks caption IG atau trigger sinkronisasi).
+        Body JSON:
+        {
+            "text": "Pestapora 2026 di Gambir Expo Kemayoran..."
+        }
+        atau tanpa text untuk sinkronisasi konser resmi Jabodetabek.
+        """
+        from apps.gigs.services.real_events import RealEventService
+        service = RealEventService()
+        raw_text = request.data.get('text')
+
+        if raw_text:
+            result = service.parse_text_announcement(raw_text)
+            return Response({"status": "success", "event": result})
+
+        synced = service.sync_verified_concerts()
+        return Response({
+            "status": "success",
+            "message": f"Berhasil menyinkronkan {len(synced)} konser nyata Jabodetabek.",
+            "events": synced
         })

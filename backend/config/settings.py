@@ -123,3 +123,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
 }
+
+# Bandsintown Integration API Configuration
+BANDSINTOWN_APP_ID = os.getenv('BANDSINTOWN_APP_ID', '')
+BANDSINTOWN_BASE_URL = 'https://rest.bandsintown.com'

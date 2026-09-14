@@ -19,6 +19,7 @@ class GigLineupSerializer(serializers.ModelSerializer):
 class GigListSerializer(serializers.ModelSerializer):
     venue_name = serializers.CharField(source='venue.name', read_only=True)
     venue_city = serializers.CharField(source='venue.city', read_only=True)
+    ticket_url = serializers.CharField(source='resolved_ticket_url', read_only=True)
     display_poster = serializers.ReadOnlyField()
     is_happening_today = serializers.ReadOnlyField()
     artists = serializers.SerializerMethodField()
@@ -29,7 +30,7 @@ class GigListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'slug', 'venue_name', 'venue_city',
             'start_datetime', 'doors_open', 'ticket_price', 'is_free',
-            'status', 'is_featured', 'display_poster', 'is_happening_today',
+            'ticket_url', 'status', 'is_featured', 'display_poster', 'is_happening_today',
             'artists', 'genres'
         ]
 
@@ -64,6 +65,7 @@ class GigDetailSerializer(serializers.ModelSerializer):
     lineups = GigLineupSerializer(many=True, read_only=True)
     display_poster = serializers.ReadOnlyField()
     is_happening_today = serializers.ReadOnlyField()
+    ticket_url = serializers.CharField(source='resolved_ticket_url', read_only=True)
     genres = serializers.SerializerMethodField()
 
     class Meta:

@@ -53,6 +53,65 @@ class Gig(models.Model):
         gig_date = timezone.localtime(self.start_datetime).date()
         return gig_date == local_today
 
+    @property
+    def resolved_ticket_url(self):
+        """
+        Mengembalikan URL tiket yang valid dan anti-404.
+        Jika URL berupa tebakan slug loket/tiket/goers yang rawan 404,
+        otomatis dialihkan ke halaman pencarian resmi platform terkait
+        menggunakan nama headliner band / event agar user langsung diarahkan
+        ke tiket pembelian resmi tanpa pernah menemui error 404 Not Found.
+        """
+        import urllib.parse
+        import re
+
+        # Acara gratis murni tanpa tautan registrasi tiket tidak memerlukan tautan
+        if self.is_free and not self.ticket_url:
+            return ""
+
+        # Dapatkan kata kunci pencarian paling akurat
+        search_term = ""
+        lower_title = self.title.lower() if self.title else ""
+        if "pestapora" in lower_title:
+            search_term = "Pestapora"
+        elif "synchronize" in lower_title:
+            return "https://synchronizefestival.com/tickets"
+        elif "joyland" in lower_title:
+            search_term = "Joyland Festival"
+        else:
+            try:
+                headliner = self.lineups.filter(is_headliner=True).select_related('artist').first()
+                if headliner and headliner.artist:
+                    search_term = headliner.artist.name
+                elif self.lineups.exists():
+                    first_artist = self.lineups.select_related('artist').first()
+                    if first_artist and first_artist.artist:
+                        search_term = first_artist.artist.name
+            except Exception:
+                pass
+
+            if not search_term:
+                base = re.split(r'\b(live|at|in|feat|special)\b', self.title, flags=re.IGNORECASE)[0]
+                base = base.split(':')[0].split('(')[0].strip()
+                search_term = base if len(base) > 2 else (self.title or "Konser")
+
+        q = urllib.parse.quote(search_term.strip())
+        u = (self.ticket_url or "").strip()
+
+        # Jika sudah berupa halaman pencarian resmi atau link festival resmi aktif
+        if "loket.com/search" in u or "tiket.com/to-do/search" in u or "goersapp.com/search" in u or "synchronizefestival.com" in u:
+            return u
+
+        # Cegah link slug fiktif yang pasti 404 di loket/tiket/goers/megatix
+        if "goersapp.com" in u:
+            return f"https://goersapp.com/search?keyword={q}"
+        elif "tiket.com" in u:
+            return f"https://www.tiket.com/to-do/search?q={q}"
+        elif "loket.com" in u or "megatix" in u or not u:
+            return f"https://www.loket.com/search?q={q}"
+
+        return u
+
     def __str__(self):
         return f"{self.title} @ {self.venue.name} ({self.start_datetime.strftime('%d %b %Y')})"
 

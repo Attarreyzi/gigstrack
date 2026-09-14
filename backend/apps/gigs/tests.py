@@ -119,3 +119,88 @@ class GigTrackAPITests(TestCase):
         cities = response.json()
         self.assertIn("Jakarta Selatan", cities)
         self.assertIn("Bandung", cities)
+
+    def test_sync_live_endpoint(self):
+        """Verifies that /api/gigs/sync_live/ triggers automated sync successfully."""
+        response = self.client.get('/api/gigs/sync_live/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(data['status'], 'success')
+        self.assertIn('Sinkronisasi', data['message'])
+
+    def test_bandsintown_service_sync(self):
+        """Verifies that BandsintownService dynamically creates Artist, Venues, Gigs, and Lineups."""
+        from apps.gigs.services.bandsintown import BandsintownService
+        service = BandsintownService()
+        result = service.sync_artist_events("Pamungkas", use_mock=True)
+
+        self.assertTrue(result['success'])
+        self.assertEqual(result['artist'], "Pamungkas")
+        self.assertGreater(result['gigs_created'], 0)
+
+        # Check that artist exists in DB
+        pamungkas = Artist.objects.filter(name="Pamungkas").first()
+        self.assertIsNotNone(pamungkas)
+
+        # Check that gigs were created with Pamungkas in lineup
+        gigs = Gig.objects.filter(lineups__artist=pamungkas)
+        self.assertGreater(gigs.count(), 0)
+
+    def test_bandsintown_api_endpoint(self):
+        """Verifies that POST /api/gigs/sync-bandsintown/ triggers sync via API."""
+        payload = {"artist": "NIKI", "use_mock": True}
+        response = self.client.post('/api/gigs/sync-bandsintown/', payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(data['status'], 'success')
+        self.assertEqual(data['total_artists_synced'], 1)
+        self.assertEqual(data['results'][0]['artist'], "NIKI")
+
+    def test_bandsintown_api_validation(self):
+        """Verifies that POST /api/gigs/sync-bandsintown/ rejects missing artist/all."""
+        response = self.client.post('/api/gigs/sync-bandsintown/', {}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_past_gig_auto_filtered(self):
+        """Verifies that past/yesterday gigs are automatically excluded from the main list."""
+        yesterday_time = timezone.now() - timedelta(days=1)
+        past_gig = Gig.objects.create(
+            title="Yesterday Indie Fest",
+            venue=self.venue_jakarta,
+            start_datetime=yesterday_time,
+            ticket_price=50000,
+            status=GigStatus.COMPLETED
+        )
+
+        # 1. Default GET /api/gigs/ should NOT include yesterday's gig
+        response = self.client.get('/api/gigs/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        results = data.get('results', data)
+        titles = [g['title'] for g in results]
+        self.assertNotIn("Yesterday Indie Fest", titles)
+
+        # 2. GET /api/gigs/?include_past=true SHOULD include yesterday's gig
+        response_all = self.client.get('/api/gigs/?include_past=true')
+        self.assertEqual(response_all.status_code, status.HTTP_200_OK)
+        data_all = response_all.json()
+        results_all = data_all.get('results', data_all)
+        titles_all = [g['title'] for g in results_all]
+        self.assertIn("Yesterday Indie Fest", titles_all)
+
+    def test_anti_404_resolved_ticket_url(self):
+        """Verifies that generic 404-prone ticket URLs resolve to official search queries."""
+        gig = Gig.objects.create(
+            title="Morfem Live at Rossi Musik",
+            venue=self.venue_jakarta,
+            start_datetime=timezone.now() + timedelta(days=2),
+            ticket_url="https://www.loket.com/event/morfem-jakarta-pusat"
+        )
+        self.assertIn("loket.com/search?q=Morfem", gig.resolved_ticket_url)
+
+        # Also test in API serializer response
+        response = self.client.get(f'/api/gigs/{gig.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIn("loket.com/search?q=Morfem", data['ticket_url'])
+
