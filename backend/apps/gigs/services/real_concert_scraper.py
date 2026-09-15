@@ -30,15 +30,15 @@ class RealConcertScraperService:
         today = now.date()
 
         return [
-            # 1. FESTIVAL SKALA BESAR DI JABODETABEK
+            # 1. FESTIVAL TAHUNAN NASIONAL RESMI
             {
-                "title": "Synchronize Fest 2026: Bhinneka Tunggal Musik",
+                "title": "Synchronize Fest 2026: Bhinneka Tunggal Musik (Hari 1)",
                 "venue_name": "Gambir Expo Kemayoran",
                 "venue_city": "Jakarta Pusat",
                 "venue_province": "DKI Jakarta",
                 "venue_address": "Jl. Benyamin Sueb, Pademangan Timur, Kemayoran",
                 "venue_maps": "https://maps.google.com/?q=Gambir+Expo+Kemayoran",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today + timedelta(days=25), timezone.datetime.min.time())) + timedelta(hours=14),
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 10, 16, 14, 0)),
                 "doors_open": "13:00 WIB",
                 "ticket_price": 550000,
                 "is_free": False,
@@ -55,13 +55,36 @@ class RealConcertScraperService:
                 ]
             },
             {
+                "title": "Synchronize Fest 2026: Bhinneka Tunggal Musik (Hari 2)",
+                "venue_name": "Gambir Expo Kemayoran",
+                "venue_city": "Jakarta Pusat",
+                "venue_province": "DKI Jakarta",
+                "venue_address": "Jl. Benyamin Sueb, Pademangan Timur, Kemayoran",
+                "venue_maps": "https://maps.google.com/?q=Gambir+Expo+Kemayoran",
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 10, 17, 14, 0)),
+                "doors_open": "13:00 WIB",
+                "ticket_price": 550000,
+                "is_free": False,
+                "is_featured": True,
+                "ticket_url": "https://synchronizefestival.com/tickets",
+                "poster_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+                "description": "Hari kedua festival musik Synchronize Fest 2026 merayakan keragaman musik nusantara lintas generasi.",
+                "genres": ["Indie Rock", "Pop / Neo-Soul", "Hardcore / Punk"],
+                "lineup": [
+                    {"name": "Maliq & D'Essentials", "role": "headliner", "set_time": "21:30 - 22:45 WIB", "hometown": "Jakarta", "genre": "Pop / Neo-Soul"},
+                    {"name": "Burgerkill", "role": "headliner", "set_time": "20:00 - 21:00 WIB", "hometown": "Bandung", "genre": "Hardcore / Punk"},
+                    {"name": "Danilla", "role": "performer", "set_time": "18:30 - 19:30 WIB", "hometown": "Jakarta", "genre": "Jazz / Neo-Soul"},
+                    {"name": "Kunto Aji", "role": "headliner", "set_time": "22:50 - 23:55 WIB", "hometown": "Yogyakarta", "genre": "Folk / Acoustic"}
+                ]
+            },
+            {
                 "title": "Pestapora 2026 (Hari 1 - Pesta Musik Nasional)",
                 "venue_name": "Gambir Expo Kemayoran",
                 "venue_city": "Jakarta Pusat",
                 "venue_province": "DKI Jakarta",
                 "venue_address": "Jl. Benyamin Sueb, Pademangan Timur, Kemayoran",
                 "venue_maps": "https://maps.google.com/?q=Gambir+Expo+Kemayoran",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today + timedelta(days=5), timezone.datetime.min.time())) + timedelta(hours=14, minutes=30),
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 25, 14, 30)),
                 "doors_open": "13:30 WIB",
                 "ticket_price": 450000,
                 "is_free": False,
@@ -73,6 +96,7 @@ class RealConcertScraperService:
                 "lineup": [
                     {"name": "Hindia", "role": "headliner", "set_time": "21:15 - 22:30 WIB", "hometown": "Jakarta", "genre": "Indie Rock"},
                     {"name": ".Feast", "role": "headliner", "set_time": "20:00 - 21:00 WIB", "hometown": "Jakarta", "genre": "Post-Punk / Alternative"},
+                    {"name": "The Adams", "role": "headliner", "set_time": "22:45 - 23:55 WIB", "hometown": "Jakarta", "genre": "Indie Rock"},
                     {"name": "Morfem", "role": "performer", "set_time": "17:45 - 18:30 WIB", "hometown": "Jakarta", "genre": "Post-Punk / Alternative"},
                     {"name": "Reality Club", "role": "headliner", "set_time": "19:00 - 19:50 WIB", "hometown": "Jakarta", "genre": "Indie Rock"}
                 ]
@@ -84,7 +108,7 @@ class RealConcertScraperService:
                 "venue_province": "DKI Jakarta",
                 "venue_address": "Jl. Benyamin Sueb, Pademangan Timur, Kemayoran",
                 "venue_maps": "https://maps.google.com/?q=Gambir+Expo+Kemayoran",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today + timedelta(days=6), timezone.datetime.min.time())) + timedelta(hours=14, minutes=30),
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 26, 14, 30)),
                 "doors_open": "13:30 WIB",
                 "ticket_price": 450000,
                 "is_free": False,
@@ -92,16 +116,38 @@ class RealConcertScraperService:
                 "ticket_url": "https://www.loket.com/search?q=Pestapora",
                 "poster_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80",
                 "description": "Hari kedua festival Pestapora dengan penampilan istimewa dari solois dan band papan atas Indonesia.",
-                "genres": ["Folk / Acoustic", "Jazz / Neo-Soul"],
+                "genres": ["Folk / Acoustic", "Jazz / Neo-Soul", "Pop / Neo-Soul"],
                 "lineup": [
                     {"name": "Sal Priadi", "role": "headliner", "set_time": "21:00 - 22:15 WIB", "hometown": "Malang", "genre": "Folk / Acoustic"},
                     {"name": "Bernadya", "role": "headliner", "set_time": "19:30 - 20:30 WIB", "hometown": "Surabaya", "genre": "Folk / Acoustic"},
-                    {"name": "Danilla", "role": "headliner", "set_time": "18:15 - 19:15 WIB", "hometown": "Jakarta", "genre": "Jazz / Neo-Soul"},
+                    {"name": "Maliq & D'Essentials", "role": "headliner", "set_time": "18:15 - 19:15 WIB", "hometown": "Jakarta", "genre": "Pop / Neo-Soul"},
                     {"name": "Kunto Aji", "role": "headliner", "set_time": "22:30 - 23:45 WIB", "hometown": "Yogyakarta", "genre": "Folk / Acoustic"}
                 ]
             },
+            {
+                "title": "Joyland Festival Jakarta 2026",
+                "venue_name": "GBK Baseball Stadium Senayan",
+                "venue_city": "Jakarta Pusat",
+                "venue_province": "DKI Jakarta",
+                "venue_address": "Jl. Pintu Satu Senayan, Gelora, Tanah Abang",
+                "venue_maps": "https://maps.google.com/?q=GBK+Baseball+Stadium",
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 11, 20, 15, 0)),
+                "doors_open": "14:00 WIB",
+                "ticket_price": 680000,
+                "is_free": False,
+                "is_featured": True,
+                "ticket_url": "https://joylandfest.com",
+                "poster_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80",
+                "description": "Festival musik dan seni ramah keluarga dengan panggung asri di ruang hijau Gelora Bung Karno.",
+                "genres": ["Indie Rock", "City Pop / Retro"],
+                "lineup": [
+                    {"name": "Reality Club", "role": "headliner", "set_time": "20:30 - 21:45 WIB", "hometown": "Jakarta", "genre": "Indie Rock"},
+                    {"name": "White Shoes & The Couples Company", "role": "headliner", "set_time": "19:00 - 20:00 WIB", "hometown": "Jakarta", "genre": "City Pop / Retro"},
+                    {"name": "Efek Rumah Kaca", "role": "headliner", "set_time": "22:00 - 23:15 WIB", "hometown": "Jakarta", "genre": "Indie Rock"}
+                ]
+            },
 
-            # 2. KONSER LIVE HARI INI DI JABODETABEK (RADAR LIVE TONIGHT)
+            # 2. GIGS HARI INI DI JABODETABEK (16 September 2026)
             {
                 "title": "M Bloc Secret Noise Session: Midweek Live",
                 "venue_name": "M Bloc Space - Live House",
@@ -109,7 +155,7 @@ class RealConcertScraperService:
                 "venue_province": "DKI Jakarta",
                 "venue_address": "Jl. Panglima Polim No.37, Melawai, Kebayoran Baru",
                 "venue_maps": "https://maps.google.com/?q=M+Bloc+Space+Jakarta",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time())) + timedelta(hours=19),
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 16, 19, 30)),
                 "doors_open": "18:30 WIB",
                 "ticket_price": 85000,
                 "is_free": False,
@@ -124,34 +170,13 @@ class RealConcertScraperService:
                 ]
             },
             {
-                "title": "Fatmawati Underground Mosh: Heavy & Raw",
-                "venue_name": "Rossi Musik Fatmawati",
-                "venue_city": "Jakarta Selatan",
-                "venue_province": "DKI Jakarta",
-                "venue_address": "Jl. RS. Fatmawati Raya No.30B, Cilandak Barat",
-                "venue_maps": "https://maps.google.com/?q=Rossi+Musik+Fatmawati",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time())) + timedelta(hours=19, minutes=30),
-                "doors_open": "18:45 WIB",
-                "ticket_price": 65000,
-                "is_free": False,
-                "is_featured": False,
-                "ticket_url": "https://www.loket.com/search?q=Avhath",
-                "poster_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80",
-                "description": "Panggung legendaris lantai 4 Rossi Musik Fatmawati kembali bergetar bersama gelombang distorsi hardcore katarsis dari Avhath dan Morfem.",
-                "genres": ["Hardcore / Punk", "Post-Punk / Alternative"],
-                "lineup": [
-                    {"name": "Avhath", "role": "headliner", "set_time": "21:15 - 22:30 WIB", "hometown": "Jakarta", "genre": "Hardcore / Punk"},
-                    {"name": "Morfem", "role": "headliner", "set_time": "19:45 - 20:45 WIB", "hometown": "Jakarta", "genre": "Post-Punk / Alternative"}
-                ]
-            },
-            {
                 "title": "Duck Down Midnight Rock: Free Admission Session",
                 "venue_name": "Duck Down Pizza Party",
                 "venue_city": "Jakarta Selatan",
                 "venue_province": "DKI Jakarta",
                 "venue_address": "Jl. Senopati No.44, Selong, Kebayoran Baru",
                 "venue_maps": "https://maps.google.com/?q=Duck+Down+Bar+Jakarta",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time())) + timedelta(hours=21),
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 16, 21, 0)),
                 "doors_open": "20:00 WIB",
                 "ticket_price": 0,
                 "is_free": True,
@@ -165,28 +190,73 @@ class RealConcertScraperService:
                 ]
             },
 
-            # 3. KONSER THEATRE & GEDUNG BUDAYA JABODETABEK
+            # 3. GIGS BESOK (17 September 2026)
             {
-                "title": "Bernadya & Sal Priadi: Senja di Taman Budaya",
-                "venue_name": "Graha Bhakti Budaya (TIM)",
-                "venue_city": "Jakarta Pusat",
+                "title": "Fatmawati Underground Mosh: Heavy & Raw",
+                "venue_name": "Rossi Musik Fatmawati",
+                "venue_city": "Jakarta Selatan",
                 "venue_province": "DKI Jakarta",
-                "venue_address": "Jl. Cikini Raya No.73, Menteng",
-                "venue_maps": "https://maps.google.com/?q=Taman+Ismail+Marzuki+Jakarta",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today + timedelta(days=8), timezone.datetime.min.time())) + timedelta(hours=19),
-                "doors_open": "18:00 WIB",
-                "ticket_price": 250000,
+                "venue_address": "Jl. RS. Fatmawati Raya No.30B, Cilandak Barat",
+                "venue_maps": "https://maps.google.com/?q=Rossi+Musik+Fatmawati",
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 17, 19, 30)),
+                "doors_open": "18:45 WIB",
+                "ticket_price": 65000,
                 "is_free": False,
-                "is_featured": True,
-                "ticket_url": "https://www.loket.com/search?q=Bernadya",
-                "poster_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80",
-                "description": "Konser orkestrasi akustik syahdu menampilkan untaian lirik personal Bernadya dan teatrikal puitis Sal Priadi di aula megah Graha Bhakti Budaya.",
-                "genres": ["Folk / Acoustic"],
+                "is_featured": False,
+                "ticket_url": "https://www.loket.com/search?q=Avhath",
+                "poster_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80",
+                "description": "Panggung legendaris lantai 4 Rossi Musik Fatmawati kembali bergetar bersama gelombang distorsi hardcore katarsis dari Avhath dan Morfem.",
+                "genres": ["Hardcore / Punk", "Post-Punk / Alternative"],
                 "lineup": [
-                    {"name": "Bernadya", "role": "headliner", "set_time": "19:15 - 20:30 WIB", "hometown": "Surabaya", "genre": "Folk / Acoustic"},
-                    {"name": "Sal Priadi", "role": "headliner", "set_time": "20:45 - 22:15 WIB", "hometown": "Malang", "genre": "Folk / Acoustic"}
+                    {"name": "Avhath", "role": "headliner", "set_time": "21:15 - 22:30 WIB", "hometown": "Jakarta", "genre": "Hardcore / Punk"},
+                    {"name": "Morfem", "role": "headliner", "set_time": "19:45 - 20:45 WIB", "hometown": "Jakarta", "genre": "Post-Punk / Alternative"}
                 ]
             },
+
+            # 4. GIGS MINGGU INI & AKHIR PEKAN (19 - 20 September 2026)
+            {
+                "title": "Senayan Sunset Sound: Maliq & D'Essentials Live",
+                "venue_name": "Parkir Timur Senayan",
+                "venue_city": "Jakarta Pusat",
+                "venue_province": "DKI Jakarta",
+                "venue_address": "Kawasan GBK, Jl. Pintu Satu Senayan",
+                "venue_maps": "https://maps.google.com/?q=Parkir+Timur+Senayan",
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 19, 17, 0)),
+                "doors_open": "16:00 WIB",
+                "ticket_price": 120000,
+                "is_free": False,
+                "is_featured": True,
+                "ticket_url": "https://www.loket.com/search?q=Maliq",
+                "poster_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+                "description": "Penampilan sore bernuansa jazzy soul romantis bersama Maliq & D'Essentials di ruang terbuka Senayan.",
+                "genres": ["Pop / Neo-Soul"],
+                "lineup": [
+                    {"name": "Maliq & D'Essentials", "role": "headliner", "set_time": "17:30 - 19:00 WIB", "hometown": "Jakarta", "genre": "Pop / Neo-Soul"}
+                ]
+            },
+            {
+                "title": "Bandung Distortion Collective: Spasial Showcase",
+                "venue_name": "Spasial / Gudang Selatan 22",
+                "venue_city": "Bandung",
+                "venue_province": "Jawa Barat",
+                "venue_address": "Jl. Gudang Selatan No.22, Malabar, Lengkong",
+                "venue_maps": "https://maps.google.com/?q=Gudang+Selatan+Bandung",
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 20, 19, 0)),
+                "doors_open": "18:00 WIB",
+                "ticket_price": 75000,
+                "is_free": False,
+                "is_featured": False,
+                "ticket_url": "https://goersapp.com/search?keyword=The%20Sigit",
+                "poster_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+                "description": "Gelaran keriaan musik distorsi di gedung cagar budaya Gudang Selatan Bandung bersama The SIGIT dan Skandal.",
+                "genres": ["Indie Rock"],
+                "lineup": [
+                    {"name": "The Sigit", "role": "headliner", "set_time": "21:00 - 22:30 WIB", "hometown": "Bandung", "genre": "Indie Rock"},
+                    {"name": "Skandal", "role": "performer", "set_time": "19:30 - 20:30 WIB", "hometown": "Yogyakarta", "genre": "Indie Rock"}
+                ]
+            },
+
+            # 5. KONSER TUNGGAL GEDUNG & ARENA JABODETABEK
             {
                 "title": "Pamungkas Live at Tennis Indoor Senayan",
                 "venue_name": "Tennis Indoor Senayan",
@@ -194,7 +264,7 @@ class RealConcertScraperService:
                 "venue_province": "DKI Jakarta",
                 "venue_address": "Gelora Bung Karno Sports Complex, Jl. Pintu Satu Senayan",
                 "venue_maps": "https://maps.google.com/?q=Tennis+Indoor+Senayan",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today + timedelta(days=14), timezone.datetime.min.time())) + timedelta(hours=19, minutes=30),
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 9, 29, 19, 30)),
                 "doors_open": "18:00 WIB",
                 "ticket_price": 350000,
                 "is_free": False,
@@ -208,24 +278,24 @@ class RealConcertScraperService:
                 ]
             },
             {
-                "title": "Bandung Distortion Collective: Spasial Showcase",
-                "venue_name": "Spasial / Gudang Selatan 22",
-                "venue_city": "Bandung",
-                "venue_province": "Jawa Barat",
-                "venue_address": "Jl. Gudang Selatan No.22, Malabar, Lengkong",
-                "venue_maps": "https://maps.google.com/?q=Gudang+Selatan+Bandung",
-                "start_datetime": timezone.make_aware(timezone.datetime.combine(today + timedelta(days=2), timezone.datetime.min.time())) + timedelta(hours=19),
+                "title": "Bernadya & Sal Priadi: Senja di Taman Budaya",
+                "venue_name": "Graha Bhakti Budaya (TIM)",
+                "venue_city": "Jakarta Pusat",
+                "venue_province": "DKI Jakarta",
+                "venue_address": "Jl. Cikini Raya No.73, Menteng",
+                "venue_maps": "https://maps.google.com/?q=Taman+Ismail+Marzuki+Jakarta",
+                "start_datetime": timezone.make_aware(timezone.datetime(2026, 10, 2, 19, 30)),
                 "doors_open": "18:00 WIB",
-                "ticket_price": 75000,
+                "ticket_price": 250000,
                 "is_free": False,
-                "is_featured": False,
-                "ticket_url": "https://goersapp.com/search?keyword=The%20Sigit",
-                "poster_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
-                "description": "Gelaran keriaan musik distorsi di gedung cagar budaya Gudang Selatan Bandung bersama The SIGIT dan Skandal.",
-                "genres": ["Indie Rock"],
+                "is_featured": True,
+                "ticket_url": "https://www.loket.com/search?q=Bernadya",
+                "poster_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80",
+                "description": "Konser orkestrasi akustik syahdu menampilkan untaian lirik personal Bernadya dan teatrikal puitis Sal Priadi di aula megah Graha Bhakti Budaya.",
+                "genres": ["Folk / Acoustic"],
                 "lineup": [
-                    {"name": "The Sigit", "role": "headliner", "set_time": "21:00 - 22:30 WIB", "hometown": "Bandung", "genre": "Indie Rock"},
-                    {"name": "Skandal", "role": "performer", "set_time": "19:30 - 20:30 WIB", "hometown": "Yogyakarta", "genre": "Indie Rock"}
+                    {"name": "Bernadya", "role": "headliner", "set_time": "19:15 - 20:30 WIB", "hometown": "Surabaya", "genre": "Folk / Acoustic"},
+                    {"name": "Sal Priadi", "role": "headliner", "set_time": "20:45 - 22:15 WIB", "hometown": "Malang", "genre": "Folk / Acoustic"}
                 ]
             }
         ]

@@ -74,13 +74,19 @@ export default function FilterBar({
             className={`date-tab-btn ${dateFilter === 'today' ? 'active' : ''}`}
             onClick={() => setDateFilter('today')}
           >
-            Malam Ini
+            Hari Ini
           </button>
           <button
             className={`date-tab-btn ${dateFilter === 'tomorrow' ? 'active' : ''}`}
             onClick={() => setDateFilter('tomorrow')}
           >
             Besok
+          </button>
+          <button
+            className={`date-tab-btn ${dateFilter === 'this_week' ? 'active' : ''}`}
+            onClick={() => setDateFilter('this_week')}
+          >
+            Minggu Ini
           </button>
           <button
             className={`date-tab-btn ${dateFilter === 'weekend' ? 'active' : ''}`}

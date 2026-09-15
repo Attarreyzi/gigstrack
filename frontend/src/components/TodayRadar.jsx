@@ -29,9 +29,9 @@ export default function TodayRadar({ todayData, stats }) {
 
           <h1 className="radar-headline">
             {totalGigs > 0 ? (
-              <>Ada <span>{totalGigs} Panggung Musik</span> Berlangsung Malam Ini</>
+              <>Ada <span>{totalGigs} Panggung Musik</span> Berlangsung Hari Ini</>
             ) : (
-              <>Belum Ada Jadwal Konser <span>Malam Ini</span></>
+              <>Belum Ada Jadwal Konser <span>Hari Ini</span></>
             )}
           </h1>
 

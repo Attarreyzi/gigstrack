@@ -98,6 +98,19 @@ export default function App() {
     })
       .then((data) => {
         let results = data;
+        // Client side filtering for 'this_week' if selected
+        if (dateFilter === 'this_week') {
+          const now = new Date();
+          const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const currentDay = now.getDay(); // 0 is Sunday, 1 is Monday...
+          const daysUntilSunday = currentDay === 0 ? 0 : 7 - currentDay;
+          const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday, 23, 59, 59, 999);
+
+          results = results.filter((gig) => {
+            const gigDate = new Date(gig.start_datetime);
+            return gigDate >= startOfToday && gigDate <= endOfWeek;
+          });
+        }
         // Client side filtering for 'weekend' if selected
         if (dateFilter === 'weekend') {
           results = results.filter((gig) => {
@@ -150,10 +163,16 @@ export default function App() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
             {dateFilter === 'today'
-              ? 'Konser & Gig Malam Ini'
-              : dateFilter === 'saved'
-              ? 'Konser Tersimpan'
-              : 'Jadwal & Agenda Konser'}
+              ? 'Konser & Gig Hari Ini'
+              : dateFilter === 'tomorrow'
+                ? 'Konser & Gig Besok'
+                : dateFilter === 'this_week'
+                  ? 'Konser & Gig Minggu Ini'
+                  : dateFilter === 'weekend'
+                    ? 'Konser Akhir Pekan'
+                    : dateFilter === 'saved'
+                      ? 'Konser Tersimpan'
+                      : 'Jadwal & Agenda Konser'}
           </h2>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
             {gigs.length} acara ditemukan
