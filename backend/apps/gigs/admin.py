@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Gig, GigLineup
+from .models import Gig, GigLineup, GigTicketTier
 
 class GigLineupInline(admin.TabularInline):
     model = GigLineup
@@ -8,6 +8,13 @@ class GigLineupInline(admin.TabularInline):
     autocomplete_fields = ['artist']
     fields = ('order', 'artist', 'set_time', 'is_headliner')
     ordering = ('order',)
+
+
+class GigTicketTierInline(admin.TabularInline):
+    model = GigTicketTier
+    extra = 1
+    fields = ('order', 'tier_name', 'price', 'is_sold_out', 'description', 'ticket_url')
+    ordering = ('order', 'price')
 
 
 @admin.register(Gig)
@@ -19,8 +26,9 @@ class GigAdmin(admin.ModelAdmin):
     list_filter = ('status', 'venue__city', 'is_featured', 'start_datetime')
     search_fields = ('title', 'venue__name', 'venue__city', 'lineups__artist__name')
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [GigLineupInline]
+    inlines = [GigLineupInline, GigTicketTierInline]
     date_hierarchy = 'start_datetime'
+
 
     def poster_preview(self, obj):
         return format_html(

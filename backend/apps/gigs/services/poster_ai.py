@@ -9,7 +9,7 @@ from django.utils.text import slugify
 from google import genai
 from google.genai import types
 
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.gigs.models import Gig, GigLineup, GigTicketTier, GigStatus
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
 
@@ -30,8 +30,17 @@ Struktur JSON yang WAJIB dihasilkan:
     "date": "YYYY-MM-DD (format tahun-bulan-tanggal. Jika tahun tidak tertulis, gunakan tahun saat ini/mendatang 2026/2027)",
     "time": "HH:MM (format 24 jam waktu mulai jika ada, contoh: 19:00, atau null)",
     "doors_open": "Waktu open gate / doors open (contoh: 18:30 WIB)",
-    "ticket_price": 0, // Angka integer rupiah (contoh: 150000 untuk 150k/150rb). Jika gratis tulis 0.
+    "ticket_price": 0, // Harga termurah / mulai dari (angka integer rupiah, contoh: 150000). Jika gratis tulis 0.
     "is_free": false, // true jika ada tulisan Free Entry, HTM: Free, Gratis, Donasi
+    "ticket_tiers": [
+        // Ekstrak SEMUA kategori tiket yang tertera (Early Bird, Presale 1, Presale 2, Regular, VIP, Daily Pass, 3-Day Pass, OTS, dll)
+        {
+            "tier_name": "Nama Kategori (contoh: Presale 1 / Early Bird / 3-Day Pass / VIP)",
+            "price": 250000, // Angka integer rupiah
+            "is_sold_out": false, // true jika ada cap SOLD OUT / HABIS
+            "description": "Keterangan opsional (misal: Akses 3 Hari / Daily Pass)"
+        }
+    ],
     "ticket_url": "URL pembelian tiket jika tertera (contoh: loket.com/..., tiket.com/..., atau null)",
     "genres": ["Indie Rock", "Pop", "Metal", "Punk", ...], // Perkiraan genre musik dari band yang tertera
     "description": "Ringkasan informasi acara dan lineup lengkap untuk deskripsi",
@@ -40,9 +49,11 @@ Struktur JSON yang WAJIB dihasilkan:
 
 PENTING:
 1. Pastikan nama artis/band diekstrak secara terpisah dan bersih dari kata tambahan seperti 'Feat', 'With', 'Presenting'.
-2. Format tanggal WAJIB YYYY-MM-DD. Terjemahkan nama bulan Indonesia (Januari, Februari, Maret, April, Mei, Juni, Juli, Agustus, September, Oktober, November, Desember).
-3. Hanya kembalikan valid JSON string tanpa teks pengantar atau penutup apapun.
+2. Jika acara adalah FESTIVAL dengan banyak harga (Presale 1, Presale 2, VIP, dll), ekstrak SEMUA tier ke array 'ticket_tiers'.
+3. Format tanggal WAJIB YYYY-MM-DD. Terjemahkan nama bulan Indonesia.
+4. Hanya kembalikan valid JSON string tanpa teks pengantar atau penutup apapun.
 """
+
 
 class PosterAIService:
     def __init__(self, api_key: str = None):
@@ -186,26 +197,56 @@ class PosterAIService:
             date_str = start_datetime.strftime('%Y-%m-%d')
 
         # Normalisasi Harga Tiket
+        # Normalisasi Harga Tiket & Ticket Tiers
         raw_price = data.get("ticket_price", 0)
         is_free = bool(data.get("is_free", False))
         
-        try:
-            if isinstance(raw_price, str):
-                # Bersihkan Rp, titik, koma, K, rb
-                p_clean = raw_price.lower().replace("rp", "").replace(".", "").replace(",", "").strip()
-                if "k" in p_clean:
-                    ticket_price = int(float(p_clean.replace("k", "")) * 1000)
-                elif "rb" in p_clean:
-                    ticket_price = int(float(p_clean.replace("rb", "")) * 1000)
-                else:
-                    digits = re.findall(r'\d+', p_clean)
-                    ticket_price = int(digits[0]) if digits else 0
-            else:
-                ticket_price = int(raw_price or 0)
-        except Exception:
-            ticket_price = 0
+        def parse_price(val):
+            try:
+                if isinstance(val, str):
+                    p_clean = val.lower().replace("rp", "").replace(".", "").replace(",", "").strip()
+                    if "k" in p_clean:
+                        return int(float(p_clean.replace("k", "")) * 1000)
+                    elif "rb" in p_clean:
+                        return int(float(p_clean.replace("rb", "")) * 1000)
+                    else:
+                        digits = re.findall(r'\d+', p_clean)
+                        return int(digits[0]) if digits else 0
+                return int(val or 0)
+            except Exception:
+                return 0
 
-        if ticket_price == 0:
+        ticket_price = parse_price(raw_price)
+
+        # Normalisasi Ticket Tiers
+        raw_tiers = data.get("ticket_tiers", [])
+        normalized_tiers = []
+        if isinstance(raw_tiers, list):
+            for idx, tier in enumerate(raw_tiers, start=1):
+                if isinstance(tier, dict) and tier.get("tier_name"):
+                    t_name = str(tier["tier_name"]).strip()
+                    t_price = parse_price(tier.get("price", ticket_price))
+                    t_sold_out = bool(tier.get("is_sold_out", False))
+                    t_desc = str(tier.get("description", "")).strip()
+                    normalized_tiers.append({
+                        "order": idx,
+                        "tier_name": t_name,
+                        "price": t_price,
+                        "is_sold_out": t_sold_out,
+                        "description": t_desc
+                    })
+
+        # Jika ada tiers, tentukan ticket_price sebagai harga termurah aktif
+        if normalized_tiers:
+            active_prices = [t["price"] for t in normalized_tiers if t["price"] > 0 and not t["is_sold_out"]]
+            if active_prices:
+                ticket_price = min(active_prices)
+            elif any(t["price"] > 0 for t in normalized_tiers):
+                ticket_price = min(t["price"] for t in normalized_tiers if t["price"] > 0)
+            else:
+                ticket_price = 0
+
+        if ticket_price == 0 and not normalized_tiers:
             is_free = True
 
         # Normalisasi link tiket
@@ -234,6 +275,7 @@ class PosterAIService:
             "doors_open": data.get("doors_open") or "18:30 WIB",
             "ticket_price": ticket_price,
             "is_free": is_free,
+            "ticket_tiers": normalized_tiers,
             "ticket_url": ticket_url,
             "genres": genres,
             "description": description,
@@ -242,7 +284,7 @@ class PosterAIService:
 
     def save_gig_to_database(self, normalized_data: dict, poster_file=None) -> Gig:
         """
-        Menyimpan data hasil AI langsung ke database Django (Venue, Artists, Genres, Gig, GigLineup).
+        Menyimpan data hasil AI langsung ke database Django (Venue, Artists, Genres, Gig, GigLineup, GigTicketTier).
         """
         # 1. Venue
         venue_name = normalized_data["venue_name"]
@@ -341,4 +383,19 @@ class PosterAIService:
                 }
             )
 
+        # 6. Ticket Tiers
+        for tier_data in normalized_data.get("ticket_tiers", []):
+            GigTicketTier.objects.update_or_create(
+                gig=gig,
+                tier_name__iexact=tier_data["tier_name"],
+                defaults={
+                    "tier_name": tier_data["tier_name"],
+                    "price": tier_data.get("price", 0),
+                    "is_sold_out": tier_data.get("is_sold_out", False),
+                    "description": tier_data.get("description", ""),
+                    "order": tier_data.get("order", 1)
+                }
+            )
+
         return gig
+

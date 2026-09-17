@@ -145,8 +145,62 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
                 </div>
               )}
 
+              {/* Ticket Tiers (Festival / Multi-Price Options) */}
+              {detail.ticket_tiers && detail.ticket_tiers.length > 0 && (
+                <div style={{ marginTop: '24px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '16px' }}>
+                  <h4 style={{ fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>🎟️</span>
+                    <span>Pilihan Kategori & Paket Tiket</span>
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {detail.ticket_tiers.map((tier) => (
+                      <div
+                        key={tier.id || tier.tier_name}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '10px 14px',
+                          background: tier.is_sold_out ? 'rgba(239, 68, 68, 0.06)' : 'rgba(255, 255, 255, 0.02)',
+                          border: tier.is_sold_out ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid rgba(255, 255, 255, 0.06)',
+                          borderRadius: '8px',
+                          gap: '12px'
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: '0.92rem', color: tier.is_sold_out ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                            {tier.tier_name}
+                          </div>
+                          {tier.description && (
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                              {tier.description}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.95rem', color: tier.is_sold_out ? 'var(--text-muted)' : 'var(--accent-pink)' }}>
+                            {tier.price === 0 ? 'GRATIS' : `Rp ${tier.price.toLocaleString('id-ID')}`}
+                          </span>
+                          <span style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            background: tier.is_sold_out ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                            color: tier.is_sold_out ? '#F87171' : '#34D399'
+                          }}>
+                            {tier.is_sold_out ? 'SOLD OUT' : 'TERSEDIA'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Action Buttons */}
               <div className="modal-actions-row">
+
                 {detail.ticket_url ? (
                   <a
                     href={detail.ticket_url}

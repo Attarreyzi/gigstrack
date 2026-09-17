@@ -75,8 +75,20 @@ class TelegramPosterBot:
         file_name = os.path.basename(file_path)
         return r.content, file_name
 
-    def format_review_card(self, extracted: dict, is_corrected: bool = False) -> tuple[str, dict]:
-        price_str = "<b>GRATIS / Free Entry</b>" if extracted.get("is_free") else f"<b>Rp {extracted.get('ticket_price', 0):,}</b>"
+    def format_review_card(self, extracted: dict, is_corrected: bool = False) -> str:
+        tiers = extracted.get("ticket_tiers", [])
+        if tiers:
+            tier_lines = []
+            for t in tiers:
+                status = " 🔴 [SOLD OUT]" if t.get("is_sold_out") else " 🟢"
+                desc = f" ({t['description']})" if t.get("description") else ""
+                tier_lines.append(f"   • {t['tier_name']}: <b>Rp {t.get('price', 0):,}</b>{status}{desc}")
+            price_str = "\n" + "\n".join(tier_lines)
+        elif extracted.get("is_free"):
+            price_str = "<b>GRATIS / Free Entry</b>"
+        else:
+            price_str = f"<b>Rp {extracted.get('ticket_price', 0):,}</b>"
+
         lineup_str = ", ".join(extracted.get("artists", [])) or "Belum terdeteksi"
         confidence = int(extracted.get("confidence_score", 0.9) * 100)
 
@@ -89,14 +101,15 @@ class TelegramPosterBot:
             f"📍 <b>Venue:</b> {extracted.get('venue_name')}, {extracted.get('city')}\n"
             f"📅 <b>Tanggal:</b> {extracted.get('date')} ({extracted.get('time', '19:00')} WIB)\n"
             f"🚪 <b>Open Gate:</b> {extracted.get('doors_open')}\n"
-            f"🎟️ <b>HTM:</b> {price_str}\n"
+            f"🎟️ <b>Kategori Tiket:</b> {price_str}\n"
             f"🔗 <b>Tiket:</b> {extracted.get('ticket_url')}\n"
             f"🎯 <b>AI Confidence:</b> {confidence}%\n\n"
             "💡 <i>Ada yang salah? Ketik saja langsung koreksinya di chat ini!\n"
-            "Contoh: <code>ubah tanggal jadi 25 Nov</code> atau <code>ganti venue ke GBK Senayan</code></i>"
+            "Contoh: <code>ubah tanggal jadi 25 Nov</code> atau <code>tambah tiket VIP 500rb</code></i>"
         )
 
         return review_text
+
 
     def handle_update(self, update: dict):
         if "callback_query" in update:

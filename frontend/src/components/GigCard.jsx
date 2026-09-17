@@ -42,13 +42,17 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fff', display: 'inline-block' }}></span>
               <span>LIVE TONIGHT</span>
             </span>
+          ) : (gig.ticket_tiers && gig.ticket_tiers.length > 1) ? (
+            <span style={{ background: 'rgba(139, 92, 246, 0.25)', color: '#C084FC', border: '1px solid rgba(139, 92, 246, 0.4)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.04em' }}>
+              FESTIVAL PASS
+            </span>
           ) : (
             <span></span>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className={`badge-price ${gig.is_free ? 'free' : ''}`}>
-              {gig.is_free ? 'FREE ENTRY' : `IDR ${gig.ticket_price.toLocaleString('id-ID')}`}
+              {gig.price_range_display || (gig.is_free ? 'FREE ENTRY' : `IDR ${gig.ticket_price.toLocaleString('id-ID')}`)}
             </span>
             <button
               className={`btn-card-bookmark ${isBookmarked ? 'active' : ''}`}
@@ -65,6 +69,7 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
             </button>
           </div>
         </div>
+
       </div>
 
       {/* Card Content */}

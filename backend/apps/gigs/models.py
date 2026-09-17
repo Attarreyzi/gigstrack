@@ -36,10 +36,17 @@ class Gig(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(f"{self.title}-{self.start_datetime.strftime('%Y%m%d') if self.start_datetime else 'event'}")
-        if self.ticket_price == 0:
+            dt_str = 'event'
+            if self.start_datetime:
+                if hasattr(self.start_datetime, 'strftime'):
+                    dt_str = self.start_datetime.strftime('%Y%m%d')
+                else:
+                    dt_str = str(self.start_datetime)[:10].replace('-', '')
+            self.slug = slugify(f"{self.title}-{dt_str}")
+        if self.ticket_price == 0 and not self.ticket_tiers.exists():
             self.is_free = True
         super().save(*args, **kwargs)
+
 
     @property
     def display_poster(self):
@@ -112,6 +119,22 @@ class Gig(models.Model):
 
         return u
 
+    @property
+    def price_range_display(self):
+        tiers = self.ticket_tiers.all()
+        if tiers.exists():
+            prices = [t.price for t in tiers if t.price > 0]
+            if not prices:
+                return "GRATIS / Free Entry"
+            min_p = min(prices)
+            max_p = max(prices)
+            if min_p == max_p:
+                return f"Rp {min_p:,.0f}".replace(',', '.')
+            return f"Mulai Rp {min_p:,.0f} - Rp {max_p:,.0f}".replace(',', '.')
+        if self.is_free or self.ticket_price == 0:
+            return "GRATIS / Free Entry"
+        return f"Rp {self.ticket_price:,.0f}".replace(',', '.')
+
     def __str__(self):
         return f"{self.title} @ {self.venue.name} ({self.start_datetime.strftime('%d %b %Y')})"
 
@@ -131,3 +154,23 @@ class GigLineup(models.Model):
 
     def __str__(self):
         return f"{self.artist.name} ({self.gig.title})"
+
+
+class GigTicketTier(models.Model):
+    gig = models.ForeignKey(Gig, on_delete=models.CASCADE, related_name="ticket_tiers", verbose_name="Konser / Acara")
+    tier_name = models.CharField(max_length=150, verbose_name="Nama Kategori / Tier Tiket")
+    price = models.IntegerField(default=0, verbose_name="Harga Tiket (Rp)")
+    is_sold_out = models.BooleanField(default=False, verbose_name="Habis / Sold Out")
+    description = models.CharField(max_length=250, blank=True, verbose_name="Keterangan (contoh: 3-Day Pass / Daily Pass)")
+    ticket_url = models.URLField(blank=True, verbose_name="Link Tiket Khusus Tier Ini (Opsional)")
+    order = models.PositiveIntegerField(default=1, verbose_name="Urutan")
+
+    class Meta:
+        ordering = ['order', 'price', 'id']
+        verbose_name = "Kategori / Tier Tiket"
+        verbose_name_plural = "Daftar Kategori / Tier Tiket"
+
+    def __str__(self):
+        status = " [SOLD OUT]" if self.is_sold_out else ""
+        return f"{self.tier_name} - Rp {self.price:,}{status}"
+
