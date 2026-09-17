@@ -28,10 +28,10 @@ Struktur JSON yang WAJIB dihasilkan:
     "city": "Kota acara (contoh: Jakarta, Bandung, Yogyakarta, Surabaya, Denpasar, Medan, dll)",
     "address": "Alamat spesifik jika tertulis, atau gabungkan dengan kota",
     "date": "YYYY-MM-DD (format tahun-bulan-tanggal. Jika tahun tidak tertulis, gunakan tahun saat ini/mendatang 2026/2027)",
-    "time": "HH:MM (format 24 jam waktu mulai jika ada, contoh: 19:00, atau null)",
-    "doors_open": "Waktu open gate / doors open (contoh: 18:30 WIB)",
-    "ticket_price": 0, // Harga termurah / mulai dari (angka integer rupiah, contoh: 150000). Jika gratis tulis 0.
-    "is_free": false, // true jika ada tulisan Free Entry, HTM: Free, Gratis, Donasi
+    "time": "HH:MM jika tertera, atau null jika belum ada info jam",
+    "doors_open": "Waktu open gate / doors open HANYA jika tertulis di poster (contoh: '15:00 WIB'). Jika TIDAK TERTULIS di poster, isi 'TBA'. JANGAN mengarang jam jika tidak ada di poster!",
+    "ticket_price": 0, // Harga termurah / mulai dari (angka integer rupiah, contoh: 150000). Jika gratis atau belum ada harga, tulis 0.
+    "is_free": false, // true HANYA jika tertulis Free Entry, HTM: Free, Gratis, Donasi. Jika belum ada info tiket atau berbayar, false.
     "ticket_tiers": [
         // Ekstrak SEMUA kategori tiket yang tertera (Early Bird, Presale 1, Presale 2, Regular, VIP, Daily Pass, 3-Day Pass, OTS, dll)
         {
@@ -48,11 +48,13 @@ Struktur JSON yang WAJIB dihasilkan:
 }
 
 PENTING:
-1. Pastikan nama artis/band diekstrak secara terpisah dan bersih dari kata tambahan seperti 'Feat', 'With', 'Presenting'.
-2. Jika acara adalah FESTIVAL dengan banyak harga (Presale 1, Presale 2, VIP, dll), ekstrak SEMUA tier ke array 'ticket_tiers'.
-3. Format tanggal WAJIB YYYY-MM-DD. Terjemahkan nama bulan Indonesia.
-4. Hanya kembalikan valid JSON string tanpa teks pengantar atau penutup apapun.
+1. JANGAN mengarang Open Gate! Jika tidak ada tulisan jam buka gate/pintu, isi 'doors_open': 'TBA'.
+2. Pastikan nama artis/band diekstrak secara terpisah dan bersih dari kata tambahan seperti 'Feat', 'With', 'Presenting'.
+3. Jika acara adalah FESTIVAL dengan banyak harga (Presale 1, Presale 2, VIP, dll), ekstrak SEMUA tier ke array 'ticket_tiers'.
+4. Format tanggal WAJIB YYYY-MM-DD. Terjemahkan nama bulan Indonesia.
+5. Hanya kembalikan valid JSON string tanpa teks pengantar atau penutup apapun.
 """
+
 
 
 class PosterAIService:
@@ -261,6 +263,13 @@ class PosterAIService:
 
         description = (data.get("description") or f"Konser {title} menampilkan {', '.join(artists)} di {venue_name}, {city}.").strip()
 
+        # Normalisasi Open Gate / Doors Open
+        raw_doors = str(data.get("doors_open") or "").strip()
+        if not raw_doors or raw_doors.lower() in ["tba", "none", "null", "belum ada", "belum diumumkan", ""]:
+            doors_open = "TBA"
+        else:
+            doors_open = raw_doors
+
         return {
             "success": True,
             "title": title,
@@ -272,7 +281,7 @@ class PosterAIService:
             "date": start_datetime.strftime('%Y-%m-%d'),
             "time": start_datetime.strftime('%H:%M'),
             "start_datetime_iso": start_datetime.isoformat(),
-            "doors_open": data.get("doors_open") or "18:30 WIB",
+            "doors_open": doors_open,
             "ticket_price": ticket_price,
             "is_free": is_free,
             "ticket_tiers": normalized_tiers,
@@ -345,7 +354,7 @@ class PosterAIService:
                 "title": title,
                 "venue": venue,
                 "start_datetime": start_datetime,
-                "doors_open": normalized_data.get("doors_open", "18:30 WIB"),
+                "doors_open": normalized_data.get("doors_open", "TBA"),
                 "ticket_price": normalized_data.get("ticket_price", 0),
                 "is_free": normalized_data.get("is_free", False),
                 "ticket_url": normalized_data.get("ticket_url", ""),
@@ -359,10 +368,12 @@ class PosterAIService:
             gig.title = title
             gig.venue = venue
             gig.start_datetime = start_datetime
+            gig.doors_open = normalized_data.get("doors_open", gig.doors_open)
             gig.ticket_price = normalized_data.get("ticket_price", gig.ticket_price)
             gig.is_free = normalized_data.get("is_free", gig.is_free)
             gig.ticket_url = normalized_data.get("ticket_url", gig.ticket_url)
             gig.description = normalized_data.get("description", gig.description)
+
 
         if poster_file:
             gig.poster = poster_file

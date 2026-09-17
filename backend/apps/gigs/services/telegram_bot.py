@@ -76,18 +76,33 @@ class TelegramPosterBot:
         return r.content, file_name
 
     def format_review_card(self, extracted: dict, is_corrected: bool = False) -> str:
+        # 1. Kategori Tiket & HTM
         tiers = extracted.get("ticket_tiers", [])
         if tiers:
             tier_lines = []
             for t in tiers:
-                status = " 🔴 [SOLD OUT]" if t.get("is_sold_out") else " 🟢"
+                status = " 🔴 [SOLD OUT]" if t.get("is_sold_out") else " 🟢 [TERSEDIA]"
                 desc = f" ({t['description']})" if t.get("description") else ""
                 tier_lines.append(f"   • {t['tier_name']}: <b>Rp {t.get('price', 0):,}</b>{status}{desc}")
             price_str = "\n" + "\n".join(tier_lines)
         elif extracted.get("is_free"):
             price_str = "<b>GRATIS / Free Entry</b>"
-        else:
+        elif extracted.get("ticket_price", 0) > 0:
             price_str = f"<b>Rp {extracted.get('ticket_price', 0):,}</b>"
+        else:
+            price_str = "<i>TBA (Belum Diumumkan)</i>"
+
+        # 2. Open Gate
+        doors = str(extracted.get("doors_open") or "TBA").strip()
+        if not doors or doors.upper() in ["TBA", "NONE", "NULL", "BELUM ADA"]:
+            doors_display = "<i>TBA (Belum Diumumkan)</i>"
+        else:
+            doors_display = doors
+
+        # 3. Waktu Jam Mulai
+        time_val = extracted.get("time")
+        time_display = f" ({time_val} WIB)" if time_val and str(time_val).upper() != "TBA" else ""
+        date_display = f"{extracted.get('date')}{time_display}"
 
         lineup_str = ", ".join(extracted.get("artists", [])) or "Belum terdeteksi"
         confidence = int(extracted.get("confidence_score", 0.9) * 100)
@@ -99,16 +114,17 @@ class TelegramPosterBot:
             f"🎸 <b>Acara:</b> {extracted.get('title')}\n"
             f"👥 <b>Lineup:</b> {lineup_str}\n"
             f"📍 <b>Venue:</b> {extracted.get('venue_name')}, {extracted.get('city')}\n"
-            f"📅 <b>Tanggal:</b> {extracted.get('date')} ({extracted.get('time', '19:00')} WIB)\n"
-            f"🚪 <b>Open Gate:</b> {extracted.get('doors_open')}\n"
-            f"🎟️ <b>Kategori Tiket:</b> {price_str}\n"
+            f"📅 <b>Tanggal:</b> {date_display}\n"
+            f"🚪 <b>Open Gate:</b> {doors_display}\n"
+            f"🎟️ <b>HTM / Tiket:</b> {price_str}\n"
             f"🔗 <b>Tiket:</b> {extracted.get('ticket_url')}\n"
             f"🎯 <b>AI Confidence:</b> {confidence}%\n\n"
             "💡 <i>Ada yang salah? Ketik saja langsung koreksinya di chat ini!\n"
-            "Contoh: <code>ubah tanggal jadi 25 Nov</code> atau <code>tambah tiket VIP 500rb</code></i>"
+            "Contoh: <code>ubah tanggal jadi 25 Nov</code> atau <code>open gate jam 16:00</code></i>"
         )
 
         return review_text
+
 
 
     def handle_update(self, update: dict):
