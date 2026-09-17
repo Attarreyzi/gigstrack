@@ -76,6 +76,7 @@ class GigDetailSerializer(serializers.ModelSerializer):
     display_poster = serializers.ReadOnlyField()
     is_happening_today = serializers.ReadOnlyField()
     price_range_display = serializers.ReadOnlyField()
+    price_full_range_display = serializers.ReadOnlyField()
     ticket_url = serializers.CharField(source='resolved_ticket_url', read_only=True)
     genres = serializers.SerializerMethodField()
 
@@ -84,7 +85,7 @@ class GigDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'slug', 'venue', 'start_datetime', 'end_datetime',
             'doors_open', 'description', 'poster', 'poster_url', 'display_poster',
-            'ticket_price', 'is_free', 'price_range_display', 'ticket_tiers',
+            'ticket_price', 'is_free', 'price_range_display', 'price_full_range_display', 'ticket_tiers',
             'ticket_url', 'status', 'is_featured',
             'is_happening_today', 'lineups', 'genres', 'created_at'
         ]

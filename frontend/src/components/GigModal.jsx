@@ -53,7 +53,7 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
                   </span>
                 )}
                 <span className={`badge-price ${detail.is_free ? 'free' : ''}`}>
-                  {detail.is_free ? 'FREE ADMISSION' : `HTM: IDR ${detail.ticket_price.toLocaleString('id-ID')}`}
+                  {detail.is_free ? 'FREE ADMISSION' : (detail.price_full_range_display || detail.price_range_display || `HTM: IDR ${detail.ticket_price.toLocaleString('id-ID')}`)}
                 </span>
                 {detail.status === 'live_now' && (
                   <span className="badge-today" style={{ background: '#FF1744' }}>
@@ -95,7 +95,7 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
                       })}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      Open Gate: {detail.doors_open || '18:30 WIB'}
+                      Open Gate: {(detail.doors_open && detail.doors_open.toUpperCase().includes('TBA')) ? 'TBA' : (detail.doors_open || '18:30 WIB')}
                     </div>
                   </div>
                 </div>
@@ -108,37 +108,51 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
                 </div>
               )}
 
-              {/* Rundown / Lineup Timetable */}
+              {/* Lineup Musisi Minimalis (Modern Chip Grid) */}
               {detail.lineups && detail.lineups.length > 0 && (
                 <div style={{ marginTop: '24px' }}>
                   <h4 style={{ fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
-                    <span>Line-up & Set Time (Rundown)</span>
+                    <span>Line-up Band & Musisi ({detail.lineups.length} Artis)</span>
                   </h4>
-                  <div className="rundown-table">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {detail.lineups.map((item) => (
-                      <div key={item.id} className="rundown-item">
-                        <div className="rundown-band">
-                          <img src={item.artist.display_image} alt={item.artist.name} />
-                          <div>
-                            <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <span>{item.artist.name}</span>
-                              {item.is_headliner && (
-                                <span style={{ background: 'rgba(255, 0, 85, 0.2)', color: 'var(--accent-pink)', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, letterSpacing: '0.04em' }}>
-                                  HEADLINER
-                                </span>
-                              )}
-                            </div>
-                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                              {item.artist.genres?.map(g => g.name).join(', ')} • Asal: {item.artist.hometown || 'Indonesia'}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="rundown-time">
-                          {item.set_time || 'TBA'}
-                        </div>
+                      <div
+                        key={item.id}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 12px',
+                          borderRadius: '8px',
+                          fontSize: '0.86rem',
+                          background: item.is_headliner
+                            ? 'linear-gradient(135deg, rgba(255, 0, 85, 0.25), rgba(139, 92, 246, 0.25))'
+                            : 'rgba(255, 255, 255, 0.04)',
+                          border: item.is_headliner
+                            ? '1px solid rgba(255, 0, 85, 0.4)'
+                            : '1px solid rgba(255, 255, 255, 0.08)',
+                          color: item.is_headliner ? '#fff' : 'var(--text-primary)',
+                          fontWeight: item.is_headliner ? 700 : 500
+                        }}
+                      >
+                        {item.is_headliner && <span>⭐</span>}
+                        <span>{item.artist?.name}</span>
+                        {item.is_headliner && (
+                          <span style={{
+                            background: 'rgba(255, 0, 85, 0.3)',
+                            color: 'var(--accent-pink)',
+                            fontSize: '0.62rem',
+                            padding: '1px 5px',
+                            borderRadius: '4px',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em'
+                          }}>
+                            HEADLINER
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>

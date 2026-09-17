@@ -108,10 +108,16 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
-          <span>{formatEventDate(gig.start_datetime)} ({gig.doors_open || formatEventTime(gig.start_datetime)})</span>
+          <span>
+            {formatEventDate(gig.start_datetime)} • {
+              (gig.doors_open && gig.doors_open.toUpperCase().includes('TBA'))
+                ? 'TBA'
+                : (gig.doors_open || formatEventTime(gig.start_datetime) || 'TBA')
+            }
+          </span>
         </div>
 
-        {/* Line-up Pills */}
+        {/* Line-up Pills (Modern Clean Badges) */}
         {gig.artists && gig.artists.length > 0 && (
           <div className="card-lineup">
             <div className="lineup-label">Line-up Band:</div>
@@ -121,14 +127,19 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
                   key={artist.id}
                   className={`artist-pill ${artist.is_headliner ? 'headliner' : ''}`}
                   title={artist.name}
+                  style={artist.is_headliner ? {
+                    background: 'linear-gradient(135deg, rgba(255, 0, 85, 0.25), rgba(139, 92, 246, 0.25))',
+                    borderColor: 'rgba(255, 0, 85, 0.5)',
+                    color: '#fff',
+                    fontWeight: 700
+                  } : {
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'var(--text-secondary)'
+                  }}
                 >
-                  <img src={artist.image} alt={artist.name} />
+                  {artist.is_headliner && <span style={{ marginRight: '4px' }}>⭐</span>}
                   <span>{artist.name}</span>
-                  {artist.is_headliner && (
-                    <span style={{ color: 'var(--accent-pink)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.04em' }}>
-                      HEADLINER
-                    </span>
-                  )}
                 </span>
               ))}
             </div>
