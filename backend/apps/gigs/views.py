@@ -247,3 +247,41 @@ class GigViewSet(viewsets.ModelViewSet):
         service = RealConcertScraperService()
         result = service.sync_all_verified(clean_dummy=clean_dummy)
         return Response(result)
+
+    @action(detail=False, methods=['post'], url_path='sync-ticketmaster')
+    def sync_ticketmaster(self, request):
+        """
+        Endpoint untuk menyinkronkan event konser musik resmi dari Ticketmaster Discovery API.
+        Body JSON (seluruh parameter opsional):
+        {
+            "keyword": "Arctic Monkeys",
+            "city": "Jakarta",
+            "country_code": "ID",
+            "size": 20,
+            "api_key": "YOUR_API_KEY",
+            "use_mock": false
+        }
+        """
+        from apps.gigs.services.ticketmaster import TicketmasterService
+
+        keyword = request.data.get('keyword')
+        city = request.data.get('city', 'Jakarta')
+        country_code = request.data.get('country_code', 'ID')
+        size = request.data.get('size', 20)
+        api_key = request.data.get('api_key')
+        use_mock = request.data.get('use_mock', False)
+
+        service = TicketmasterService(api_key=api_key)
+        res = service.sync(
+            keyword=keyword,
+            city=city,
+            country_code=country_code,
+            size=size,
+            use_mock=use_mock
+        )
+
+        if not res.get("success"):
+            return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(res, status=status.HTTP_200_OK)
+

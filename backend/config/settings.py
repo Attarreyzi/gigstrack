@@ -127,3 +127,8 @@ REST_FRAMEWORK = {
 # Bandsintown Integration API Configuration
 BANDSINTOWN_APP_ID = os.getenv('BANDSINTOWN_APP_ID', '')
 BANDSINTOWN_BASE_URL = 'https://rest.bandsintown.com'
+
+# Ticketmaster Discovery API Configuration
+TICKETMASTER_API_KEY = os.getenv('TICKETMASTER_API_KEY', '')
+TICKETMASTER_BASE_URL = os.getenv('TICKETMASTER_BASE_URL', 'https://app.ticketmaster.com/discovery/v2')
+
