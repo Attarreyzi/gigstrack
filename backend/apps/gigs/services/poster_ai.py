@@ -124,7 +124,7 @@ class PosterAIService:
     def apply_corrections(self, current_data: dict, correction_instruction: str) -> dict:
         """
         Memperbarui data konser berdasarkan instruksi teks alami dari user.
-        Contoh: 'Ubah tanggal jadi 25 November 2026', 'Ganti harga tiket jadi 150rb', 'Venue di M Bloc Space Jakarta'
+        Contoh: 'Ubah tanggal jadi 25 November 2026', 'Tiket beli di aplikasi BBO', 'Venue di M Bloc Space Jakarta'
         """
         correction_prompt = f"""
         Berikut adalah data konser musik saat ini:
@@ -134,8 +134,9 @@ class PosterAIService:
         "{correction_instruction}"
 
         Tugas Anda:
-        Perbarui data JSON di atas berdasarkan instruksi koreksi dari user dengan sangat teliti.
-        Pertahankan data lama untuk field yang TIDAK disebutkan dalam instruksi koreksi.
+        1. Perbarui data JSON di atas berdasarkan instruksi koreksi dari user dengan sangat teliti.
+        2. PERINGATAN KERAS: WAJIB PERTAHANKAN seluruh data lama (termasuk seluruh isi array 'ticket_tiers', 'artists', 'genres', dll) secara utuh KECUALI jika secara spesifik diminta diubah oleh user dalam instruksi koreksi.
+        3. Jika user menyebutkan platform tiket (misal: BBO, Loket, Tiket.com, Goers, TipTip), perbarui 'ticket_url' ke platform tersebut.
 
         Format JSON yang WAJIB dihasilkan (HANYA valid JSON murni):
         {{
@@ -147,11 +148,19 @@ class PosterAIService:
             "address": "Alamat",
             "date": "YYYY-MM-DD",
             "time": "HH:MM",
-            "doors_open": "18:30 WIB",
-            "ticket_price": 150000,
+            "doors_open": "18:30 WIB atau TBA",
+            "ticket_price": 5000,
             "is_free": false,
-            "ticket_url": "URL tiket",
-            "genres": ["Indie Rock", ...],
+            "ticket_tiers": [
+                {{
+                    "tier_name": "Nama Kategori / Tier",
+                    "price": 5000,
+                    "is_sold_out": false,
+                    "description": "Keterangan tier"
+                }}
+            ],
+            "ticket_url": "URL tiket / platform",
+            "genres": ["Indie Rock", "Pop"],
             "description": "Deskripsi acara",
             "confidence_score": 1.0
         }}
@@ -170,6 +179,19 @@ class PosterAIService:
                 raw_text = re.sub(r"```\s*$", "", raw_text, flags=re.MULTILINE)
 
             parsed_data = json.loads(raw_text.strip())
+
+            # Safeguard: Pertahankan ticket_tiers dari current_data jika AI tidak mengembalikan ticket_tiers
+            old_tiers = current_data.get("ticket_tiers", [])
+            new_tiers = parsed_data.get("ticket_tiers", [])
+            if old_tiers and (not new_tiers or len(new_tiers) == 0):
+                # Periksa apakah user bermaksud menghapus tier (misal instruksi "ubah jadi gratis")
+                if not any(kw in correction_instruction.lower() for kw in ["gratis", "free entry", "tanpa tiket"]):
+                    parsed_data["ticket_tiers"] = old_tiers
+
+            # Safeguard: Jika user mengoreksi link/platform tiket (misal BBO)
+            if "bbo" in correction_instruction.lower():
+                parsed_data["ticket_url"] = "https://www.bbo.co.id"
+
             return self.normalize_extracted_data(parsed_data)
         except Exception as e:
             logger.error(f"Error pada apply_corrections: {e}")
