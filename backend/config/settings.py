@@ -4,12 +4,20 @@ Django settings for GigTrack project.
 from pathlib import Path
 import os
 from urllib.parse import urlparse
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env
+load_dotenv(BASE_DIR / '.env')
+
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-gigtrack-secret-key-music-radar-2026')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
+
+
 
 ALLOWED_HOSTS = ['*']
 

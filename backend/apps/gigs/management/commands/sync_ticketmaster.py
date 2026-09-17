@@ -15,8 +15,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--city',
             type=str,
-            default='Jakarta',
-            help='Filter berdasarkan nama kota (default: "Jakarta")',
+            default=None,
+            help='Filter berdasarkan nama kota (opsional, contoh: "London", "Singapore")',
         )
         parser.add_argument(
             '--country',

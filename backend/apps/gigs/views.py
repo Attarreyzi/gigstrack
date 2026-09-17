@@ -285,3 +285,97 @@ class GigViewSet(viewsets.ModelViewSet):
 
         return Response(res, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['post'], url_path='scan-poster')
+    def scan_poster(self, request):
+        """
+        Endpoint untuk scan & ekstrak informasi konser musik dari foto poster (Instagram flyer).
+        Terima multipart/form-data dengan key 'image'.
+        Opsi: 'auto_save=true' untuk langsung simpan ke database.
+        """
+        from apps.gigs.services.poster_ai import PosterAIService
+
+        image_file = request.FILES.get('image')
+        if not image_file:
+            return Response(
+                {"success": False, "error": "Wajib mengunggah file gambar poster dengan key 'image'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            image_bytes = image_file.read()
+            mime_type = image_file.content_type or 'image/jpeg'
+            auto_save = request.data.get('auto_save', 'false').lower() in ['true', '1']
+
+            service = PosterAIService()
+            extracted = service.analyze_poster(image_bytes=image_bytes, mime_type=mime_type)
+
+            if not extracted.get("success"):
+                return Response(extracted, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+            if auto_save:
+                image_file.seek(0)
+                gig = service.save_gig_to_database(extracted, poster_file=image_file)
+                serializer = GigDetailSerializer(gig, context={'request': request})
+                return Response({
+                    "success": True,
+                    "saved": True,
+                    "message": f"Konser '{gig.title}' berhasil diekstrak dan disimpan!",
+                    "gig": serializer.data
+                }, status=status.HTTP_201_CREATED)
+
+            return Response({
+                "success": True,
+                "saved": False,
+                "message": "Poster berhasil diekstrak oleh AI. Silakan periksa dan konfirmasi data.",
+                "data": extracted
+            }, status=status.HTTP_200_OK)
+
+        except ValueError as ve:
+            return Response({"success": False, "error": str(ve)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"success": False, "error": f"Gagal memproses poster: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['post'], url_path='confirm-poster-gig')
+    def confirm_poster_gig(self, request):
+        """
+        Endpoint untuk menyimpan data konser hasil review/edit user ke database.
+        Mendukung multipart/form-data (dengan image opsional) atau JSON payload.
+        """
+        from apps.gigs.services.poster_ai import PosterAIService
+
+        image_file = request.FILES.get('image')
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+
+        # Parse artists & genres if sent as JSON string in form-data
+        import json
+        if isinstance(data.get('artists'), str):
+            try:
+                data['artists'] = json.loads(data['artists'])
+            except Exception:
+                data['artists'] = [a.strip() for a in data['artists'].split(',') if a.strip()]
+        if isinstance(data.get('genres'), str):
+            try:
+                data['genres'] = json.loads(data['genres'])
+            except Exception:
+                data['genres'] = [g.strip() for g in data['genres'].split(',') if g.strip()]
+
+        try:
+            service = PosterAIService()
+            normalized = service.normalize_extracted_data(data)
+            gig = service.save_gig_to_database(normalized, poster_file=image_file)
+            serializer = GigDetailSerializer(gig, context={'request': request})
+
+            return Response({
+                "success": True,
+                "saved": True,
+                "message": f"Konser '{gig.title}' berhasil disimpan ke database!",
+                "gig": serializer.data
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "error": f"Gagal menyimpan gig: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+

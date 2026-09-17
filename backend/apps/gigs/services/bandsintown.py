@@ -34,7 +34,7 @@ JABODETABEK_VENUES_POOL = [
         "address": "Jl. Panglima Polim No.37, Melawai, Blok M, Jakarta Selatan",
         "latitude": "-6.2435",
         "longitude": "106.7979",
-        "offset_days": 0, # Malam ini!
+        "offset_days": 0, # Hari Ini!
         "time": "19:30:00",
         "price": 150000
     },
@@ -46,7 +46,7 @@ JABODETABEK_VENUES_POOL = [
         "address": "Jl. RS. Fatmawati Raya No.30, Cilandak, Jakarta Selatan",
         "latitude": "-6.2842",
         "longitude": "106.7971",
-        "offset_days": 0, # Malam ini!
+        "offset_days": 0, # Hari Ini!
         "time": "20:00:00",
         "price": 75000
     },
@@ -58,7 +58,7 @@ JABODETABEK_VENUES_POOL = [
         "address": "Jl. Senopati No.44, Selong, Kebayoran Baru, Jakarta Selatan",
         "latitude": "-6.2341",
         "longitude": "106.8105",
-        "offset_days": 0, # Malam ini (Free Entry)!
+        "offset_days": 0, # Hari Ini (Free Entry)!
         "time": "21:00:00",
         "price": 0
     },

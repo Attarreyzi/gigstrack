@@ -25,7 +25,7 @@ Proyek ini dibangun dengan menerapkan prinsip **Separation of Concerns (SoC)** d
 
 ## Fitur Utama
 
-1. **Real-time Live Radar**: Deteksi otomatis konser yang berlangsung malam ini berdasarkan tanggal server lokal (`timezone.localdate()`).
+1. **Real-time Live Radar**: Deteksi otomatis konser yang berlangsung Hari Ini berdasarkan tanggal server lokal (`timezone.localdate()`).
 2. **Pencarian & Multi-Filter**: Pencarian nama band (*The Adams, .Feast, Reality Club, dll*), nama venue, filter kota dinamis, filter genre musik, dan filter tiket gratis (*Free Entry*).
 3. **Rundown Timetable**: Modal detail yang menyajikan susunan jam tampil (*set time*) tiap band, status headliner, alamat venue, dan tautan Google Maps.
 4. **Bookmark Favorit**: Kemampuan menyimpan konser ke daftar favorit pengguna menggunakan `localStorage` browser.

@@ -233,7 +233,7 @@ class Command(BaseCommand):
         local_today = timezone.localdate()
 
         # Target jadwal:
-        # 1. Hari Ini (Malam Ini) -> live radar!
+        # 1. Hari Ini (Hari Ini) -> live radar!
         # 2. Besok
         # 3. Akhir pekan (Sabtu ini / Minggu ini)
         # 4. Minggu depan
@@ -385,4 +385,4 @@ class Command(BaseCommand):
             self.stdout.write(f"  [+] {gig.title} @ {venue.name} ({target_date.strftime('%d %b %Y')}) -> {action_label}")
 
         self.stdout.write(self.style.SUCCESS(f"\n[OK] Sinkronisasi Berhasil! {synced_count} gig live aktif dan terjadwal."))
-        self.stdout.write(self.style.SUCCESS("[OK] Data radar Malam Ini, Besok, dan Akhir Pekan sudah terisi otomatis.\n"))
+        self.stdout.write(self.style.SUCCESS("[OK] Data radar Hari Ini, Besok, dan Akhir Pekan sudah terisi otomatis.\n"))
