@@ -65,19 +65,35 @@ class PosterAIService:
         self.client = genai.Client(api_key=self.api_key)
         self.model_name = 'gemini-3.6-flash'
 
-    def analyze_poster(self, image_bytes: bytes, mime_type: str = 'image/jpeg') -> dict:
+    def analyze_poster(self, image_bytes: bytes = None, images_list: list = None, mime_type: str = 'image/jpeg') -> dict:
         """
-        Menganalisis gambar poster menggunakan Gemini Vision API.
-        Mengembalikan dictionary data konser yang sudah dinormalisasi dan divalidasi.
+        Menganalisis satu atau beberapa gambar poster sekaligus menggunakan Gemini Vision API.
+        Mendukung multi-foto (misal Foto 1 = Poster Utama, Foto 2 = Daftar Tiket / Rundown).
         """
         try:
-            image_part = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
-            
+            image_parts = []
+            if images_list and len(images_list) > 0:
+                for item in images_list:
+                    if isinstance(item, tuple) and len(item) == 2:
+                        b_data, m_type = item
+                        image_parts.append(types.Part.from_bytes(data=b_data, mime_type=m_type or mime_type))
+                    elif isinstance(item, bytes):
+                        image_parts.append(types.Part.from_bytes(data=item, mime_type=mime_type))
+            elif image_bytes:
+                image_parts.append(types.Part.from_bytes(data=image_bytes, mime_type=mime_type))
+            else:
+                return {
+                    "success": False,
+                    "error": "Tidak ada data gambar yang dikirimkan."
+                }
+
+            prompt_text = SYSTEM_PROMPT + "\n\nAnalisis seluruh gambar poster di atas secara komprehensif (gabungkan informasi jika ada beberapa foto) dan keluarkan HANYA format JSON murni:"
+
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=[
-                    image_part,
-                    SYSTEM_PROMPT + "\n\nAnalisis poster di atas dan keluarkan format JSON murni:"
+                    *image_parts,
+                    prompt_text
                 ]
             )
 

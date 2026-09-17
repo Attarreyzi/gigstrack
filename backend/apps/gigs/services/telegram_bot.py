@@ -2,6 +2,7 @@ import os
 import time
 import uuid
 import logging
+import threading
 import requests
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -18,10 +19,16 @@ class TelegramPosterBot:
         
         self.api_base = f"https://api.telegram.org/bot{self.token}"
         self.file_base = f"https://api.telegram.org/file/bot{self.token}"
+        
         # {session_id: {"data": dict, "photo_bytes": bytes, "file_name": str, "chat_id": int}}
         self.pending_scans = {}
         # {chat_id: session_id}
         self.active_chat_sessions = {}
+
+        # Multi-photo / Album buffering: {chat_id: [{"file_id": str, "message_id": int}, ...]}
+        self.photo_buffers = {}
+        self.buffer_timers = {}
+        self.buffer_lock = threading.Lock()
 
     def send_request(self, method: str, data: dict = None, files: dict = None, timeout: int = 10) -> dict:
         url = f"{self.api_base}/{method}"
@@ -75,7 +82,7 @@ class TelegramPosterBot:
         file_name = os.path.basename(file_path)
         return r.content, file_name
 
-    def format_review_card(self, extracted: dict, is_corrected: bool = False) -> str:
+    def format_review_card(self, extracted: dict, is_corrected: bool = False, photo_count: int = 1) -> str:
         # 1. Kategori Tiket & HTM
         tiers = extracted.get("ticket_tiers", [])
         if tiers:
@@ -90,12 +97,12 @@ class TelegramPosterBot:
         elif extracted.get("ticket_price", 0) > 0:
             price_str = f"<b>Rp {extracted.get('ticket_price', 0):,}</b>"
         else:
-            price_str = "<i>TBA (Belum Diumumkan)</i>"
+            price_str = "<i>TBA</i>"
 
         # 2. Open Gate
         doors = str(extracted.get("doors_open") or "TBA").strip()
-        if not doors or doors.upper() in ["TBA", "NONE", "NULL", "BELUM ADA"]:
-            doors_display = "<i>TBA (Belum Diumumkan)</i>"
+        if not doors or doors.upper() in ["TBA", "NONE", "NULL", "BELUM ADA", "BELUM DIUMUMKAN"]:
+            doors_display = "<i>TBA</i>"
         else:
             doors_display = doors
 
@@ -107,7 +114,12 @@ class TelegramPosterBot:
         lineup_str = ", ".join(extracted.get("artists", [])) or "Belum terdeteksi"
         confidence = int(extracted.get("confidence_score", 0.9) * 100)
 
-        header = "✏️ <b>DATA BERHASIL DIPERBARUI:</b>\n\n" if is_corrected else "✨ <b>HASIL DETEKSI POSTER IG:</b>\n\n"
+        if is_corrected:
+            header = "✏️ <b>DATA BERHASIL DIPERBARUI:</b>\n\n"
+        elif photo_count > 1:
+            header = f"✨ <b>HASIL DETEKSI {photo_count} FOTO POSTER (GABUNGAN):</b>\n\n"
+        else:
+            header = "✨ <b>HASIL DETEKSI POSTER:</b>\n\n"
 
         review_text = (
             f"{header}"
@@ -120,12 +132,10 @@ class TelegramPosterBot:
             f"🔗 <b>Tiket:</b> {extracted.get('ticket_url')}\n"
             f"🎯 <b>AI Confidence:</b> {confidence}%\n\n"
             "💡 <i>Ada yang salah? Ketik saja langsung koreksinya di chat ini!\n"
-            "Contoh: <code>ubah tanggal jadi 25 Nov</code> atau <code>open gate jam 16:00</code></i>"
+            "Contoh: <code>tiket beli di aplikasi BBO</code> atau <code>ubah tanggal jadi 25 Des</code></i>"
         )
 
         return review_text
-
-
 
     def handle_update(self, update: dict):
         if "callback_query" in update:
@@ -144,10 +154,11 @@ class TelegramPosterBot:
             welcome_text = (
                 "👋 <b>Selamat datang di GigTrack Scanner Bot!</b>\n\n"
                 "📸 <b>Cara Penggunaan:</b>\n"
-                "1. Kirim screenshot / foto <b>poster konser musik</b> ke sini.\n"
-                "2. AI Gemini Vision akan otomatis membaca data konser.\n"
-                "3. Jika ada yang salah, <b>cukup ketik koreksinya</b> (misal: <i>ubah tanggal jadi 20 Okt</i>).\n"
-                "4. Klik tombol <b>Simpan ke GigTrack</b> untuk mempublikasikannya.\n\n"
+                "1. Kirim foto poster (1 foto atau multi-foto / album Instagram sekaligus).\n"
+                "2. AI Gemini Vision akan otomatis membaca poster utama + rincian tiket.\n"
+                "3. Foto pertama yang Anda kirim otomatis menjadi <b>foto cover utama di website</b>.\n"
+                "4. Jika ada koreksi, <b>cukup ketik pesan di chat ini</b> (misal: <i>tiket beli di aplikasi BBO</i>).\n"
+                "5. Klik tombol <b>Simpan ke GigTrack</b> untuk langsung menampilkannya di website.\n\n"
                 "📋 <b>Command Lain:</b>\n"
                 "• <code>/list</code> : Melihat daftar konser terbaru di GigTrack\n"
                 "• <code>/delete &lt;id&gt;</code> : Menghapus konser dari database"
@@ -187,18 +198,17 @@ class TelegramPosterBot:
                 self.send_message(chat_id, "⚠️ Format salah. Gunakan: <code>/delete 123</code>")
             return
 
-        # Handle Photo
+        # Handle Photo (Single or Multi-Photo Album)
         if "photo" in message:
-            photos = message["photo"]
-            best_photo = photos[-1]
+            best_photo = message["photo"][-1]
             file_id = best_photo["file_id"]
-            self.process_incoming_poster(chat_id, file_id)
+            self.queue_incoming_photo(chat_id, file_id)
             return
 
         # Handle Document (uncompressed image)
         if "document" in message and message["document"].get("mime_type", "").startswith("image/"):
             file_id = message["document"]["file_id"]
-            self.process_incoming_poster(chat_id, file_id)
+            self.queue_incoming_photo(chat_id, file_id)
             return
 
         # Handle Text Correction if there is an active session
@@ -211,22 +221,60 @@ class TelegramPosterBot:
         if text:
             self.send_message(
                 chat_id,
-                "📸 Silakan kirimkan <b>foto poster konser</b> untuk memulai scan,\n"
+                "📸 Silakan kirimkan <b>foto poster konser</b> (atau beberapa foto sekaligus) untuk memulai scan,\n"
                 "atau ketik <code>/list</code> untuk melihat konser yang sudah tersimpan."
             )
 
-    def process_incoming_poster(self, chat_id: int, file_id: str):
-        wait_msg = self.send_message(
-            chat_id,
-            "🔍 <b>Menganalisis poster dengan Gemini Vision AI...</b>\n<i>Mohon tunggu sebentar...</i>"
-        )
+    def queue_incoming_photo(self, chat_id: int, file_id: str):
+        """
+        Buffer photos for 1.2 seconds to group multiple photos (carousel album)
+        into a single unified AI analysis request.
+        """
+        with self.buffer_lock:
+            if chat_id not in self.photo_buffers:
+                self.photo_buffers[chat_id] = []
+            
+            self.photo_buffers[chat_id].append(file_id)
+
+            # Cancel existing timer if any
+            if chat_id in self.buffer_timers:
+                self.buffer_timers[chat_id].cancel()
+
+            # Debounce timer 1.2s to capture all photos in the album
+            t = threading.Timer(1.2, self.flush_photo_buffer, args=[chat_id])
+            self.buffer_timers[chat_id] = t
+            t.start()
+
+    def flush_photo_buffer(self, chat_id: int):
+        with self.buffer_lock:
+            file_ids = self.photo_buffers.pop(chat_id, [])
+            self.buffer_timers.pop(chat_id, None)
+
+        if not file_ids:
+            return
+
+        photo_count = len(file_ids)
+        if photo_count > 1:
+            msg_text = f"🔍 <b>Menganalisis {photo_count} foto poster sekaligus dengan Gemini Vision AI...</b>\n<i>Foto pertama ditetapkan sebagai cover utama. Mohon tunggu...</i>"
+        else:
+            msg_text = "🔍 <b>Menganalisis poster dengan Gemini Vision AI...</b>\n<i>Mohon tunggu sebentar...</i>"
+
+        wait_msg = self.send_message(chat_id, msg_text)
         wait_msg_id = wait_msg.get("result", {}).get("message_id")
 
         try:
-            image_bytes, file_name = self.download_file_bytes(file_id)
-            
+            downloaded_images = []
+            for fid in file_ids:
+                b_data, f_name = self.download_file_bytes(fid)
+                downloaded_images.append((b_data, f_name))
+
+            # Cover Photo is STRICTLY the FIRST image sent
+            primary_photo_bytes, primary_file_name = downloaded_images[0]
+
+            # Send all downloaded images to Gemini Vision
             ai_service = PosterAIService()
-            extracted = ai_service.analyze_poster(image_bytes=image_bytes)
+            raw_img_list = [img[0] for img in downloaded_images]
+            extracted = ai_service.analyze_poster(images_list=raw_img_list)
 
             if not extracted.get("success"):
                 err_text = f"❌ <b>Gagal membaca poster:</b>\n{extracted.get('error', 'Format tidak terbaca')}"
@@ -239,13 +287,15 @@ class TelegramPosterBot:
             session_id = str(uuid.uuid4())[:8]
             self.pending_scans[session_id] = {
                 "data": extracted,
-                "photo_bytes": image_bytes,
-                "file_name": file_name,
-                "chat_id": chat_id
+                "photo_bytes": primary_photo_bytes,
+                "file_name": primary_file_name,
+                "chat_id": chat_id,
+                "photo_count": photo_count
             }
+            # Lock active session to this new unified scan
             self.active_chat_sessions[chat_id] = session_id
 
-            review_text = self.format_review_card(extracted, is_corrected=False)
+            review_text = self.format_review_card(extracted, is_corrected=False, photo_count=photo_count)
 
             inline_keyboard = {
                 "inline_keyboard": [
@@ -262,8 +312,8 @@ class TelegramPosterBot:
                 self.send_message(chat_id, review_text, reply_markup=inline_keyboard)
 
         except Exception as e:
-            logger.error(f"Error processing poster on Telegram: {e}")
-            err_msg = f"⚠️ <b>Terjadi kesalahan:</b>\n<code>{str(e)}</code>"
+            logger.error(f"Error processing buffered poster on Telegram: {e}")
+            err_msg = "⚠️ <b>Terjadi kendala saat memproses gambar.</b> Silakan coba kirim ulang fotonya."
             if wait_msg_id:
                 self.edit_message(chat_id, wait_msg_id, err_msg)
             else:
@@ -287,7 +337,7 @@ class TelegramPosterBot:
             scan_item["data"] = updated_data
             self.pending_scans[session_id] = scan_item
 
-            review_text = self.format_review_card(updated_data, is_corrected=True)
+            review_text = self.format_review_card(updated_data, is_corrected=True, photo_count=scan_item.get("photo_count", 1))
 
             inline_keyboard = {
                 "inline_keyboard": [
@@ -306,7 +356,7 @@ class TelegramPosterBot:
         except Exception as e:
             logger.error(f"Error applying text correction: {e}")
             if wait_msg_id:
-                self.edit_message(chat_id, wait_msg_id, f"⚠️ Gagal menerapkan koreksi: {e}")
+                self.edit_message(chat_id, wait_msg_id, "⚠️ <i>Gagal menerapkan koreksi. Silakan ketik dengan format sederhana, contoh: <code>ubah tiket jadi di BBO</code></i>")
 
     def handle_callback(self, callback_query: dict):
         cq_id = callback_query["id"]
@@ -340,7 +390,8 @@ class TelegramPosterBot:
         if action == "cancel":
             self.answer_callback_query(cq_id, "Scan dibatalkan.")
             self.pending_scans.pop(session_id, None)
-            self.active_chat_sessions.pop(chat_id, None)
+            if self.active_chat_sessions.get(chat_id) == session_id:
+                self.active_chat_sessions.pop(chat_id, None)
             self.edit_message(chat_id, message_id, "❌ <b>Proses dibatalkan.</b> Poster tidak disimpan.")
             return
 
@@ -352,23 +403,29 @@ class TelegramPosterBot:
                 gig = ai_service.save_gig_to_database(scan_item["data"], poster_file=poster_file)
                 
                 self.pending_scans.pop(session_id, None)
-                self.active_chat_sessions.pop(chat_id, None)
+                if self.active_chat_sessions.get(chat_id) == session_id:
+                    self.active_chat_sessions.pop(chat_id, None)
 
                 success_text = (
                     "🎉 <b>BERHASIL DITAMBAHKAN KE GIGTRACK!</b>\n\n"
                     f"🎸 <b>Acara:</b> {gig.title}\n"
                     f"📍 <b>Venue:</b> {gig.venue.name} ({gig.venue.city})\n"
-                    f"📅 <b>Jadwal:</b> {gig.start_datetime.strftime('%d %B %Y - %H:%M WIB')}\n"
+                    f"📅 <b>Jadwal:</b> {gig.start_datetime.strftime('%d %B %Y')}\n"
                     f"👥 <b>Total Lineup:</b> {gig.lineups.count()} Band\n"
-                    f"🎟️ <b>HTM:</b> {'GRATIS' if gig.is_free else f'Rp {gig.ticket_price:,}'}\n\n"
-                    f"🌐 <i>Konser sekarang sudah aktif dan tayang di radar GigTrack!</i>\n"
+                    f"🎟️ <b>HTM:</b> {gig.price_range_display}\n\n"
+                    f"🌐 <i>Konser sekarang sudah aktif dan tayang di website GigTrack!</i>\n"
                     f"💡 <i>Ketik <code>/list</code> untuk melihat atau mengelola daftar konser.</i>"
                 )
                 self.edit_message(chat_id, message_id, success_text)
 
             except Exception as e:
                 logger.error(f"Error saving gig from Telegram callback: {e}")
-                self.edit_message(chat_id, message_id, f"❌ <b>Gagal menyimpan ke database:</b>\n<code>{str(e)}</code>")
+                err_str = str(e).lower()
+                if "duplicate" in err_str or "unique" in err_str or "integrityerror" in err_str:
+                    msg = "ℹ️ <b>Konser sudah ada di database.</b> Data berhasil disinkronkan dengan pembaruan terbaru!"
+                else:
+                    msg = "⚠️ <b>Terjadi kendala saat menyimpan.</b> Silakan coba klik tombol <b>✅ Simpan ke GigTrack</b> sekali lagi."
+                self.edit_message(chat_id, message_id, msg)
 
     def run_polling(self):
         logger.info("Memulai polling Telegram Bot...")
@@ -378,7 +435,7 @@ class TelegramPosterBot:
         if me.get("ok"):
             bot_info = me["result"]
             print(f"[OK] Telegram Bot Aktif: @{bot_info.get('username')} ({bot_info.get('first_name')})")
-            print("[*] Fitur Koreksi Teks & Edit Konser Aktif!")
+            print("[*] Fitur Multi-Foto Album Carousel & Koreksi Teks Aktif!")
             print("[*] Siap menerima screenshot poster dari HP...")
         else:
             print(f"[!] Gagal inisialisasi Bot: {me}")

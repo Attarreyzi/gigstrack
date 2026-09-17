@@ -42,7 +42,13 @@ class Gig(models.Model):
                     dt_str = self.start_datetime.strftime('%Y%m%d')
                 else:
                     dt_str = str(self.start_datetime)[:10].replace('-', '')
-            self.slug = slugify(f"{self.title}-{dt_str}")
+            base_slug = slugify(f"{self.title}-{dt_str}") or "gig-event"
+            slug = base_slug
+            counter = 1
+            while Gig.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         if self.ticket_price == 0 and not self.ticket_tiers.exists():
             self.is_free = True
         super().save(*args, **kwargs)
