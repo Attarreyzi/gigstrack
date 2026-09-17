@@ -117,7 +117,7 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
           </span>
         </div>
 
-        {/* Line-up Pills (Modern Clean Badges) */}
+        {/* Line-up Pills (Modern Unified Clean Badges) */}
         {gig.artists && gig.artists.length > 0 && (
           <div className="card-lineup">
             <div className="lineup-label">Line-up Band:</div>
@@ -125,20 +125,15 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
               {gig.artists.map((artist) => (
                 <span
                   key={artist.id}
-                  className={`artist-pill ${artist.is_headliner ? 'headliner' : ''}`}
+                  className="artist-pill"
                   title={artist.name}
-                  style={artist.is_headliner ? {
-                    background: 'linear-gradient(135deg, rgba(255, 0, 85, 0.25), rgba(139, 92, 246, 0.25))',
-                    borderColor: 'rgba(255, 0, 85, 0.5)',
-                    color: '#fff',
-                    fontWeight: 700
-                  } : {
+                  style={{
                     background: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                    color: 'var(--text-secondary)'
+                    border: '1px solid rgba(255, 255, 255, 0.09)',
+                    color: 'var(--text-secondary)',
+                    fontWeight: 500
                   }}
                 >
-                  {artist.is_headliner && <span style={{ marginRight: '4px' }}>⭐</span>}
                   <span>{artist.name}</span>
                 </span>
               ))}

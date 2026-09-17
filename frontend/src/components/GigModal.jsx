@@ -108,7 +108,7 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
                 </div>
               )}
 
-              {/* Lineup Musisi Minimalis (Modern Chip Grid) */}
+              {/* Lineup Musisi Minimalis (Modern Unified Chip Grid) */}
               {detail.lineups && detail.lineups.length > 0 && (
                 <div style={{ marginTop: '24px' }}>
                   <h4 style={{ fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -124,35 +124,16 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '6px',
-                          padding: '6px 12px',
+                          padding: '7px 14px',
                           borderRadius: '8px',
-                          fontSize: '0.86rem',
-                          background: item.is_headliner
-                            ? 'linear-gradient(135deg, rgba(255, 0, 85, 0.25), rgba(139, 92, 246, 0.25))'
-                            : 'rgba(255, 255, 255, 0.04)',
-                          border: item.is_headliner
-                            ? '1px solid rgba(255, 0, 85, 0.4)'
-                            : '1px solid rgba(255, 255, 255, 0.08)',
-                          color: item.is_headliner ? '#fff' : 'var(--text-primary)',
-                          fontWeight: item.is_headliner ? 700 : 500
+                          fontSize: '0.88rem',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.09)',
+                          color: 'var(--text-primary)',
+                          fontWeight: 500
                         }}
                       >
-                        {item.is_headliner && <span>⭐</span>}
                         <span>{item.artist?.name}</span>
-                        {item.is_headliner && (
-                          <span style={{
-                            background: 'rgba(255, 0, 85, 0.3)',
-                            color: 'var(--accent-pink)',
-                            fontSize: '0.62rem',
-                            padding: '1px 5px',
-                            borderRadius: '4px',
-                            fontWeight: 800,
-                            letterSpacing: '0.04em'
-                          }}>
-                            HEADLINER
-                          </span>
-                        )}
                       </div>
                     ))}
                   </div>
