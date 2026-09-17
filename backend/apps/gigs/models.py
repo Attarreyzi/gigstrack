@@ -133,13 +133,10 @@ class Gig(models.Model):
             if not prices:
                 return "GRATIS / Free Entry"
             min_p = min(prices)
-            max_p = max(prices)
-            if min_p == max_p:
-                return f"Rp {min_p:,.0f}".replace(',', '.')
             return f"Mulai Rp {min_p:,.0f}".replace(',', '.')
         if self.is_free or self.ticket_price == 0:
             return "GRATIS / Free Entry"
-        return f"Rp {self.ticket_price:,.0f}".replace(',', '.')
+        return f"Mulai Rp {self.ticket_price:,.0f}".replace(',', '.')
 
     @property
     def price_full_range_display(self):

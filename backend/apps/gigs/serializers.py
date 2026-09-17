@@ -26,7 +26,7 @@ class GigListSerializer(serializers.ModelSerializer):
     venue_name = serializers.CharField(source='venue.name', read_only=True)
     venue_city = serializers.CharField(source='venue.city', read_only=True)
     ticket_url = serializers.CharField(source='resolved_ticket_url', read_only=True)
-    display_poster = serializers.ReadOnlyField()
+    display_poster = serializers.SerializerMethodField()
     is_happening_today = serializers.ReadOnlyField()
     price_range_display = serializers.ReadOnlyField()
     ticket_tiers = GigTicketTierSerializer(many=True, read_only=True)
@@ -42,6 +42,17 @@ class GigListSerializer(serializers.ModelSerializer):
             'ticket_url', 'status', 'is_featured', 'display_poster', 'is_happening_today',
             'artists', 'genres'
         ]
+
+    def get_display_poster(self, obj):
+        url = obj.display_poster
+        if not url:
+            return "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80"
+        if url.startswith('/media/'):
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(url)
+            return f"http://localhost:8000{url}"
+        return url
 
     def get_artists(self, obj):
         return [
@@ -73,7 +84,7 @@ class GigDetailSerializer(serializers.ModelSerializer):
     venue = VenueSerializer(read_only=True)
     lineups = GigLineupSerializer(many=True, read_only=True)
     ticket_tiers = GigTicketTierSerializer(many=True, read_only=True)
-    display_poster = serializers.ReadOnlyField()
+    display_poster = serializers.SerializerMethodField()
     is_happening_today = serializers.ReadOnlyField()
     price_range_display = serializers.ReadOnlyField()
     price_full_range_display = serializers.ReadOnlyField()
@@ -89,6 +100,17 @@ class GigDetailSerializer(serializers.ModelSerializer):
             'ticket_url', 'status', 'is_featured',
             'is_happening_today', 'lineups', 'genres', 'created_at'
         ]
+
+    def get_display_poster(self, obj):
+        url = obj.display_poster
+        if not url:
+            return "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80"
+        if url.startswith('/media/'):
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(url)
+            return f"http://localhost:8000{url}"
+        return url
 
     def get_genres(self, obj):
         genres_set = set()

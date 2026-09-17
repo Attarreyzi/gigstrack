@@ -24,15 +24,41 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
     }
   };
 
+  const resolvePosterUrl = (url) => {
+    if (!url) return "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80";
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/media/') || url.startsWith('/')) {
+      return `http://localhost:8000${url}`;
+    }
+    return url;
+  };
+
+  const formatPriceDisplay = () => {
+    if (gig.is_free) return 'FREE ENTRY';
+    if (gig.price_range_display) {
+      if (!gig.price_range_display.toLowerCase().includes('mulai') && !gig.price_range_display.toLowerCase().includes('gratis')) {
+        return `Mulai ${gig.price_range_display}`;
+      }
+      return gig.price_range_display;
+    }
+    const p = gig.ticket_price || 0;
+    if (p === 0) return 'FREE ENTRY';
+    return `Mulai Rp ${p.toLocaleString('id-ID')}`;
+  };
+
   return (
     <article className="gig-card" onClick={() => onSelect(gig)}>
       {/* Poster & Badges */}
       <div className="gig-poster-wrapper">
         <img
-          src={gig.display_poster}
+          src={resolvePosterUrl(gig.display_poster)}
           alt={gig.title}
           className="gig-poster-img"
           loading="lazy"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80";
+          }}
         />
         <div className="poster-overlay-gradient"></div>
 
@@ -52,7 +78,7 @@ export default function GigCard({ gig, onSelect, isBookmarked = false, onToggleB
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className={`badge-price ${gig.is_free ? 'free' : ''}`}>
-              {gig.price_range_display || (gig.is_free ? 'FREE ENTRY' : `IDR ${gig.ticket_price.toLocaleString('id-ID')}`)}
+              {formatPriceDisplay()}
             </span>
             <button
               className={`btn-card-bookmark ${isBookmarked ? 'active' : ''}`}

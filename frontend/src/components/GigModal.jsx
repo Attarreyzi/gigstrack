@@ -39,7 +39,18 @@ export default function GigModal({ gigId, onClose, isBookmarked = false, onToggl
         ) : detail ? (
           <>
             <div className="modal-poster-hero">
-              <img src={detail.display_poster} alt={detail.title} />
+              <img
+                src={
+                  detail.display_poster?.startsWith('/media/') || detail.display_poster?.startsWith('/')
+                    ? `http://localhost:8000${detail.display_poster}`
+                    : (detail.display_poster || "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80")
+                }
+                alt={detail.title}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80";
+                }}
+              />
               <div className="poster-overlay-gradient"></div>
             </div>
 
