@@ -145,11 +145,24 @@ class GigViewSet(viewsets.ModelViewSet):
     def summary_stats(self, request):
         """Statistik ringkas untuk dashboard radar."""
         today_date = timezone.localdate()
+        active_gigs = Gig.objects.exclude(status=GigStatus.CANCELLED)
+        
+        # Hitung artis dan venue yang benar-benar memiliki jadwal gig aktif
+        total_artists = Artist.objects.filter(
+            is_active=True,
+            gig_appearances__gig__in=active_gigs
+        ).distinct().count()
+
+        total_venues = Venue.objects.filter(
+            is_active=True,
+            gigs__in=active_gigs
+        ).distinct().count()
+
         return Response({
-            'gigs_today': Gig.objects.filter(start_datetime__date=today_date).exclude(status=GigStatus.CANCELLED).count(),
-            'total_artists': Artist.objects.filter(is_active=True).count(),
-            'total_venues': Venue.objects.filter(is_active=True).count(),
-            'total_upcoming': Gig.objects.filter(start_datetime__date__gt=today_date).exclude(status=GigStatus.CANCELLED).count(),
+            'gigs_today': active_gigs.filter(start_datetime__date=today_date).count(),
+            'total_artists': total_artists,
+            'total_venues': total_venues,
+            'total_upcoming': active_gigs.filter(start_datetime__date__gte=today_date).count(),
         })
 
     @action(detail=False, methods=['post', 'get'])
