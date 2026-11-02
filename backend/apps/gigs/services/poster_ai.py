@@ -80,44 +80,67 @@ class PosterAIService:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY belum dikonfigurasi di file .env atau settings.")
         self.client = genai.Client(api_key=self.api_key)
-        self.primary_model = 'gemini-3.6-flash'
+        self.primary_model = 'gemini-3.5-flash-lite'
         self.fallback_models = [
-            'gemini-3.6-flash',
+            'gemini-3.5-flash-lite',
+            'gemini-3-flash-preview',
             'gemini-3.5-flash',
-            'gemini-3.8-flash'
+            'gemini-3.6-flash'
         ]
 
+    def _get_model_config(self, model: str):
+        """
+        Mengonfigurasi generation config agar respon AI berformat JSON instan tanpa delay 'thinking'.
+        """
+        if any(tag in model for tag in ['preview', '3.6', '3.7', '3.8']):
+            try:
+                return types.GenerateContentConfig(
+                    thinking_config=types.ThinkingConfig(thinking_budget=0),
+                    response_mime_type="application/json"
+                )
+            except Exception:
+                pass
+        try:
+            return types.GenerateContentConfig(response_mime_type="application/json")
+        except Exception:
+            return None
 
     def _generate_content_with_fallback(self, contents: list) -> str:
         """
-        Mengeksekusi request ke Gemini API dengan dukungan auto-retry dan multi-model fallback.
-        Jika model utama mengalami 503 UNAVAILABLE (High Demand), otomatis beralih ke model cadangan.
+        Mengeksekusi request ke Gemini API dengan latensi super cepat dan multi-model fallback.
+        Jika kuota habis (429) atau server sibuk (503), otomatis langsung lompat ke model cadangan.
         """
         last_exception = None
         for model in self.fallback_models:
+            config = self._get_model_config(model)
             for attempt in range(2):
                 try:
                     logger.info(f"Memanggil Gemini API (Model: {model}, Percobaan: {attempt + 1})...")
-                    response = self.client.models.generate_content(
-                        model=model,
-                        contents=contents
-                    )
+                    kwargs = {"model": model, "contents": contents}
+                    if config is not None:
+                        kwargs["config"] = config
+                    
+                    response = self.client.models.generate_content(**kwargs)
                     if response and response.text:
                         return response.text.strip()
                 except Exception as e:
                     last_exception = e
                     err_msg = str(e).lower()
                     logger.warning(f"Kendala pada model {model} (attempt {attempt + 1}): {e}")
-                    if any(k in err_msg for k in ["503", "unavailable", "429", "high demand", "overloaded", "quota"]):
-                        time.sleep(1.0)
+                    # Jika kuota harian habis (429) pada model ini, jangan coba lagi model yang sama, langsung ganti model
+                    if "429" in err_msg or "resource_exhausted" in err_msg or "quota" in err_msg:
+                        break
+                    # Jika 503 / sibuk, tunggu sangat singkat atau ganti model
+                    if any(k in err_msg for k in ["503", "unavailable", "high demand", "overloaded"]):
+                        time.sleep(0.4)
                         continue
                     else:
-                        time.sleep(0.5)
+                        break
 
         raise last_exception or RuntimeError("Seluruh server model Gemini sedang sibuk. Silakan coba kembali dalam beberapa detik.")
 
     @staticmethod
-    def _optimize_image(image_bytes: bytes, max_dim: int = 1600) -> tuple[bytes, str]:
+    def _optimize_image(image_bytes: bytes, max_dim: int = 1280) -> tuple[bytes, str]:
         try:
             im = Image.open(io.BytesIO(image_bytes))
             if im.mode in ('RGBA', 'P'):
@@ -125,9 +148,9 @@ class PosterAIService:
             w, h = im.size
             if max(w, h) > max_dim:
                 scale = max_dim / float(max(w, h))
-                im = im.resize((int(w * scale), int(h * scale)), Image.Resampling.LANCZOS)
+                im = im.resize((int(w * scale), int(h * scale)), Image.Resampling.BILINEAR)
             out = io.BytesIO()
-            im.save(out, format='JPEG', quality=85, optimize=True)
+            im.save(out, format='JPEG', quality=80)
             return out.getvalue(), 'image/jpeg'
         except Exception:
             return image_bytes, 'image/jpeg'

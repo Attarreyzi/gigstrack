@@ -19,6 +19,7 @@ class TelegramPosterBot:
         
         self.api_base = f"https://api.telegram.org/bot{self.token}"
         self.file_base = f"https://api.telegram.org/file/bot{self.token}"
+        self.session = requests.Session()
         
         # {session_id: {"data": dict, "photo_bytes": bytes, "file_name": str, "chat_id": int}}
         self.pending_scans = {}
@@ -33,11 +34,14 @@ class TelegramPosterBot:
     def send_request(self, method: str, data: dict = None, files: dict = None, timeout: int = 10) -> dict:
         url = f"{self.api_base}/{method}"
         try:
-            r = requests.post(url, json=data if not files else None, data=data if files else None, files=files, timeout=timeout)
+            r = self.session.post(url, json=data if not files else None, data=data if files else None, files=files, timeout=timeout)
             return r.json()
         except Exception as e:
             logger.error(f"Telegram API request error ({method}): {e}")
             return {"ok": False, "error": str(e)}
+
+    def send_chat_action(self, chat_id: int, action: str = "typing") -> dict:
+        return self.send_request("sendChatAction", data={"chat_id": chat_id, "action": action})
 
     def send_message(self, chat_id: int, text: str, reply_markup: dict = None, parse_mode: str = "HTML") -> dict:
         payload = {
@@ -75,7 +79,7 @@ class TelegramPosterBot:
         file_path = res["result"]["file_path"]
         download_url = f"{self.file_base}/{file_path}"
         
-        r = requests.get(download_url, timeout=20)
+        r = self.session.get(download_url, timeout=20)
         if r.status_code != 200:
             raise ValueError(f"Gagal download file: HTTP {r.status_code}")
         
@@ -255,9 +259,10 @@ class TelegramPosterBot:
 
     def queue_incoming_photo(self, chat_id: int, file_id: str):
         """
-        Buffer photos for 1.2 seconds to group multiple photos (carousel album)
+        Buffer photos for 0.5 seconds to group multiple photos (carousel album)
         into a single unified AI analysis request.
         """
+        self.send_chat_action(chat_id, "upload_photo")
         with self.buffer_lock:
             if chat_id not in self.photo_buffers:
                 self.photo_buffers[chat_id] = []
@@ -268,8 +273,8 @@ class TelegramPosterBot:
             if chat_id in self.buffer_timers:
                 self.buffer_timers[chat_id].cancel()
 
-            # Debounce timer 1.2s to capture all photos in the album
-            t = threading.Timer(1.2, self.flush_photo_buffer, args=[chat_id])
+            # Debounce timer 0.5s to capture all photos in the album
+            t = threading.Timer(0.5, self.flush_photo_buffer, args=[chat_id])
             self.buffer_timers[chat_id] = t
             t.start()
 
