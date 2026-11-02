@@ -30,3 +30,9 @@ dist-ssr/
 *.swo
 .DS_Store
 Thumbs.db
+desktop.ini
+*.tmp
+
+# Temporary local scripts
+backend/add_day_col.py
+backend/update_multiday_sample.py
