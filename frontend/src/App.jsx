@@ -1,13 +1,28 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import TodayRadar from './components/TodayRadar';
 import FilterBar from './components/FilterBar';
 import GigCard from './components/GigCard';
 import GigModal from './components/GigModal';
+import ArtistsCatalog from './components/ArtistsCatalog';
+import AboutPage from './components/AboutPage';
+import ContactPage from './components/ContactPage';
+import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
+import { useAuth } from './contexts/AuthContext';
 import { fetchTodayGigs, fetchGigs, fetchGenres, fetchCities, fetchStats } from './services/api';
 
 export default function App() {
+  const { savedGigIds, savedCount, isAuthenticated, isAdmin } = useAuth();
+
+  // Navigation tab: 'gigs' | 'artists' | 'saved' | 'about' | 'contact'
+  const [activeTab, setActiveTab] = useState('gigs');
+
+  // Modal UI state
+  const [selectedGigId, setSelectedGigId] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // Data states
   const [todayData, setTodayData] = useState(null);
   const [stats, setStats] = useState(null);
   const [genres, setGenres] = useState([]);
@@ -17,37 +32,11 @@ export default function App() {
 
   // Filters
   const [search, setSearch] = useState('');
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
-  const [dateFilter, setDateFilter] = useState('all'); // 'all', 'today', 'tomorrow', 'weekend'
+  const [dateFilter, setDateFilter] = useState('all');
   const [isFreeOnly, setIsFreeOnly] = useState(false);
-
-  // Modal
-  const [selectedGigId, setSelectedGigId] = useState(null);
-
-  // Bookmarks (Local Storage)
-  const [bookmarks, setBookmarks] = useState(() => {
-    try {
-      const saved = localStorage.getItem('gigtrack_bookmarks');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const toggleBookmark = (gigId) => {
-    setBookmarks((prev) => {
-      const next = prev.includes(gigId)
-        ? prev.filter((id) => id !== gigId)
-        : [...prev, gigId];
-      try {
-        localStorage.setItem('gigtrack_bookmarks', JSON.stringify(next));
-      } catch (e) {
-        console.error(e);
-      }
-      return next;
-    });
-  };
 
   // Load initial today's radar data & metadata
   useEffect(() => {
@@ -57,186 +46,301 @@ export default function App() {
       fetchGenres().catch(() => []),
       fetchCities().catch(() => [])
     ]).then(([todayRes, statsRes, genresRes, citiesRes]) => {
-      setTodayData(todayRes);
-      setStats(statsRes);
-      setGenres(genresRes);
-      setCities(citiesRes);
+      if (todayRes) setTodayData(todayRes);
+      if (statsRes) setStats(statsRes);
+      if (genresRes) setGenres(genresRes);
+      if (citiesRes) setCities(citiesRes);
     });
   }, []);
 
-  // Compute date string based on quick tabs
+  // Helper date query mapping
   const getDateQueryParam = useCallback(() => {
-    const now = new Date();
-    const formatDate = (d) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    if (dateFilter === 'today') {
-      return formatDate(now);
-    } else if (dateFilter === 'tomorrow') {
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      return formatDate(tomorrow);
-    }
+    if (dateFilter === 'today') return 'today';
+    if (dateFilter === 'tomorrow') return 'tomorrow';
+    if (dateFilter === 'this_week') return 'this_week';
+    if (dateFilter === 'weekend') return 'weekend';
     return '';
   }, [dateFilter]);
 
-  // Fetch gigs whenever filters change
+  // Main fetch gigs with debounce
   useEffect(() => {
-    setLoading(true);
-    const dateParam = getDateQueryParam();
+    const timer = setTimeout(() => {
+      setLoading(true);
 
-    fetchGigs({
-      search: search.trim(),
-      city: selectedCity,
-      genre: selectedGenre,
-      date: dateParam,
-      is_free: isFreeOnly ? 'true' : ''
-    })
-      .then((data) => {
-        let results = data;
-        // Client side filtering for 'this_week' if selected
-        if (dateFilter === 'this_week') {
-          const now = new Date();
-          const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          const currentDay = now.getDay(); // 0 is Sunday, 1 is Monday...
-          const daysUntilSunday = currentDay === 0 ? 0 : 7 - currentDay;
-          const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday, 23, 59, 59, 999);
+      const params = {};
+      if (search) params.search = search;
+      if (selectedCity) params.city = selectedCity;
+      if (selectedGenre) params.genre = selectedGenre;
+      if (isFreeOnly) params.is_free = 'true';
 
-          results = results.filter((gig) => {
-            const gigDate = new Date(gig.start_datetime);
-            return gigDate >= startOfToday && gigDate <= endOfWeek;
-          });
+      const dateQuery = getDateQueryParam();
+      if (dateQuery) params.date = dateQuery;
+
+      fetchGigs(params)
+        .then((data) => {
+          setGigs(data.results || data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Gagal memuat daftar konser:", err);
+          setGigs([]);
+          setLoading(false);
+        });
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [search, selectedCity, selectedGenre, dateFilter, isFreeOnly, getDateQueryParam]);
+
+  // Filtered gigs for 'saved' view
+  const displayedGigs = useMemo(() => {
+    if (activeTab === 'saved' || dateFilter === 'saved') {
+      return gigs.filter((gig) => savedGigIds.includes(gig.id));
+    }
+    return gigs;
+  }, [gigs, savedGigIds, activeTab, dateFilter]);
+
+  const handleSelectArtistFromCatalog = (artistName) => {
+    setSearch(artistName);
+    setIsSearchVisible(true);
+    setActiveTab('gigs');
+    setDateFilter('all');
+    setTimeout(() => {
+      const el = document.getElementById('main-gigs-search-input');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+      }
+    }, 120);
+  };
+
+  const handleToggleSearch = useCallback(() => {
+    if (activeTab !== 'gigs') {
+      setActiveTab('gigs');
+    }
+    setIsSearchVisible((prev) => {
+      const next = !prev;
+      if (next) {
+        setTimeout(() => {
+          const el = document.getElementById('main-gigs-search-input');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.focus();
+          }
+        }, 120);
+      }
+      return next;
+    });
+  }, [activeTab]);
+
+  const handleDateFilterFromHero = (filterKey) => {
+    setActiveTab('gigs');
+    setDateFilter(filterKey);
+  };
+
+  const handleNavigateFromDrawer = (menuKey) => {
+    if (menuKey === 'gigs') {
+      setActiveTab('gigs');
+      setDateFilter('all');
+      setTimeout(() => {
+        const el = document.getElementById('gigs-listing-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
+    } else if (menuKey === 'today') {
+      setActiveTab('gigs');
+      setDateFilter('today');
+      setTimeout(() => {
+        const el = document.getElementById('gigs-listing-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
+    } else if (menuKey === 'artists') {
+      setActiveTab('artists');
+      setTimeout(() => {
+        const el = document.getElementById('artists-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
+    } else if (menuKey === 'about') {
+      setActiveTab('about');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (menuKey === 'contact') {
+      setActiveTab('contact');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (menuKey === 'venues') {
+      setActiveTab('gigs');
+      setDateFilter('all');
+      setTimeout(() => {
+        const el = document.querySelector('.city-select');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.focus();
         }
-        // Client side filtering for 'weekend' if selected
-        if (dateFilter === 'weekend') {
-          results = results.filter((gig) => {
-            const gigDate = new Date(gig.start_datetime);
-            const dayOfWeek = gigDate.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
-            return dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
-          });
-        }
-        // Client side filtering for 'saved'
-        if (dateFilter === 'saved') {
-          results = results.filter((gig) => bookmarks.includes(gig.id));
-        }
-        setGigs(results);
-      })
-      .catch((err) => {
-        console.error(err);
-        setGigs([]);
-      })
-      .finally(() => setLoading(false));
-  }, [search, selectedCity, selectedGenre, dateFilter, isFreeOnly, bookmarks, getDateQueryParam]);
+      }, 100);
+    } else if (menuKey === 'saved') {
+      setActiveTab('saved');
+      setTimeout(() => {
+        const el = document.getElementById('gigs-listing-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
+    }
+  };
 
   return (
     <div className="app-layout">
-      <Navbar liveCount={todayData?.total_gigs_today || 0} />
-
-      <TodayRadar
-        todayData={todayData}
-        stats={stats}
-        onSelectGig={(gig) => setSelectedGigId(gig.id)}
+      <Navbar
+        liveCount={todayData?.total_gigs_today || 0}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onNavigate={handleNavigateFromDrawer}
+        onOpenAuth={() => setShowAuthModal(true)}
+        onToggleSearch={handleToggleSearch}
+        isSearchVisible={isSearchVisible}
       />
 
-      <FilterBar
-        search={search}
-        setSearch={setSearch}
-        selectedCity={selectedCity}
-        setSelectedCity={setSelectedCity}
-        selectedGenre={selectedGenre}
-        setSelectedGenre={setSelectedGenre}
-        dateFilter={dateFilter}
-        setDateFilter={setDateFilter}
-        isFreeOnly={isFreeOnly}
-        setIsFreeOnly={setIsFreeOnly}
-        cities={cities}
-        genres={genres}
-        savedCount={bookmarks.length}
-      />
+      {/* Navigation View Switch */}
+      {activeTab === 'about' ? (
+        <AboutPage onNavigate={handleNavigateFromDrawer} />
+      ) : activeTab === 'contact' ? (
+        <ContactPage onNavigate={handleNavigateFromDrawer} />
+      ) : activeTab === 'artists' ? (
+        <ArtistsCatalog onSelectArtist={handleSelectArtistFromCatalog} />
+      ) : (
+        <>
+          {/* Hero Radar Banner */}
+          <TodayRadar
+            todayData={todayData}
+            stats={stats}
+            onSelectDateFilter={handleDateFilterFromHero}
+            onSelectTab={setActiveTab}
+          />
 
-      {/* Main Gigs Listing */}
-      <main className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-            {dateFilter === 'today'
-              ? 'Konser & Gig Hari Ini'
-              : dateFilter === 'tomorrow'
-                ? 'Konser & Gig Besok'
-                : dateFilter === 'this_week'
-                  ? 'Konser & Gig Minggu Ini'
-                  : dateFilter === 'weekend'
-                    ? 'Konser Akhir Pekan'
-                    : dateFilter === 'saved'
-                      ? 'Konser Tersimpan'
-                      : 'Jadwal & Agenda Konser'}
-          </h2>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-            {gigs.length} acara ditemukan
-          </span>
-        </div>
+          <FilterBar
+            search={search}
+            setSearch={setSearch}
+            isSearchVisible={isSearchVisible}
+            setIsSearchVisible={setIsSearchVisible}
+            selectedCity={selectedCity}
+            setSelectedCity={setSelectedCity}
+            selectedGenre={selectedGenre}
+            setSelectedGenre={setSelectedGenre}
+            dateFilter={activeTab === 'saved' ? 'saved' : dateFilter}
+            setDateFilter={(df) => {
+              if (df === 'saved') {
+                setActiveTab('saved');
+              } else {
+                if (activeTab === 'saved') setActiveTab('gigs');
+                setDateFilter(df);
+              }
+            }}
+            isFreeOnly={isFreeOnly}
+            setIsFreeOnly={setIsFreeOnly}
+            cities={cities}
+            genres={genres}
+            savedCount={savedCount}
+          />
 
-        {loading ? (
-          <div style={{ padding: '80px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            <div style={{ fontSize: '1.1rem', marginBottom: '10px' }}>Memuat radar jadwal konser...</div>
-          </div>
-        ) : gigs.length > 0 ? (
-          <div className="gigs-grid">
-            {gigs.map((gig) => (
-              <GigCard
-                key={gig.id}
-                gig={gig}
-                onSelect={(selected) => setSelectedGigId(selected.id)}
-                isBookmarked={bookmarks.includes(gig.id)}
-                onToggleBookmark={toggleBookmark}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--text-muted)' }}>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-              </svg>
+          {/* Main Gigs Listing */}
+          <main id="gigs-listing-section" className="container">
+            <div className="section-header-row">
+              <h2>
+                {activeTab === 'saved' || dateFilter === 'saved'
+                  ? 'Konser Tersimpan'
+                  : dateFilter === 'today'
+                    ? 'Konser & Gigs HARI INI'
+                    : dateFilter === 'this_week'
+                      ? 'Konser & Gigs Minggu Ini'
+                        : dateFilter === 'weekend'
+                          ? 'Konser Akhir Pekan'
+                          : 'Jadwal & Agenda Konser'}
+              </h2>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                {displayedGigs.length} acara ditemukan
+              </span>
             </div>
-            <h3>{dateFilter === 'saved' ? 'Belum Ada Konser Tersimpan' : 'Tidak Ada Gig Ditemukan'}</h3>
-            <p>
-              {dateFilter === 'saved'
-                ? 'Klik ikon bookmark pada kartu konser untuk menyimpannya ke daftar agendamu.'
-                : 'Coba reset filter wilayah atau ubah kata kunci pencarian untuk menemukan konser musik lainnya.'}
-            </p>
-            <button
-              className="btn-primary"
-              style={{ marginTop: '20px', display: 'inline-flex' }}
-              onClick={() => {
-                setSearch('');
-                setSelectedCity('');
-                setSelectedGenre('');
-                setDateFilter('all');
-                setIsFreeOnly(false);
-              }}
-            >
-              Reset Semua Filter
-            </button>
-          </div>
-        )}
-      </main>
+
+            {loading ? (
+              <div className="gigs-loading-grid">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <div key={n} className="skeleton-card">
+                    <div className="skeleton-poster"></div>
+                    <div className="skeleton-text line-1"></div>
+                    <div className="skeleton-text line-2"></div>
+                  </div>
+                ))}
+              </div>
+            ) : displayedGigs.length > 0 ? (
+              <div className="gigs-grid">
+                {displayedGigs.map((gig) => (
+                  <GigCard
+                    key={gig.id}
+                    gig={gig}
+                    onSelect={(g) => setSelectedGigId(g.id)}
+                    onRequireAuth={() => setShowAuthModal(true)}
+                  />
+                ))}
+              </div>
+            ) : (activeTab === 'saved' || dateFilter === 'saved') ? (
+              <div className="radar-empty-state">
+                <div style={{ color: 'var(--accent-pink)', marginBottom: '14px' }}>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <h3>Belum Ada Konser Tersimpan</h3>
+                <p>
+                  Kamu belum menandai konser apapun. Simpan konser favoritmu agar tidak ketinggalan jadwal.
+                </p>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ marginTop: '20px', display: 'inline-flex' }}
+                  onClick={() => {
+                    setActiveTab('gigs');
+                    setDateFilter('all');
+                  }}
+                >
+                  Jelajahi Konser
+                </button>
+              </div>
+            ) : (
+              <div className="radar-empty-state">
+                <div className="empty-icon"></div>
+                <h3>Belum Ada Jadwal Gigs</h3>
+                <p>
+                  Tidak ditemukan konser musik dengan filter yang dipilih. Coba cari artis lain atau ganti kota.
+                </p>
+                <button
+                  className="btn-secondary"
+                  style={{ marginTop: '20px', display: 'inline-flex' }}
+                  onClick={() => {
+                    setSearch('');
+                    setSelectedCity('');
+                    setSelectedGenre('');
+                    setDateFilter('all');
+                    setIsFreeOnly(false);
+                  }}
+                >
+                  Reset Semua Filter
+                </button>
+              </div>
+            )}
+          </main>
+        </>
+      )}
 
       {/* Detail Modal */}
       {selectedGigId && (
         <GigModal
           gigId={selectedGigId}
           onClose={() => setSelectedGigId(null)}
-          isBookmarked={bookmarks.includes(selectedGigId)}
-          onToggleBookmark={toggleBookmark}
+          onRequireAuth={() => setShowAuthModal(true)}
         />
       )}
 
-      <Footer />
+      {/* Auth Modal (Google & Guest & Email) */}
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
+
+      <Footer onNavigate={handleNavigateFromDrawer} />
     </div>
   );
 }

@@ -2,21 +2,23 @@ import os
 import json
 import re
 import logging
-from datetime import datetime, time
+import time
+from datetime import datetime
 from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify
 from google import genai
 from google.genai import types
 
-from apps.gigs.models import Gig, GigLineup, GigTicketTier, GigStatus
+
+from apps.gigs.models import Gigs, GigsLineup, GigsTicketTier, GigsTicketLink, GigsStatus
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
 
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """
-Anda adalah asisten AI ahli yang bertugas menganalisis gambar poster/pamflet konser musik di Indonesia (Instagram poster, festival flyer, gigs poster).
+Anda adalah asisten AI ahli yang bertugas menganalisis gambar poster/pamflet konser musik di Indonesia (Instagram poster, festival flyer, Gigss poster).
 Tugas Anda adalah membaca dan mengekstrak semua informasi penting dari poster ini dengan sangat akurat dan mengembalikannya HANYA dalam format JSON murni.
 
 Struktur JSON yang WAJIB dihasilkan:
@@ -24,15 +26,25 @@ Struktur JSON yang WAJIB dihasilkan:
     "title": "Nama resmi acara/konser/festival",
     "artists": ["Nama Band/Musisi 1", "Nama Band/Musisi 2", ...],
     "headliner": "Nama musisi/band utama jika jelas terlihat, atau null",
+    "lineups": [
+        // Ekstrak detail artis per hari/rundown festival jika tertera di poster/flyer
+        {
+            "artist_name": "Nama Band/Musisi",
+            "day": "Day 1 / Day 2 / Day 3 (HANYA jika tertera pembagian hari di poster, contoh: 'Day 1', 'Day 2'. Jika acara 1 hari biasa, isi null)",
+            "set_time": "Jam tampil musisi jika tertulis di rundown (contoh: '19:30 WIB'). Jika tidak ada info jam tampil, isi 'TBA'",
+            "is_headliner": false
+        }
+    ],
     "venue_name": "Nama venue / tempat acara (contoh: M Bloc Space, GBK Senayan, Rossi Musik, Synchronize Field)",
     "city": "Kota acara (contoh: Jakarta, Bandung, Yogyakarta, Surabaya, Denpasar, Medan, dll)",
     "address": "Alamat spesifik jika tertulis, atau gabungkan dengan kota",
     "date": "YYYY-MM-DD (format tahun-bulan-tanggal. Jika tahun tidak tertulis, gunakan tahun saat ini/mendatang 2026/2027)",
     "time": "HH:MM jika tertera, atau null jika belum ada info jam",
     "doors_open": "Waktu open gate / doors open HANYA jika tertulis di poster (contoh: '15:00 WIB'). Jika TIDAK TERTULIS di poster, isi 'TBA'. JANGAN mengarang jam jika tidak ada di poster!",
-    "ticket_price": 0, // Harga termurah / mulai dari (angka integer rupiah, contoh: 150000). Jika gratis atau belum ada harga, tulis 0.
-    "is_free": false, // true HANYA jika tertulis Free Entry, HTM: Free, Gratis, Donasi. Jika belum ada info tiket atau berbayar, false.
+    "ticket_price": 0, // Harga termurah / mulai dari (angka integer rupiah, contoh: 150000). Jika gratis atau belum tertulis nominal harga di poster, tulis 0.
+    "is_free": false, // WAJIB false KECUALI poster EKSPLISIT menuliskan kata 'FREE ENTRY', 'FREE', 'GRATIS', 'NO HTM', atau 'TANPA HTM'. Jika poster menyebutkan platform tiket (Goers, DetikEvent, Tiket.com, Loket, BBO, Artatix, Megatix, dll) meskipun nominal harga tidak tertulis, is_free WAJIB false!
     "ticket_tiers": [
+
         // Ekstrak SEMUA kategori tiket yang tertera (Early Bird, Presale 1, Presale 2, Regular, VIP, Daily Pass, 3-Day Pass, OTS, dll)
         {
             "tier_name": "Nama Kategori (contoh: Presale 1 / Early Bird / 3-Day Pass / VIP)",
@@ -42,8 +54,10 @@ Struktur JSON yang WAJIB dihasilkan:
         }
     ],
     "ticket_url": "URL pembelian tiket jika tertera (contoh: loket.com/..., tiket.com/..., atau null)",
+    "ticket_platforms": ["GOERS", "Artatix", "detikevent"], // Ekstrak SEMUA nama platform/vendor tiket yang tertera di poster (contoh: GOERS, Artatix, detikevent, Loket, Tiket.com, BBO, Megatix, dll)
     "genres": ["Indie Rock", "Pop", "Metal", "Punk", ...], // Perkiraan genre musik dari band yang tertera
-    "description": "Ringkasan informasi acara dan lineup lengkap untuk deskripsi",
+
+    "description": "Deskripsi singkat tema atau konsep acara (maksimal 1-2 kalimat). JANGAN mencantumkan daftar nama band penampil karena lineup sudah diekstrak tersendiri!",
     "confidence_score": 0.95 // Nilai 0.0 - 1.0 seberapa jelas poster terbaca
 }
 
@@ -52,7 +66,8 @@ PENTING:
 2. Pastikan nama artis/band diekstrak secara terpisah dan bersih dari kata tambahan seperti 'Feat', 'With', 'Presenting'.
 3. Jika acara adalah FESTIVAL dengan banyak harga (Presale 1, Presale 2, VIP, dll), ekstrak SEMUA tier ke array 'ticket_tiers'.
 4. Format tanggal WAJIB YYYY-MM-DD. Terjemahkan nama bulan Indonesia.
-5. Hanya kembalikan valid JSON string tanpa teks pengantar atau penutup apapun.
+5. Kolom 'description' HANYA untuk deskripsi singkat acara atau tema festival. JANGAN menyebutkan atau mengulang daftar nama lineup musisi di dalam deskripsi.
+6. Hanya kembalikan valid JSON string tanpa teks pengantar atau penutup apapun.
 """
 
 
@@ -63,7 +78,42 @@ class PosterAIService:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY belum dikonfigurasi di file .env atau settings.")
         self.client = genai.Client(api_key=self.api_key)
-        self.model_name = 'gemini-3.6-flash'
+        self.primary_model = 'gemini-3.8-flash'
+        self.fallback_models = [
+            'gemini-3.8-flash',
+            'gemini-3.6-flash',
+            'gemini-2.5-flash',
+            'gemini-1.5-flash'
+        ]
+
+
+    def _generate_content_with_fallback(self, contents: list) -> str:
+        """
+        Mengeksekusi request ke Gemini API dengan dukungan auto-retry dan multi-model fallback.
+        Jika model utama mengalami 503 UNAVAILABLE (High Demand), otomatis beralih ke model cadangan.
+        """
+        last_exception = None
+        for model in self.fallback_models:
+            for attempt in range(2):
+                try:
+                    logger.info(f"Memanggil Gemini API (Model: {model}, Percobaan: {attempt + 1})...")
+                    response = self.client.models.generate_content(
+                        model=model,
+                        contents=contents
+                    )
+                    if response and response.text:
+                        return response.text.strip()
+                except Exception as e:
+                    last_exception = e
+                    err_msg = str(e).lower()
+                    logger.warning(f"Kendala pada model {model} (attempt {attempt + 1}): {e}")
+                    if any(k in err_msg for k in ["503", "unavailable", "429", "high demand", "overloaded", "quota"]):
+                        time.sleep(1.0)
+                        continue
+                    else:
+                        time.sleep(0.5)
+
+        raise last_exception or RuntimeError("Seluruh server model Gemini sedang sibuk. Silakan coba kembali dalam beberapa detik.")
 
     def analyze_poster(self, image_bytes: bytes = None, images_list: list = None, mime_type: str = 'image/jpeg') -> dict:
         """
@@ -89,15 +139,7 @@ class PosterAIService:
 
             prompt_text = SYSTEM_PROMPT + "\n\nAnalisis seluruh gambar poster di atas secara komprehensif (gabungkan informasi jika ada beberapa foto) dan keluarkan HANYA format JSON murni:"
 
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=[
-                    *image_parts,
-                    prompt_text
-                ]
-            )
-
-            raw_text = response.text.strip() if response.text else "{}"
+            raw_text = self._generate_content_with_fallback([*image_parts, prompt_text])
             
             # Bersihkan blok markdown ```json jika ada
             if raw_text.startswith("```"):
@@ -122,6 +164,7 @@ class PosterAIService:
             }
 
     def apply_corrections(self, current_data: dict, correction_instruction: str) -> dict:
+
         """
         Memperbarui data konser berdasarkan instruksi teks alami dari user.
         Contoh: 'Ubah tanggal jadi 25 November 2026', 'Tiket beli di aplikasi BBO', 'Venue di M Bloc Space Jakarta'
@@ -166,17 +209,13 @@ class PosterAIService:
         }}
         """
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=[
-                    correction_prompt + "\n\nKeluarkan format JSON murni yang sudah dikoreksi:"
-                ]
-            )
-
-            raw_text = response.text.strip() if response.text else "{}"
+            raw_text = self._generate_content_with_fallback([
+                correction_prompt + "\n\nKeluarkan format JSON murni yang sudah dikoreksi:"
+            ])
             if raw_text.startswith("```"):
                 raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text, flags=re.MULTILINE)
                 raw_text = re.sub(r"```\s*$", "", raw_text, flags=re.MULTILINE)
+
 
             parsed_data = json.loads(raw_text.strip())
 
@@ -283,21 +322,31 @@ class PosterAIService:
                 ticket_price = min(active_prices)
             elif any(t["price"] > 0 for t in normalized_tiers):
                 ticket_price = min(t["price"] for t in normalized_tiers if t["price"] > 0)
-            else:
-                ticket_price = 0
 
-        if ticket_price == 0 and not normalized_tiers:
-            is_free = True
+        # HANYA jadikan is_free = True jika secara eksplisit diset True dari AI / poster
+        # (JANGAN menganggap otomatis gratis jika harga 0 tapi ada platform tiket)
+        is_free = bool(data.get("is_free", False))
 
-        # Normalisasi link tiket
+        # Safeguard: Jika terdeteksi platform tiket atau kata kunci berbayar (Goers, Artatix, Detikevent, Loket, Tiket, BBO, dll)
+        # DAN tidak ada kata eksplisit 'free entry' / 'gratis', maka is_free WAJIB False!
         ticket_url = (data.get("ticket_url") or "").strip()
+        description = (data.get("description") or f"Konser {title} menampilkan {', '.join(artists)} di {venue_name}, {city}.").strip()
+        
+        full_text_search = f"{title} {description} {ticket_url} {json.dumps(data)}".lower()
+        platform_keywords = ["goers", "artatix", "detik", "loket", "tiket", "bbo", "megatix", "cognitix", "tiptip", "presale", "early bird", "ots"]
+        free_keywords = ["free entry", "gratis", "no htm", "tanpa htm", "free admission"]
+        
+        if any(kw in full_text_search for kw in platform_keywords) and not any(fkw in full_text_search for fkw in free_keywords):
+            is_free = False
+
         if not ticket_url:
             q_term = (headliner or (artists[0] if artists else title)).strip()
             ticket_url = f"https://www.loket.com/search?q={q_term}"
 
         genres = [g.strip() for g in data.get("genres", []) if g and isinstance(g, str)]
-        if not genres:
-            genres = ["Indie Rock", "Pop"]
+        # Jika poster tidak mendeskripsikan genre, jangan karang genre secara otomatis
+        # Biarkan kosong kecuali jelas tertera
+
 
         description = (data.get("description") or f"Konser {title} menampilkan {', '.join(artists)} di {venue_name}, {city}.").strip()
 
@@ -308,11 +357,50 @@ class PosterAIService:
         else:
             doors_open = raw_doors
 
+        raw_platforms = data.get("ticket_platforms", [])
+        ticket_platforms = []
+        if isinstance(raw_platforms, list):
+            ticket_platforms = [str(p).strip() for p in raw_platforms if p and isinstance(p, (str, int))]
+
+        # Fallback deteksi manual dari full_text_search jika AI luput mengekstrak array ticket_platforms
+        if not ticket_platforms:
+            if "goers" in full_text_search: ticket_platforms.append("GOERS")
+            if "artatix" in full_text_search: ticket_platforms.append("Artatix")
+            if "detik" in full_text_search: ticket_platforms.append("detikevent")
+            if "loket" in full_text_search: ticket_platforms.append("Loket.com")
+            if "tiket.com" in full_text_search: ticket_platforms.append("Tiket.com")
+            if "bbo" in full_text_search: ticket_platforms.append("BBO")
+
+        # Normalisasi Lineups & Multi-Day Rundown
+        raw_lineups = data.get("lineups", [])
+        normalized_lineups = []
+        if isinstance(raw_lineups, list) and len(raw_lineups) > 0:
+            for idx, item in enumerate(raw_lineups, start=1):
+                if isinstance(item, dict) and item.get("artist_name"):
+                    a_name = str(item["artist_name"]).strip()
+                    d_day = str(item.get("day") or "").strip()
+                    if d_day.lower() in ["none", "null", "tba", "false", ""]:
+                        d_day = ""
+                    s_time = str(item.get("set_time") or "").strip()
+                    if not s_time or s_time.lower() in ["none", "null", "false"]:
+                        s_time = "TBA"
+                    is_hl = bool(item.get("is_headliner", False))
+                    normalized_lineups.append({
+                        "order": idx,
+                        "artist_name": a_name,
+                        "day": d_day,
+                        "set_time": s_time,
+                        "is_headliner": is_hl
+                    })
+                    if a_name not in artists:
+                        artists.append(a_name)
+
         return {
             "success": True,
             "title": title,
             "artists": artists,
             "headliner": headliner,
+            "lineups": normalized_lineups,
             "venue_name": venue_name,
             "city": city,
             "address": address,
@@ -324,61 +412,59 @@ class PosterAIService:
             "is_free": is_free,
             "ticket_tiers": normalized_tiers,
             "ticket_url": ticket_url,
+            "ticket_platforms": ticket_platforms,
             "genres": genres,
             "description": description,
             "confidence_score": float(data.get("confidence_score") or 0.9)
         }
 
-    def save_gig_to_database(self, normalized_data: dict, poster_file=None) -> Gig:
+
+    def save_Gigs_to_database(self, normalized_data: dict, poster_file=None) -> Gigs:
         """
-        Menyimpan data hasil AI langsung ke database Django (Venue, Artists, Genres, Gig, GigLineup, GigTicketTier).
+        Menyimpan data hasil AI langsung ke database Django (Venue, Artists, Genres, Gigs, GigsLineup, GigsTicketTier).
         """
         # 1. Venue
         venue_name = normalized_data["venue_name"]
         city = normalized_data["city"]
         address = normalized_data.get("address") or f"{venue_name}, {city}"
         
-        venue, _ = Venue.objects.get_or_create(
-            name__iexact=venue_name,
-            city__iexact=city,
-            defaults={
-                "name": venue_name,
-                "city": city,
-                "address": address,
-                "province": f"Provinsi {city}",
-                "is_active": True
-            }
-        )
+        venue = Venue.objects.filter(name__iexact=venue_name, city__iexact=city).first()
+        if not venue:
+            venue = Venue.objects.create(
+                name=venue_name,
+                city=city,
+                address=address,
+                province=f"Provinsi {city}",
+                is_active=True
+            )
 
         # 2. Genres
         genre_objs = []
         genre_colors = ["#FF3366", "#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EC4899", "#06B6D4"]
         for idx, g_name in enumerate(normalized_data.get("genres", [])):
-            genre, _ = Genre.objects.get_or_create(
-                name__iexact=g_name,
-                defaults={
-                    "name": g_name.title(),
-                    "color": genre_colors[idx % len(genre_colors)]
-                }
-            )
+            genre = Genre.objects.filter(name__iexact=g_name).first()
+            if not genre:
+                genre = Genre.objects.create(
+                    name=g_name.title(),
+                    color=genre_colors[idx % len(genre_colors)]
+                )
             genre_objs.append(genre)
 
         # 3. Artists
         artist_objs = []
         for a_name in normalized_data.get("artists", []):
-            artist, _ = Artist.objects.get_or_create(
-                name__iexact=a_name,
-                defaults={
-                    "name": a_name,
-                    "hometown": city,
-                    "is_active": True
-                }
-            )
+            artist = Artist.objects.filter(name__iexact=a_name).first()
+            if not artist:
+                artist = Artist.objects.create(
+                    name=a_name,
+                    hometown=city,
+                    is_active=True
+                )
             if genre_objs:
                 artist.genres.set(genre_objs)
             artist_objs.append(artist)
 
-        # 4. Gig
+        # 4. Gigs
         start_datetime = datetime.fromisoformat(normalized_data["start_datetime_iso"])
         if timezone.is_naive(start_datetime):
             start_datetime = timezone.make_aware(start_datetime)
@@ -386,65 +472,99 @@ class PosterAIService:
         title = normalized_data["title"]
         slug_candidate = slugify(f"{title}-{start_datetime.strftime('%Y%m%d')}")
         
-        gig, created = Gig.objects.get_or_create(
-            slug=slug_candidate,
-            defaults={
-                "title": title,
-                "venue": venue,
-                "start_datetime": start_datetime,
-                "doors_open": normalized_data.get("doors_open", "TBA"),
-                "ticket_price": normalized_data.get("ticket_price", 0),
-                "is_free": normalized_data.get("is_free", False),
-                "ticket_url": normalized_data.get("ticket_url", ""),
-                "description": normalized_data.get("description", ""),
-                "status": GigStatus.SCHEDULED,
-                "is_featured": True
-            }
-        )
-
-        if not created:
-            gig.title = title
-            gig.venue = venue
-            gig.start_datetime = start_datetime
-            gig.doors_open = normalized_data.get("doors_open", gig.doors_open)
-            gig.ticket_price = normalized_data.get("ticket_price", gig.ticket_price)
-            gig.is_free = normalized_data.get("is_free", gig.is_free)
-            gig.ticket_url = normalized_data.get("ticket_url", gig.ticket_url)
-            gig.description = normalized_data.get("description", gig.description)
-
+        Gigs = Gigs.objects.filter(slug=slug_candidate).first()
+        if not Gigs:
+            Gigs = Gigs.objects.create(
+                slug=slug_candidate,
+                title=title,
+                venue=venue,
+                start_datetime=start_datetime,
+                doors_open=normalized_data.get("doors_open", "TBA"),
+                ticket_price=normalized_data.get("ticket_price", 0),
+                is_free=normalized_data.get("is_free", False),
+                ticket_url=normalized_data.get("ticket_url", ""),
+                description=normalized_data.get("description", ""),
+                status=GigsStatus.SCHEDULED,
+                is_featured=True
+            )
+        else:
+            Gigs.title = title
+            Gigs.venue = venue
+            Gigs.start_datetime = start_datetime
+            Gigs.doors_open = normalized_data.get("doors_open", Gigs.doors_open)
+            Gigs.ticket_price = normalized_data.get("ticket_price", Gigs.ticket_price)
+            Gigs.is_free = normalized_data.get("is_free", Gigs.is_free)
+            Gigs.ticket_url = normalized_data.get("ticket_url", Gigs.ticket_url)
+            Gigs.description = normalized_data.get("description", Gigs.description)
 
         if poster_file:
-            gig.poster = poster_file
+            Gigs.poster = poster_file
         
-        gig.save()
+        Gigs.save()
 
-        # 5. Lineups
+        # 5. Lineups (dengan dukungan multi-day & rundown waktu)
+        lineups_meta = normalized_data.get("lineups", [])
+        lineup_dict = {l["artist_name"].lower(): l for l in lineups_meta if isinstance(l, dict) and l.get("artist_name")}
         headliner_name = normalized_data.get("headliner", "")
+
         for order, artist in enumerate(artist_objs, start=1):
-            is_hl = (headliner_name and headliner_name.lower() in artist.name.lower()) or (order == 1)
-            GigLineup.objects.get_or_create(
-                gig=gig,
-                artist=artist,
-                defaults={
-                    "order": order,
-                    "is_headliner": is_hl,
-                    "set_time": f"{19 + order - 1}:00 - {19 + order}:00 WIB"
-                }
-            )
+            artist_meta = lineup_dict.get(artist.name.lower(), {})
+            day_val = artist_meta.get("day", "")
+            set_time_val = artist_meta.get("set_time") or f"{(17 + (order % 6)):02d}:00 WIB"
+            is_hl = artist_meta.get("is_headliner", (headliner_name and headliner_name.lower() in artist.name.lower()) or (order == 1))
+
+            lineup_obj = GigsLineup.objects.filter(Gigs=Gigs, artist=artist).first()
+            if not lineup_obj:
+                GigsLineup.objects.create(
+                    Gigs=Gigs,
+                    artist=artist,
+                    order=order,
+                    day=day_val,
+                    is_headliner=is_hl,
+                    set_time=set_time_val
+                )
+            else:
+                if day_val:
+                    lineup_obj.day = day_val
+                if set_time_val and set_time_val != "TBA":
+                    lineup_obj.set_time = set_time_val
+                lineup_obj.is_headliner = is_hl
+                lineup_obj.order = order
+                lineup_obj.save()
 
         # 6. Ticket Tiers
         for tier_data in normalized_data.get("ticket_tiers", []):
-            GigTicketTier.objects.update_or_create(
-                gig=gig,
-                tier_name__iexact=tier_data["tier_name"],
-                defaults={
-                    "tier_name": tier_data["tier_name"],
-                    "price": tier_data.get("price", 0),
-                    "is_sold_out": tier_data.get("is_sold_out", False),
-                    "description": tier_data.get("description", ""),
-                    "order": tier_data.get("order", 1)
-                }
-            )
+            tier_name = tier_data["tier_name"]
+            tier_obj = GigsTicketTier.objects.filter(Gigs=Gigs, tier_name__iexact=tier_name).first()
+            if not tier_obj:
+                GigsTicketTier.objects.create(
+                    Gigs=Gigs,
+                    tier_name=tier_name,
+                    price=tier_data.get("price", 0),
+                    is_sold_out=tier_data.get("is_sold_out", False),
+                    description=tier_data.get("description", ""),
+                    order=tier_data.get("order", 1)
+                )
+            else:
+                tier_obj.price = tier_data.get("price", tier_obj.price)
+                tier_obj.is_sold_out = tier_data.get("is_sold_out", tier_obj.is_sold_out)
+                tier_obj.description = tier_data.get("description", tier_obj.description)
+                tier_obj.save()
 
-        return gig
+        # 7. Ticket Links (Multi-platform)
+        platforms = normalized_data.get("ticket_platforms", [])
+        if platforms:
+            for idx, p_name in enumerate(platforms, start=1):
+                p_clean = str(p_name).strip()
+                p_url = normalized_data.get("ticket_url") or f"https://www.google.com/search?q={title}+{p_clean}"
+                if not GigsTicketLink.objects.filter(Gigs=Gigs, platform_name__iexact=p_clean).exists():
+                    GigsTicketLink.objects.create(
+                        Gigs=Gigs,
+                        platform_name=p_clean,
+                        url=p_url,
+                        order=idx
+                    )
+
+        return Gigs
+
 

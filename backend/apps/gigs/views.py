@@ -8,6 +8,8 @@ from .serializers import GigListSerializer, GigDetailSerializer
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
 
+JABODETABEK_CITIES = ['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi', 'Tangerang Selatan']
+
 class GigViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -22,6 +24,9 @@ class GigViewSet(viewsets.ModelViewSet):
         qs = Gig.objects.select_related('venue').prefetch_related('lineups__artist__genres')
         params = self.request.query_params
 
+        # Hanya tampilkan wilayah Jabodetabek
+        qs = qs.filter(venue__city__in=JABODETABEK_CITIES)
+
         # Filter by search keyword
         search_param = params.get('search')
         if search_param:
@@ -35,18 +40,37 @@ class GigViewSet(viewsets.ModelViewSet):
                 Q(lineups__artist__genres__name__icontains=search_param)
             )
 
-        # Filter by specific date (YYYY-MM-DD), or default to today onwards (sembunyikan konser kemarin)
+        # Filter tanggal cerdas
         date_param = params.get('date')
         include_past = params.get('include_past', 'false').lower() in ['true', '1']
+        local_today = timezone.localdate()
+
         if date_param:
-            try:
-                parsed_date = timezone.datetime.strptime(date_param, '%Y-%m-%d').date()
-                qs = qs.filter(start_datetime__date=parsed_date)
-            except ValueError:
-                pass
+            d_lower = date_param.lower().strip()
+            if d_lower == 'today':
+                qs = qs.filter(start_datetime__date=local_today)
+            elif d_lower == 'tomorrow':
+                tomorrow = local_today + timezone.timedelta(days=1)
+                qs = qs.filter(start_datetime__date=tomorrow)
+            elif d_lower == 'this_week':
+                days_to_sunday = 6 - local_today.weekday()
+                end_of_week = local_today + timezone.timedelta(days=days_to_sunday)
+                qs = qs.filter(start_datetime__date__gte=local_today, start_datetime__date__lte=end_of_week)
+            elif d_lower == 'weekend':
+                # Akhir pekan (Jumat, Sabtu, Minggu) mendatang
+                # Di Django ORM: week_day 1=Minggu, 6=Jumat, 7=Sabtu
+                qs = qs.filter(
+                    start_datetime__date__gte=local_today,
+                    start_datetime__week_day__in=[1, 6, 7]
+                )
+            else:
+                try:
+                    parsed_date = timezone.datetime.strptime(date_param, '%Y-%m-%d').date()
+                    qs = qs.filter(start_datetime__date=parsed_date)
+                except ValueError:
+                    pass
         elif not include_past:
-            # Otomatis sembunyikan konser yang sudah lewat kemarin
-            local_today = timezone.localdate()
+            # Sembunyikan konser yang sudah lewat kemarin
             qs = qs.filter(start_datetime__date__gte=local_today)
 
         # Filter by city
@@ -61,19 +85,6 @@ class GigViewSet(viewsets.ModelViewSet):
                 Q(lineups__artist__genres__slug__iexact=genre_param) |
                 Q(lineups__artist__genres__name__iexact=genre_param)
             )
-
-        # Filter by artist (id or name)
-        artist_param = params.get('artist')
-        if artist_param:
-            if artist_param.isdigit():
-                qs = qs.filter(lineups__artist__id=int(artist_param))
-            else:
-                qs = qs.filter(lineups__artist__name__icontains=artist_param)
-
-        # Filter by venue id
-        venue_param = params.get('venue')
-        if venue_param and venue_param.isdigit():
-            qs = qs.filter(venue__id=int(venue_param))
 
         # Filter by is_free
         free_param = params.get('is_free')
@@ -137,26 +148,17 @@ class GigViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def cities(self, request):
-        """Daftar kota yang memiliki venue aktif."""
-        cities = Venue.objects.filter(is_active=True).values_list('city', flat=True).distinct()
-        return Response(sorted(list(set(cities))))
+        """Daftar kota Jabodetabek."""
+        return Response(['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi'])
 
     @action(detail=False, methods=['get'])
     def summary_stats(self, request):
         """Statistik ringkas untuk dashboard radar."""
         today_date = timezone.localdate()
-        active_gigs = Gig.objects.exclude(status=GigStatus.CANCELLED)
-        
-        # Hitung artis dan venue yang benar-benar memiliki jadwal gig aktif
-        total_artists = Artist.objects.filter(
-            is_active=True,
-            gig_appearances__gig__in=active_gigs
-        ).distinct().count()
+        active_gigs = Gig.objects.filter(venue__city__in=JABODETABEK_CITIES).exclude(status=GigStatus.CANCELLED)
 
-        total_venues = Venue.objects.filter(
-            is_active=True,
-            gigs__in=active_gigs
-        ).distinct().count()
+        total_artists = Artist.objects.filter(is_active=True).count()
+        total_venues = Venue.objects.filter(is_active=True, city__in=JABODETABEK_CITIES).count()
 
         return Response({
             'gigs_today': active_gigs.filter(start_datetime__date=today_date).count(),
@@ -165,230 +167,5 @@ class GigViewSet(viewsets.ModelViewSet):
             'total_upcoming': active_gigs.filter(start_datetime__date__gte=today_date).count(),
         })
 
-    @action(detail=False, methods=['post', 'get'])
-    def sync_live(self, request):
-        """Endpoint untuk memicu sinkronisasi jadwal gig secara otomatis."""
-        from django.core.management import call_command
-        import io
-        out = io.StringIO()
-        call_command('sync_live_gigs', stdout=out)
-        return Response({
-            'status': 'success',
-            'message': 'Sinkronisasi gig live berhasil dijalankan.',
-            'log': out.getvalue()
-        })
-
-    @action(detail=False, methods=['post'], url_path='sync-bandsintown')
-    def sync_bandsintown(self, request):
-        """
-        Endpoint untuk menyinkronkan jadwal konser dari Bandsintown API.
-        Body JSON:
-        {
-            "artist": "Reality Club",  # Opsional jika sync_all=True
-            "all": false,              # Jika True, sync semua artis di DB
-            "app_id": "YOUR_KEY",      # Opsional
-            "use_mock": false          # Opsional
-        }
-        """
-        from apps.gigs.services.bandsintown import BandsintownService
-        artist = request.data.get('artist')
-        sync_all = request.data.get('all', False)
-        app_id = request.data.get('app_id')
-        use_mock = request.data.get('use_mock', False)
-
-        if not artist and not sync_all:
-            return Response(
-                {"error": "Wajib menyertakan parameter 'artist' (nama band) atau 'all': true."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        service = BandsintownService(app_id=app_id)
-        results = []
-
-        if artist:
-            res = service.sync_artist_events(artist.strip(), app_id=app_id, use_mock=use_mock)
-            results.append(res)
-        elif sync_all:
-            db_artists = list(Artist.objects.values_list('name', flat=True))
-            for name in db_artists:
-                res = service.sync_artist_events(name, app_id=app_id, use_mock=use_mock)
-                results.append(res)
-
-        return Response({
-            "status": "success",
-            "total_artists_synced": len(results),
-            "results": results
-        })
-
-    @action(detail=False, methods=['post'], url_path='import-real-event')
-    def import_real_event(self, request):
-        """
-        Endpoint untuk memasukkan pengumuman konser nyata (teks caption IG atau trigger sinkronisasi).
-        Body JSON:
-        {
-            "text": "Pestapora 2026 di Gambir Expo Kemayoran..."
-        }
-        atau tanpa text untuk sinkronisasi konser resmi Jabodetabek.
-        """
-        from apps.gigs.services.real_events import RealEventService
-        service = RealEventService()
-        raw_text = request.data.get('text')
-
-        if raw_text:
-            result = service.parse_text_announcement(raw_text)
-            return Response({"status": "success", "event": result})
-
-        synced = service.sync_verified_concerts()
-        return Response({
-            "status": "success",
-            "message": f"Berhasil menyinkronkan {len(synced)} konser nyata Jabodetabek.",
-            "events": synced
-        })
-
-    @action(detail=False, methods=['post'], url_path='sync-verified')
-    def sync_verified(self, request):
-        """
-        Endpoint untuk menyinkronkan konser musik nyata terverifikasi
-        dan opsi membersihkan data dummy lama.
-        Body JSON:
-        {
-            "clean_dummy": true  # Opsional, default false
-        }
-        """
-        from apps.gigs.services.real_concert_scraper import RealConcertScraperService
-        clean_dummy = request.data.get('clean_dummy', False)
-        service = RealConcertScraperService()
-        result = service.sync_all_verified(clean_dummy=clean_dummy)
-        return Response(result)
-
-    @action(detail=False, methods=['post'], url_path='sync-ticketmaster')
-    def sync_ticketmaster(self, request):
-        """
-        Endpoint untuk menyinkronkan event konser musik resmi dari Ticketmaster Discovery API.
-        Body JSON (seluruh parameter opsional):
-        {
-            "keyword": "Arctic Monkeys",
-            "city": "Jakarta",
-            "country_code": "ID",
-            "size": 20,
-            "api_key": "YOUR_API_KEY",
-            "use_mock": false
-        }
-        """
-        from apps.gigs.services.ticketmaster import TicketmasterService
-
-        keyword = request.data.get('keyword')
-        city = request.data.get('city', 'Jakarta')
-        country_code = request.data.get('country_code', 'ID')
-        size = request.data.get('size', 20)
-        api_key = request.data.get('api_key')
-        use_mock = request.data.get('use_mock', False)
-
-        service = TicketmasterService(api_key=api_key)
-        res = service.sync(
-            keyword=keyword,
-            city=city,
-            country_code=country_code,
-            size=size,
-            use_mock=use_mock
-        )
-
-        if not res.get("success"):
-            return Response(res, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(res, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['post'], url_path='scan-poster')
-    def scan_poster(self, request):
-        """
-        Endpoint untuk scan & ekstrak informasi konser musik dari foto poster (Instagram flyer).
-        Terima multipart/form-data dengan key 'image'.
-        Opsi: 'auto_save=true' untuk langsung simpan ke database.
-        """
-        from apps.gigs.services.poster_ai import PosterAIService
-
-        image_file = request.FILES.get('image')
-        if not image_file:
-            return Response(
-                {"success": False, "error": "Wajib mengunggah file gambar poster dengan key 'image'."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            image_bytes = image_file.read()
-            mime_type = image_file.content_type or 'image/jpeg'
-            auto_save = request.data.get('auto_save', 'false').lower() in ['true', '1']
-
-            service = PosterAIService()
-            extracted = service.analyze_poster(image_bytes=image_bytes, mime_type=mime_type)
-
-            if not extracted.get("success"):
-                return Response(extracted, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-            if auto_save:
-                image_file.seek(0)
-                gig = service.save_gig_to_database(extracted, poster_file=image_file)
-                serializer = GigDetailSerializer(gig, context={'request': request})
-                return Response({
-                    "success": True,
-                    "saved": True,
-                    "message": f"Konser '{gig.title}' berhasil diekstrak dan disimpan!",
-                    "gig": serializer.data
-                }, status=status.HTTP_201_CREATED)
-
-            return Response({
-                "success": True,
-                "saved": False,
-                "message": "Poster berhasil diekstrak oleh AI. Silakan periksa dan konfirmasi data.",
-                "data": extracted
-            }, status=status.HTTP_200_OK)
-
-        except ValueError as ve:
-            return Response({"success": False, "error": str(ve)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except Exception as e:
-            return Response({"success": False, "error": f"Gagal memproses poster: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    @action(detail=False, methods=['post'], url_path='confirm-poster-gig')
-    def confirm_poster_gig(self, request):
-        """
-        Endpoint untuk menyimpan data konser hasil review/edit user ke database.
-        Mendukung multipart/form-data (dengan image opsional) atau JSON payload.
-        """
-        from apps.gigs.services.poster_ai import PosterAIService
-
-        image_file = request.FILES.get('image')
-        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
-
-        # Parse artists & genres if sent as JSON string in form-data
-        import json
-        if isinstance(data.get('artists'), str):
-            try:
-                data['artists'] = json.loads(data['artists'])
-            except Exception:
-                data['artists'] = [a.strip() for a in data['artists'].split(',') if a.strip()]
-        if isinstance(data.get('genres'), str):
-            try:
-                data['genres'] = json.loads(data['genres'])
-            except Exception:
-                data['genres'] = [g.strip() for g in data['genres'].split(',') if g.strip()]
-
-        try:
-            service = PosterAIService()
-            normalized = service.normalize_extracted_data(data)
-            gig = service.save_gig_to_database(normalized, poster_file=image_file)
-            serializer = GigDetailSerializer(gig, context={'request': request})
-
-            return Response({
-                "success": True,
-                "saved": True,
-                "message": f"Konser '{gig.title}' berhasil disimpan ke database!",
-                "gig": serializer.data
-            }, status=status.HTTP_201_CREATED)
-
-        except Exception as e:
-            return Response({
-                "success": False,
-                "error": f"Gagal menyimpan gig: {str(e)}"
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
+# Alias for backward-compatibility if router expects GigsViewSet
+GigsViewSet = GigViewSet

@@ -78,12 +78,12 @@ class Command(BaseCommand):
         self.stdout.write(self.style.NOTICE(f"[3/3] 💾 Menyimpan konser, venue, dan lineup ke database Django..."))
         try:
             poster_content = ContentFile(image_bytes, name=os.path.basename(image_path))
-            gig = service.save_gig_to_database(result, poster_file=poster_content)
+            Gigs = service.save_Gigs_to_database(result, poster_file=poster_content)
             self.stdout.write(self.style.SUCCESS(
-                f"\n🎉 BERHASIL! Konser '{gig.title}' (ID: {gig.id}) berhasil ditambahkan ke GigTrack.\n"
-                f"   - Database Venue : {gig.venue.name} ({gig.venue.city})\n"
-                f"   - Total Lineup   : {gig.lineups.count()} band/musisi\n"
-                f"   - Status         : {gig.get_status_display()}\n"
+                f"\n🎉 BERHASIL! Konser '{Gigs.title}' (ID: {Gigs.id}) berhasil ditambahkan ke GigsSTRACK.\n"
+                f"   - Database Venue : {Gigs.venue.name} ({Gigs.venue.city})\n"
+                f"   - Total Lineup   : {Gigs.lineups.count()} band/musisi\n"
+                f"   - Status         : {Gigs.get_status_display()}\n"
             ))
         except Exception as e:
             raise CommandError(f"Gagal menyimpan ke database Django: {e}")

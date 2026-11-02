@@ -1,6 +1,6 @@
-# GigTrack — Live Music & Indie Gigs Radar
+# GigsSTRACK — Live Music & Indie Gigss Radar
 
-> Platform pelacak gig dan konser musik langsung (*live music radar*) berskala nasional untuk memantau jadwal band yang tampil **hari ini**, jadwal akhir pekan, rundown susunan panggung, dan tiket di berbagai kota (Jakarta, Bandung, Bali, dll).
+> Platform pelacak Gigs dan konser musik langsung (*live music radar*) berskala nasional untuk memantau jadwal band yang tampil **hari ini**, jadwal akhir pekan, rundown susunan panggung, dan tiket di berbagai kota (Jakarta, Bandung, Bali, dll).
 
 ---
 
@@ -37,12 +37,12 @@ Proyek ini dibangun dengan menerapkan prinsip **Separation of Concerns (SoC)** d
 ## Struktur Repositori
 
 ```text
-GigTrack/
+GigsSTRACK/
 ├── backend/
 │   ├── apps/
 │   │   ├── artists/          # Model Genre & Artist, Serializer, ViewSet, Admin
 │   │   ├── venues/           # Model Venue, Alamat, Kota, Serializer, ViewSet
-│   │   └── gigs/             # Model Gig & GigLineup, Views (/today/, /cities/), Tests
+│   │   └── Gigss/             # Model Gigs & GigsLineup, Views (/today/, /cities/), Tests
 │   ├── config/               # Settings, Routing URLs, WSGI, ASGI
 │   ├── seed_data.py          # Script seeder data konser realistis
 │   ├── requirements.txt      # Dependensi Python
@@ -50,7 +50,7 @@ GigTrack/
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/       # Navbar, TodayRadar, FilterBar, GigCard, GigModal, Footer
+│   │   ├── components/       # Navbar, TodayRadar, FilterBar, GigsCard, GigsModal, Footer
 │   │   ├── services/         # API HTTP Client (fetch wrapper)
 │   │   ├── App.jsx           # State management & layout
 │   │   └── index.css         # Custom Design System
@@ -66,7 +66,17 @@ GigTrack/
 
 ## Panduan Menjalankan (Local Development)
 
-### 1. Menjalankan Backend (Django)
+### Opsi Praktis 1-Click (Tanpa Docker)
+Cukup **double-click** file `start_app.bat` di root folder proyek, atau jalankan perintah berikut di terminal:
+```cmd
+.\start_app.bat
+```
+Script ini akan otomatis membuka server Django (Backend) dan Vite (Frontend) sekaligus.
+
+---
+
+### Opsi Manual (2 Terminal)
+
 
 Buka terminal di folder `backend`:
 
@@ -111,7 +121,7 @@ Untuk memverifikasi keandalan API, filter tanggal, dan logika pencarian:
 
 ```powershell
 cd backend
-.\venv\Scripts\python.exe manage.py test apps.gigs
+.\venv\Scripts\python.exe manage.py test apps.Gigss
 ```
 
 Hasil pengujian otomatis:

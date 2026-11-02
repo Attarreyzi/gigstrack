@@ -4,17 +4,17 @@ from django.utils import timezone
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
 
-class GigStatus(models.TextChoices):
+class GigsStatus(models.TextChoices):
     SCHEDULED = 'scheduled', 'Dijadwalkan'
     LIVE_NOW = 'live_now', 'Sedang Berlangsung'
     COMPLETED = 'completed', 'Selesai'
     POSTPONED = 'postponed', 'Ditunda'
     CANCELLED = 'cancelled', 'Dibatalkan'
 
-class Gig(models.Model):
-    title = models.CharField(max_length=250, verbose_name="Nama Acara / Gig")
+class Gigs(models.Model):
+    title = models.CharField(max_length=250, verbose_name="Nama Acara / Gigs")
     slug = models.SlugField(max_length=250, unique=True, blank=True)
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="gigs", verbose_name="Lokasi / Venue")
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="Gigss", verbose_name="Lokasi / Venue")
     start_datetime = models.DateTimeField(db_index=True, verbose_name="Waktu Mulai Acara")
     end_datetime = models.DateTimeField(null=True, blank=True, verbose_name="Waktu Selesai (Opsional)")
     doors_open = models.CharField(max_length=50, blank=True, default="18:30 WIB", verbose_name="Open Gate / Doors Open")
@@ -24,15 +24,17 @@ class Gig(models.Model):
     ticket_price = models.IntegerField(default=0, verbose_name="Harga Tiket (Rp)")
     is_free = models.BooleanField(default=False, verbose_name="Gratis / Free Entry")
     ticket_url = models.URLField(blank=True, verbose_name="Link Pembelian Tiket / RSVP")
-    status = models.CharField(max_length=20, choices=GigStatus.choices, default=GigStatus.SCHEDULED, db_index=True, verbose_name="Status Acara")
+    referral_code = models.CharField(max_length=50, blank=True, default="", verbose_name="Kode Referral / Promo")
+    status = models.CharField(max_length=20, choices=GigsStatus.choices, default=GigsStatus.SCHEDULED, db_index=True, verbose_name="Status Acara")
     is_featured = models.BooleanField(default=False, verbose_name="Tampilkan di Banner Utama (Featured)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'gigs_gig'
         ordering = ['start_datetime']
-        verbose_name = "Gig / Acara Musik"
-        verbose_name_plural = "Daftar Gig / Acara Musik"
+        verbose_name = "Gigs / Acara Musik"
+        verbose_name_plural = "Daftar Gigs / Acara Musik"
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -42,15 +44,14 @@ class Gig(models.Model):
                     dt_str = self.start_datetime.strftime('%Y%m%d')
                 else:
                     dt_str = str(self.start_datetime)[:10].replace('-', '')
-            base_slug = slugify(f"{self.title}-{dt_str}") or "gig-event"
+            base_slug = slugify(f"{self.title}-{dt_str}") or "Gigs-event"
             slug = base_slug
             counter = 1
-            while Gig.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            while Gigs.objects.filter(slug=slug).exclude(pk=self.pk).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
-        if self.ticket_price == 0 and not self.ticket_tiers.exists():
-            self.is_free = True
+
         super().save(*args, **kwargs)
 
 
@@ -63,8 +64,8 @@ class Gig(models.Model):
     @property
     def is_happening_today(self):
         local_today = timezone.localdate()
-        gig_date = timezone.localtime(self.start_datetime).date()
-        return gig_date == local_today
+        Gigs_date = timezone.localtime(self.start_datetime).date()
+        return Gigs_date == local_today
 
     @property
     def resolved_ticket_url(self):
@@ -127,56 +128,69 @@ class Gig(models.Model):
 
     @property
     def price_range_display(self):
+        if self.is_free:
+            return "GRATIS / Free Entry"
         tiers = self.ticket_tiers.all()
         if tiers.exists():
             prices = [t.price for t in tiers if t.price > 0]
-            if not prices:
-                return "GRATIS / Free Entry"
-            min_p = min(prices)
-            return f"Mulai Rp {min_p:,.0f}".replace(',', '.')
-        if self.is_free or self.ticket_price == 0:
-            return "GRATIS / Free Entry"
-        return f"Mulai Rp {self.ticket_price:,.0f}".replace(',', '.')
+            if prices:
+                min_p = min(prices)
+                return f"Mulai Rp {min_p:,.0f}".replace(',', '.')
+        if self.ticket_price > 0:
+            return f"Mulai Rp {self.ticket_price:,.0f}".replace(',', '.')
+        return "Cek Platform Tiket"
 
     @property
     def price_full_range_display(self):
+        if self.is_free:
+            return "GRATIS / Free Entry"
         tiers = self.ticket_tiers.all()
         if tiers.exists():
             prices = [t.price for t in tiers if t.price > 0]
-            if not prices:
-                return "GRATIS / Free Entry"
-            min_p = min(prices)
-            max_p = max(prices)
-            if min_p == max_p:
-                return f"Rp {min_p:,.0f}".replace(',', '.')
-            return f"Rp {min_p:,.0f} - Rp {max_p:,.0f}".replace(',', '.')
-        if self.is_free or self.ticket_price == 0:
-            return "GRATIS / Free Entry"
-        return f"Rp {self.ticket_price:,.0f}".replace(',', '.')
+            if prices:
+                min_p = min(prices)
+                max_p = max(prices)
+                if min_p == max_p:
+                    return f"Rp {min_p:,.0f}".replace(',', '.')
+                return f"Rp {min_p:,.0f} - Rp {max_p:,.0f}".replace(',', '.')
+        if self.ticket_price > 0:
+            return f"Rp {self.ticket_price:,.0f}".replace(',', '.')
+        return "Berbayar (Cek Info Tiket)"
+
 
     def __str__(self):
         return f"{self.title} @ {self.venue.name} ({self.start_datetime.strftime('%d %b %Y')})"
 
 
-class GigLineup(models.Model):
-    gig = models.ForeignKey(Gig, on_delete=models.CASCADE, related_name="lineups")
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="gig_appearances")
+class GigsLineup(models.Model):
+    Gigs = models.ForeignKey(Gigs, on_delete=models.CASCADE, related_name="lineups", db_column="gig_id")
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="Gigs_appearances")
+    day = models.CharField(max_length=60, blank=True, default="", help_text="Hari / Day festival (contoh: Day 1, Day 2, Day 3)", verbose_name="Hari / Day")
     set_time = models.CharField(max_length=100, blank=True, help_text="Contoh: 19:30 - 20:15 WIB", verbose_name="Jadwal Tampil")
     is_headliner = models.BooleanField(default=False, verbose_name="Headliner")
     order = models.PositiveIntegerField(default=1, verbose_name="Urutan Tampil")
 
+    @property
+    def gig(self):
+        return self.Gigs
+
+    @gig.setter
+    def gig(self, val):
+        self.Gigs = val
+
     class Meta:
+        db_table = 'gigs_giglineup'
         ordering = ['order', 'id']
-        unique_together = ('gig', 'artist')
+        unique_together = ('Gigs', 'artist')
         verbose_name = "Line-up Band"
         verbose_name_plural = "Line-up Band"
 
     def __str__(self):
-        return f"{self.artist.name} ({self.gig.title})"
+        return f"{self.artist.name} ({self.Gigs.title})"
 
 
-class GigTicketTier(models.Model):
-    gig = models.ForeignKey(Gig, on_delete=models.CASCADE, related_name="ticket_tiers", verbose_name="Konser / Acara")
+class GigsTicketTier(models.Model):
+    Gigs = models.ForeignKey(Gigs, on_delete=models.CASCADE, related_name="ticket_tiers", db_column="gig_id", verbose_name="Konser / Acara")
     tier_name = models.CharField(max_length=150, verbose_name="Nama Kategori / Tier Tiket")
     price = models.IntegerField(default=0, verbose_name="Harga Tiket (Rp)")
     is_sold_out = models.BooleanField(default=False, verbose_name="Habis / Sold Out")
@@ -184,7 +198,16 @@ class GigTicketTier(models.Model):
     ticket_url = models.URLField(blank=True, verbose_name="Link Tiket Khusus Tier Ini (Opsional)")
     order = models.PositiveIntegerField(default=1, verbose_name="Urutan")
 
+    @property
+    def gig(self):
+        return self.Gigs
+
+    @gig.setter
+    def gig(self, val):
+        self.Gigs = val
+
     class Meta:
+        db_table = 'gigs_gigtickettier'
         ordering = ['order', 'price', 'id']
         verbose_name = "Kategori / Tier Tiket"
         verbose_name_plural = "Daftar Kategori / Tier Tiket"
@@ -192,4 +215,35 @@ class GigTicketTier(models.Model):
     def __str__(self):
         status = " [SOLD OUT]" if self.is_sold_out else ""
         return f"{self.tier_name} - Rp {self.price:,}{status}"
+
+
+class GigsTicketLink(models.Model):
+    Gigs = models.ForeignKey(Gigs, on_delete=models.CASCADE, related_name="ticket_links", db_column="gig_id", verbose_name="Konser / Acara")
+    platform_name = models.CharField(max_length=100, verbose_name="Nama Platform", help_text="Contoh: Goers, Loket.com, Tiket.com, TipTip, Artatix")
+    url = models.URLField(max_length=500, verbose_name="URL Pembelian Tiket")
+    order = models.PositiveIntegerField(default=1, verbose_name="Urutan")
+
+    @property
+    def gig(self):
+        return self.Gigs
+
+    @gig.setter
+    def gig(self, val):
+        self.Gigs = val
+
+    class Meta:
+        db_table = 'gigs_gigticketlink'
+        ordering = ['order', 'id']
+        verbose_name = "Tautan Platform Tiket"
+        verbose_name_plural = "Daftar Tautan Platform Tiket"
+
+    def __str__(self):
+        return f"{self.platform_name}: {self.url}"
+
+# Aliases for compatibility
+Gig = Gigs
+GigStatus = GigsStatus
+GigLineup = GigsLineup
+GigTicketTier = GigsTicketTier
+GigTicketLink = GigsTicketLink
 

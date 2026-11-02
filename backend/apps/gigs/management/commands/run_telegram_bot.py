@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from apps.gigs.services.telegram_bot import TelegramPosterBot
 
 class Command(BaseCommand):
-    help = "Menjalankan GigTrack Telegram Bot Polling untuk menerima dan memproses poster konser dari HP"
+    help = "Menjalankan GigsSTRACK Telegram Bot Polling untuk menerima dan memproses poster konser dari HP"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         token = options.get('token')
         self.stdout.write(self.style.SUCCESS("="*55))
-        self.stdout.write(self.style.SUCCESS("[*] GIGTRACK TELEGRAM BOT SCANNER WORKER"))
+        self.stdout.write(self.style.SUCCESS("[*] GigsSTRACK TELEGRAM BOT SCANNER WORKER"))
         self.stdout.write(self.style.SUCCESS("="*55))
         
         try:

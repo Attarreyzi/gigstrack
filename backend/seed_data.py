@@ -1,7 +1,7 @@
 """
-Seed script for GigTrack.
+Seed script for GigsSTRACK.
 Fills database with realistic music scene data (Indie, Rock, Pop, etc.)
-including gigs happening TODAY, tomorrow, and upcoming dates.
+including Gigss happening TODAY, tomorrow, and upcoming dates.
 
 Run with:
     python seed_data.py
@@ -21,10 +21,10 @@ django.setup()
 from django.utils import timezone
 from apps.artists.models import Genre, Artist
 from apps.venues.models import Venue
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.gigs.models import Gigs, GigsLineup, GigsStatus
 
 def seed():
-    print("🎸 Memulai seeding data GigTrack...")
+    print("Memulai seeding data GigsSTRACK...")
 
     # 1. Genres
     genres_data = [
@@ -171,7 +171,7 @@ def seed():
         artist_objs[a["name"]] = obj
     print(f"✅ {len(artist_objs)} Artis / Band berhasil dibuat.")
 
-    # 4. Gigs (Today, Tomorrow, and Upcoming)
+    # 4. Gigss (Today, Tomorrow, and Upcoming)
     now = timezone.localtime(timezone.now())
     today = now.date()
 
@@ -179,11 +179,11 @@ def seed():
     today_evening = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time())) + timedelta(hours=19, minutes=0)
     today_night = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time())) + timedelta(hours=20, minutes=30)
     tomorrow_evening = today_evening + timedelta(days=1)
-    weekend_gig = today_evening + timedelta(days=3)
-    next_week_gig = today_evening + timedelta(days=7)
+    weekend_Gigs = today_evening + timedelta(days=3)
+    next_week_Gigs = today_evening + timedelta(days=7)
 
-    gigs_data = [
-        # GIG HARI INI #1 (Featured Live Radar)
+    Gigss_data = [
+        # GigsS HARI INI #1 (Featured Live Radar)
         {
             "title": "Subculture Sound Vol. 8: Midweek Noise",
             "venue": venue_objs["M Bloc Space - Live House"],
@@ -191,7 +191,7 @@ def seed():
             "doors_open": "18:30 WIB",
             "ticket_price": 75000,
             "is_free": False,
-            "status": GigStatus.SCHEDULED,
+            "status": GigsStatus.SCHEDULED,
             "is_featured": True,
             "ticket_url": "https://loket.com/event/subculture-sound",
             "poster_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
@@ -202,7 +202,7 @@ def seed():
                 {"artist": artist_objs["Grrrl Gang"], "set_time": "19:00 - 19:35 WIB", "is_headliner": False, "order": 3}
             ]
         },
-        # GIG HARI INI #2 (Free Entry Bar Gig)
+        # GigsS HARI INI #2 (Free Entry Bar Gigs)
         {
             "title": "Duck Down Secret Session",
             "venue": venue_objs["Duck Down Pizza Party"],
@@ -210,7 +210,7 @@ def seed():
             "doors_open": "20:00 WIB",
             "ticket_price": 0,
             "is_free": True,
-            "status": GigStatus.SCHEDULED,
+            "status": GigsStatus.SCHEDULED,
             "is_featured": False,
             "ticket_url": "",
             "poster_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
@@ -219,7 +219,7 @@ def seed():
                 {"artist": artist_objs[".Feast"], "set_time": "21:30 - 22:45 WIB", "is_headliner": True, "order": 1},
             ]
         },
-        # GIG BESOK
+        # Gigs BESOK
         {
             "title": "Bandung Distortion Collective",
             "venue": venue_objs["Spasial / Gudang Selatan 22"],
@@ -227,7 +227,7 @@ def seed():
             "doors_open": "18:00 WIB",
             "ticket_price": 60000,
             "is_free": False,
-            "status": GigStatus.SCHEDULED,
+            "status": GigsStatus.SCHEDULED,
             "is_featured": False,
             "ticket_url": "https://goersapp.com/e/bdg-distortion",
             "poster_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80",
@@ -237,15 +237,15 @@ def seed():
                 {"artist": artist_objs["Grrrl Gang"], "set_time": "19:30 - 20:30 WIB", "is_headliner": False, "order": 2}
             ]
         },
-        # GIG WEEKEND
+        # Gigs WEEKEND
         {
             "title": "Sunset Grooves & Nostalgia Night",
             "venue": venue_objs["The Orchard Bar & Restaurant"],
-            "start_datetime": weekend_gig,
+            "start_datetime": weekend_Gigs,
             "doors_open": "17:30 WITA",
             "ticket_price": 120000,
             "is_free": False,
-            "status": GigStatus.SCHEDULED,
+            "status": GigsStatus.SCHEDULED,
             "is_featured": True,
             "ticket_url": "https://megatix.co.id/events/sunset-grooves",
             "poster_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80",
@@ -255,15 +255,15 @@ def seed():
                 {"artist": artist_objs["Hindia"], "set_time": "18:30 - 19:45 WITA", "is_headliner": False, "order": 2}
             ]
         },
-        # GIG MINGGU DEPAN
+        # Gigs MINGGU DEPAN
         {
             "title": "Raw Underground Movement",
             "venue": venue_objs["Rossi Musik Fatmawati"],
-            "start_datetime": next_week_gig,
+            "start_datetime": next_week_Gigs,
             "doors_open": "19:00 WIB",
             "ticket_price": 50000,
             "is_free": False,
-            "status": GigStatus.SCHEDULED,
+            "status": GigsStatus.SCHEDULED,
             "is_featured": False,
             "ticket_url": "",
             "poster_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
@@ -275,23 +275,23 @@ def seed():
         }
     ]
 
-    for g_data in gigs_data:
+    for g_data in Gigss_data:
         lineup_data = g_data.pop("lineup")
-        gig, created = Gig.objects.get_or_create(
+        Gigs, created = Gigs.objects.get_or_create(
             title=g_data["title"],
             defaults=g_data
         )
         if created:
             for item in lineup_data:
-                GigLineup.objects.create(
-                    gig=gig,
+                GigsLineup.objects.create(
+                    Gigs=Gigs,
                     artist=item["artist"],
                     set_time=item["set_time"],
                     is_headliner=item["is_headliner"],
                     order=item["order"]
                 )
-    print("✅ Berhasil membuat 5 Gig realistis (termasuk 2 Gig untuk HARI INI)!")
-    print("\n🎉 Seeding selesai! Database GigTrack siap digunakan.")
+    print("✅ Berhasil membuat 5 Gigs realistis (termasuk 2 Gigs untuk HARI INI)!")
+    print("\n🎉 Seeding selesai! Database GigsSTRACK siap digunakan.")
 
 if __name__ == '__main__':
     seed()

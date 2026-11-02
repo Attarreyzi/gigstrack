@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='GigTicketTier',
+            name='GigsTicketTier',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('tier_name', models.CharField(max_length=150, verbose_name='Nama Kategori / Tier Tiket')),
@@ -21,9 +21,10 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(blank=True, max_length=250, verbose_name='Keterangan (contoh: 3-Day Pass / Daily Pass)')),
                 ('ticket_url', models.URLField(blank=True, verbose_name='Link Tiket Khusus Tier Ini (Opsional)')),
                 ('order', models.PositiveIntegerField(default=1, verbose_name='Urutan')),
-                ('gig', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ticket_tiers', to='gigs.gig', verbose_name='Konser / Acara')),
+                ('Gigs', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ticket_tiers', to='gigs.Gigs', verbose_name='Konser / Acara')),
             ],
             options={
+                'db_table': 'gigs_gigtickettier',
                 'verbose_name': 'Kategori / Tier Tiket',
                 'verbose_name_plural': 'Daftar Kategori / Tier Tiket',
                 'ordering': ['order', 'price', 'id'],

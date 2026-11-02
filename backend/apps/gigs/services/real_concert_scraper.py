@@ -1,5 +1,5 @@
 """
-Real Concert Scraper & Aggregator Service for GigTrack.
+Real Concert Scraper & Aggregator Service for GigsSTRACK.
 Aggregates authentic, verified live music concerts in Indonesia
 (Jabodetabek, Bandung, Bali, and major cities) with genuine venues,
 real artist lineups, accurate dates, and active direct ticket links.
@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.gigs.models import Gigs, GigsLineup, GigsStatus
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +147,7 @@ class RealConcertScraperService:
                 ]
             },
 
-            # 2. GIGS HARI INI DI JABODETABEK (16 September 2026)
+            # 2. GigsS HARI INI DI JABODETABEK (16 September 2026)
             {
                 "title": "M Bloc Secret Noise Session: Midweek Live",
                 "venue_name": "M Bloc Space - Live House",
@@ -190,7 +190,7 @@ class RealConcertScraperService:
                 ]
             },
 
-            # 3. GIGS BESOK (17 September 2026)
+            # 3. GigsS BESOK (17 September 2026)
             {
                 "title": "Fatmawati Underground Mosh: Heavy & Raw",
                 "venue_name": "Rossi Musik Fatmawati",
@@ -213,7 +213,7 @@ class RealConcertScraperService:
                 ]
             },
 
-            # 4. GIGS MINGGU INI & AKHIR PEKAN (19 - 20 September 2026 - JABODETABEK)
+            # 4. GigsS MINGGU INI & AKHIR PEKAN (19 - 20 September 2026 - JABODETABEK)
             {
                 "title": "Senayan Sunset Sound: Maliq & D'Essentials Live",
                 "venue_name": "Parkir Timur Senayan",
@@ -366,16 +366,16 @@ class RealConcertScraperService:
     def sync_all_verified(self, clean_dummy=False):
         """
         Menyinkronkan seluruh konser nyata ke database.
-        Jika clean_dummy=True, seluruh data gig lama yang dibuat oleh script dummy
+        Jika clean_dummy=True, seluruh data Gigs lama yang dibuat oleh script dummy
         dihapus bersih terlebih dahulu.
         """
         deleted_count = 0
         if clean_dummy:
-            deleted_count, _ = Gig.objects.all().delete()
-            logger.info(f"Pembersihan berhasil: {deleted_count} data gig lama dihapus.")
+            deleted_count, _ = Gigs.objects.all().delete()
+            logger.info(f"Pembersihan berhasil: {deleted_count} data Gigs lama dihapus.")
 
         dataset = self.get_verified_concert_dataset()
-        saved_gigs = []
+        saved_Gigss = []
 
         # Inisialisasi genre spesifik resmi
         DEFAULT_GENRES = [
@@ -415,9 +415,9 @@ class RealConcertScraperService:
                 venue.province = item["venue_province"]
                 venue.save()
 
-            # 2. Simpan atau Perbarui Gig
+            # 2. Simpan atau Perbarui Gigs
             slug_base = slugify(f"{item['title']}-{item['start_datetime'].strftime('%Y%m%d')}")
-            gig, created = Gig.objects.update_or_create(
+            Gigs, created = Gigs.objects.update_or_create(
                 slug=slug_base,
                 defaults={
                     "title": item["title"],
@@ -427,7 +427,7 @@ class RealConcertScraperService:
                     "ticket_price": item.get("ticket_price", 0),
                     "is_free": item.get("is_free", False),
                     "is_featured": item.get("is_featured", False),
-                    "status": GigStatus.SCHEDULED,
+                    "status": GigsStatus.SCHEDULED,
                     "ticket_url": item.get("ticket_url", ""),
                     "poster_url": item.get("poster_url", ""),
                     "description": item.get("description", "")
@@ -435,7 +435,7 @@ class RealConcertScraperService:
             )
 
             # 3. Hubungkan Lineup Artis
-            gig.lineups.all().delete()
+            Gigs.lineups.all().delete()
             for idx, member in enumerate(item.get("lineup", []), start=1):
                 artist, _ = Artist.objects.get_or_create(
                     name=member["name"],
@@ -453,21 +453,21 @@ class RealConcertScraperService:
                         if key.lower() in g_name.lower() or g_name.lower() in key.lower():
                             artist.genres.add(g_obj)
 
-                GigLineup.objects.create(
-                    gig=gig,
+                GigsLineup.objects.create(
+                    Gigs=Gigs,
                     artist=artist,
                     set_time=member.get("set_time", "TBA"),
                     is_headliner=(member.get("role") == "headliner"),
                     order=idx
                 )
 
-            saved_gigs.append(gig)
+            saved_Gigss.append(Gigs)
 
         return {
             "success": True,
             "deleted_dummy_count": deleted_count,
-            "total_synced": len(saved_gigs),
-            "gigs": [
+            "total_synced": len(saved_Gigss),
+            "Gigss": [
                 {
                     "id": g.id,
                     "title": g.title,
@@ -476,6 +476,6 @@ class RealConcertScraperService:
                     "date": str(g.start_datetime.date()),
                     "ticket_url": g.resolved_ticket_url
                 }
-                for g in saved_gigs
+                for g in saved_Gigss
             ]
         }

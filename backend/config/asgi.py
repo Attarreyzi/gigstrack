@@ -1,5 +1,5 @@
 """
-ASGI config for GigTrack project.
+ASGI config for GigsSTRACK project.
 """
 import os
 from django.core.asgi import get_asgi_application

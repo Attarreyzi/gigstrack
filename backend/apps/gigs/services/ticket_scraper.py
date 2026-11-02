@@ -7,13 +7,13 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.gigs.models import Gigs, GigsLineup, GigsStatus
 
 logger = logging.getLogger(__name__)
 
 class TicketScraperService:
     """
-    Scraper untuk menarik data acara konser dan gig nyata dari platform tiket lokal
+    Scraper untuk menarik data acara konser dan Gigs nyata dari platform tiket lokal
     (seperti Megatix Indonesia dan agregator event).
     """
 

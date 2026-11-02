@@ -1,10 +1,10 @@
 import time
 import sys
 from django.core.management.base import BaseCommand
-from apps.gigs.services.ticketmaster import TicketmasterService
+from apps.Gigss.services.ticketmaster import TicketmasterService
 
 class Command(BaseCommand):
-    help = "Sinkronisasi jadwal konser & tiket resmi dari Ticketmaster Discovery API v2 ke database GigTrack"
+    help = "Sinkronisasi jadwal konser & tiket resmi dari Ticketmaster Discovery API v2 ke database GigsSTRACK"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
         service = TicketmasterService(api_key=api_key)
 
-        self.stdout.write(self.style.MIGRATE_HEADING("=== [GigTrack] Ticketmaster Discovery API Engine ==="))
+        self.stdout.write(self.style.MIGRATE_HEADING("=== [GigsSTRACK] Ticketmaster Discovery API Engine ==="))
         self.stdout.write(f"Parameter: Kota='{city}', Negara='{country}', Keyword='{keyword or '-'}'")
 
         def run_sync_cycle():
@@ -83,14 +83,14 @@ class Command(BaseCommand):
 
             source = res.get("source", "ticketmaster")
             total = res.get("total_events_processed", 0)
-            created = res.get("gigs_created", 0)
-            updated = res.get("gigs_updated", 0)
+            created = res.get("Gigss_created", 0)
+            updated = res.get("Gigss_updated", 0)
 
             self.stdout.write(self.style.SUCCESS(
                 f"[+] Berhasil menyinkronkan {total} event (Sumber: {source}) | Baru: {created}, Diperbarui: {updated}"
             ))
 
-            for g in res.get("synced_gigs", []):
+            for g in res.get("synced_Gigss", []):
                 price_str = "Gratis" if g['ticket_price'] == 0 else f"Rp {g['ticket_price']:,}"
                 self.stdout.write(
                     f"    * [{g['action'].upper()}] {g['title']} @ {g['venue']} ({g['city']}) | "

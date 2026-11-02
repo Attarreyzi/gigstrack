@@ -3,12 +3,12 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: gigtrack_postgres
+    container_name: GigsSTRACK_postgres
     restart: always
     environment:
-      POSTGRES_DB: gigtrack_db
-      POSTGRES_USER: gigtrack_user
-      POSTGRES_PASSWORD: gigtrack_password
+      POSTGRES_DB: GigsSTRACK_db
+      POSTGRES_USER: GigsSTRACK_user
+      POSTGRES_PASSWORD: GigsSTRACK_password
     ports:
       - "5432:5432"
     volumes:
@@ -18,7 +18,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: gigtrack_backend
+    container_name: GigsSTRACK_backend
     restart: always
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -27,8 +27,8 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=True
-      - SECRET_KEY=django-insecure-gigtrack-dev-key-change-in-prod
-      - DATABASE_URL=postgresql://gigtrack_user:gigtrack_password@postgres:5432/gigtrack_db
+      - SECRET_KEY=django-insecure-GigsSTRACK-dev-key-change-in-prod
+      - DATABASE_URL=postgresql://GigsSTRACK_user:GigsSTRACK_password@postgres:5432/GigsSTRACK_db
     depends_on:
       - postgres
 
@@ -36,7 +36,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: gigtrack_frontend
+    container_name: GigsSTRACK_frontend
     restart: always
     volumes:
       - ./frontend:/app

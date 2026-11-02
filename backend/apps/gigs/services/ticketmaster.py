@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.artists.models import Artist, Genre
 from apps.venues.models import Venue
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.Gigss.models import Gigs, GigsLineup, GigsStatus
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +127,7 @@ class TicketmasterService:
 
     def parse_event_data(self, raw_event):
         """
-        Melakukan normalisasi data mentah JSON Ticketmaster ke struktur GigTrack.
+        Melakukan normalisasi data mentah JSON Ticketmaster ke struktur GigsSTRACK.
         """
         tm_id = raw_event.get("id", "")
         title = raw_event.get("name", "Konser Musik")
@@ -165,11 +165,11 @@ class TicketmasterService:
         # 2. Parsing Status
         status_code = dates_data.get("status", {}).get("code", "onsale").lower()
         if status_code in ["cancelled", "canceled"]:
-            gig_status = GigStatus.CANCELLED
+            Gigs_status = GigsStatus.CANCELLED
         elif status_code in ["postponed", "rescheduled"]:
-            gig_status = GigStatus.POSTPONED
+            Gigs_status = GigsStatus.POSTPONED
         else:
-            gig_status = GigStatus.SCHEDULED
+            Gigs_status = GigsStatus.SCHEDULED
 
         # 3. Parsing Harga Tiket
         price_ranges = raw_event.get("priceRanges", [])
@@ -270,7 +270,7 @@ class TicketmasterService:
             "poster_url": poster_url,
             "start_datetime": start_datetime,
             "doors_open": f"{(start_datetime - datetime.timedelta(hours=1)).strftime('%H:%M')} WIB",
-            "status": gig_status,
+            "status": Gigs_status,
             "ticket_price": ticket_price,
             "is_free": is_free,
             "venue": venue_info,
@@ -279,12 +279,12 @@ class TicketmasterService:
 
     def sync_events_to_db(self, raw_events):
         """
-        Menyimpan daftar event mentah Ticketmaster ke database Django GigTrack
+        Menyimpan daftar event mentah Ticketmaster ke database Django GigsSTRACK
         secara aman tanpa duplikasi (idempotent).
         """
-        gigs_created = 0
-        gigs_updated = 0
-        processed_gigs = []
+        Gigss_created = 0
+        Gigss_updated = 0
+        processed_Gigss = []
 
         for raw in raw_events:
             parsed = self.parse_event_data(raw)
@@ -307,13 +307,13 @@ class TicketmasterService:
                 }
             )
 
-            # 2. Sync Gig (Gunakan tm_id atau slug judul+tanggal untuk mencegah duplikasi)
+            # 2. Sync Gigs (Gunakan tm_id atau slug judul+tanggal untuk mencegah duplikasi)
             if tm_id:
-                gig_slug = slugify(f"tm-{tm_id}-{title}")[:240]
+                Gigs_slug = slugify(f"tm-{tm_id}-{title}")[:240]
             else:
-                gig_slug = slugify(f"{title}-{start_dt.strftime('%Y%m%d')}")[:240]
+                Gigs_slug = slugify(f"{title}-{start_dt.strftime('%Y%m%d')}")[:240]
 
-            gig_defaults = {
+            Gigs_defaults = {
                 "title": title,
                 "venue": venue_obj,
                 "start_datetime": start_dt,
@@ -326,15 +326,15 @@ class TicketmasterService:
                 "status": parsed["status"],
             }
 
-            gig_obj, created = Gig.objects.update_or_create(
-                slug=gig_slug,
-                defaults=gig_defaults
+            Gigs_obj, created = Gigs.objects.update_or_create(
+                slug=Gigs_slug,
+                defaults=Gigs_defaults
             )
 
             if created:
-                gigs_created += 1
+                Gigss_created += 1
             else:
-                gigs_updated += 1
+                Gigss_updated += 1
 
             # 3. Sync Lineups & Artists
             attractions = parsed["attractions"]
@@ -373,9 +373,9 @@ class TicketmasterService:
                     )
                     artist_obj.genres.add(genre_obj)
 
-                # Hubungkan ke GigLineup
-                GigLineup.objects.update_or_create(
-                    gig=gig_obj,
+                # Hubungkan ke GigsLineup
+                GigsLineup.objects.update_or_create(
+                    Gigs=Gigs_obj,
                     artist=artist_obj,
                     defaults={
                         "is_headliner": (idx == 1),
@@ -384,24 +384,24 @@ class TicketmasterService:
                     }
                 )
 
-            processed_gigs.append({
-                "id": gig_obj.id,
-                "title": gig_obj.title,
+            processed_Gigss.append({
+                "id": Gigs_obj.id,
+                "title": Gigs_obj.title,
                 "venue": venue_obj.name,
                 "city": venue_obj.city,
                 "date": start_dt.strftime("%Y-%m-%d %H:%M"),
-                "status": gig_obj.status,
-                "ticket_price": gig_obj.ticket_price,
-                "ticket_url": gig_obj.ticket_url,
+                "status": Gigs_obj.status,
+                "ticket_price": Gigs_obj.ticket_price,
+                "ticket_url": Gigs_obj.ticket_url,
                 "action": "created" if created else "updated"
             })
 
         return {
             "success": True,
             "total_events_processed": len(raw_events),
-            "gigs_created": gigs_created,
-            "gigs_updated": gigs_updated,
-            "synced_gigs": processed_gigs
+            "Gigss_created": Gigss_created,
+            "Gigss_updated": Gigss_updated,
+            "synced_Gigss": processed_Gigss
         }
 
     def generate_mock_events(self, city='Jakarta', keyword=None):
@@ -601,7 +601,7 @@ class TicketmasterService:
         """
         Alur sinkronisasi lengkap:
         1. Fetch data dari Ticketmaster (atau generate mock jika mode simulasi/tidak ada key).
-        2. Simpan dan update ke database GigTrack.
+        2. Simpan dan update ke database GigsSTRACK.
         """
         events = []
         source = "ticketmaster_live_api"

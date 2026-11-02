@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.venues.models import Venue
 from apps.artists.models import Artist, Genre
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.gigs.models import Gigs, GigsLineup, GigsStatus
 from apps.gigs.services.ticket_scraper import TicketScraperService
 
 logger = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ VERIFIED_REAL_JABODETABEK_CONCERTS = [
         "doors_open": "19:00 WIB",
         "ticket_price": 50000,
         "ticket_url": "",
-        "description": "Gig kolektif bawah tanah swadaya di studio Rossi Musik lantai 4 tanpa barikade dengan energi tanpa kompromi.",
+        "description": "Gigs kolektif bawah tanah swadaya di studio Rossi Musik lantai 4 tanpa barikade dengan energi tanpa kompromi.",
         "poster_url": "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&auto=format&fit=crop&q=80",
         "lineup": [
             {"artist": "Avhath", "set_time": "21:30 - 22:45 WIB", "is_headliner": True, "order": 1},
@@ -193,7 +193,7 @@ class RealEventService:
 
             slug_val = slugify(f"{data['title']}-{start_dt.strftime('%Y%m%d')}")
 
-            gig, created = Gig.objects.update_or_create(
+            Gigs, created = Gigs.objects.update_or_create(
                 slug=slug_val,
                 defaults={
                     "title": data["title"],
@@ -205,7 +205,7 @@ class RealEventService:
                     "ticket_url": data["ticket_url"],
                     "description": data["description"],
                     "poster_url": data["poster_url"],
-                    "status": GigStatus.SCHEDULED,
+                    "status": GigsStatus.SCHEDULED,
                     "is_featured": (data["ticket_price"] > 200000 or "today" in dt_str)
                 }
             )
@@ -220,8 +220,8 @@ class RealEventService:
                         "bio": f"Profil musisi {l_item['artist']}."
                     }
                 )
-                GigLineup.objects.update_or_create(
-                    gig=gig,
+                GigsLineup.objects.update_or_create(
+                    Gigs=Gigs,
                     artist=artist,
                     defaults={
                         "set_time": l_item["set_time"],
@@ -231,7 +231,7 @@ class RealEventService:
                 )
 
             synced.append({
-                "title": gig.title,
+                "title": Gigs.title,
                 "venue": venue.name,
                 "city": venue.city,
                 "date": start_dt.strftime("%d %b %Y, %H:%M"),
@@ -243,13 +243,13 @@ class RealEventService:
     def parse_text_announcement(self, raw_text):
         """
         Parser cerdas: Mengubah teks postingan Instagram/WhatsApp/Twitter
-        menjadi data konser nyata terstruktur di GigTrack.
+        menjadi data konser nyata terstruktur di GigsSTRACK.
         Contoh input:
         'Pestapora Night: 25 September 2026 di M Bloc Live House Jakarta Selatan.
          Lineup: The Adams, Hindia. Tiket 150000 di Loket.com'
         """
         lines = raw_text.strip().split("\n")
-        title = lines[0].strip() if lines else "Live Gig Konser"
+        title = lines[0].strip() if lines else "Live Gigs Konser"
 
         # Deteksi harga (misal: "Rp 65.000", "Rp. 150.000", "IDR 200000", "65k")
         price_match = re.search(r'(?:rp\.?|idr)\s*([0-9.,]+)', raw_text, re.IGNORECASE)
@@ -308,7 +308,7 @@ class RealEventService:
         )
 
         slug_val = slugify(f"{title}-{start_dt.strftime('%Y%m%d%H%M')}")
-        gig, created = Gig.objects.update_or_create(
+        Gigs, created = Gigs.objects.update_or_create(
             slug=slug_val,
             defaults={
                 "title": title,
@@ -319,13 +319,13 @@ class RealEventService:
                 "is_free": (ticket_price == 0),
                 "ticket_url": ticket_url,
                 "description": raw_text,
-                "status": GigStatus.SCHEDULED
+                "status": GigsStatus.SCHEDULED
             }
         )
 
         return {
             "success": True,
-            "title": gig.title,
+            "title": Gigs.title,
             "venue": venue.name,
             "city": venue.city,
             "datetime": start_dt.strftime("%d %b %Y, %H:%M"),

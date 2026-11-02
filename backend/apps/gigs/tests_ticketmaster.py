@@ -1,10 +1,10 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
-from apps.gigs.models import Gig, GigStatus
+from apps.Gigss.models import Gigs, GigsStatus
 from apps.venues.models import Venue
 from apps.artists.models import Artist
-from apps.gigs.services.ticketmaster import TicketmasterService
+from apps.Gigss.services.ticketmaster import TicketmasterService
 
 class TicketmasterIntegrationTests(TestCase):
     """
@@ -71,7 +71,7 @@ class TicketmasterIntegrationTests(TestCase):
         self.assertEqual(parsed["title"], "Radiohead - Live at Gelora Arena 2026")
         self.assertEqual(parsed["ticket_price"], 500000)
         self.assertFalse(parsed["is_free"])
-        self.assertEqual(parsed["status"], GigStatus.SCHEDULED)
+        self.assertEqual(parsed["status"], GigsStatus.SCHEDULED)
         self.assertEqual(parsed["venue"]["name"], "Stadion Madya GBK")
         self.assertEqual(parsed["venue"]["city"], "Jakarta Pusat")
         self.assertIn("106.8010", parsed["venue"]["maps_url"])
@@ -83,32 +83,32 @@ class TicketmasterIntegrationTests(TestCase):
         """Uji penyimpanan ke database dan pastikan tidak ada duplikasi data (idempotency)."""
         # Sinkronisasi pertama: harus membuat baris baru
         result1 = self.service.sync_events_to_db([self.sample_event_raw])
-        self.assertEqual(result1["gigs_created"], 1)
-        self.assertEqual(result1["gigs_updated"], 0)
+        self.assertEqual(result1["Gigss_created"], 1)
+        self.assertEqual(result1["Gigss_updated"], 0)
 
-        gig = Gig.objects.get(title="Radiohead - Live at Gelora Arena 2026")
-        self.assertEqual(gig.venue.name, "Stadion Madya GBK")
-        self.assertEqual(gig.lineups.count(), 1)
-        self.assertEqual(gig.lineups.first().artist.name, "Radiohead")
+        Gigs = Gigs.objects.get(title="Radiohead - Live at Gelora Arena 2026")
+        self.assertEqual(Gigs.venue.name, "Stadion Madya GBK")
+        self.assertEqual(Gigs.lineups.count(), 1)
+        self.assertEqual(Gigs.lineups.first().artist.name, "Radiohead")
 
         # Sinkronisasi kedua dengan data yang sama: harus update, BUKAN duplikat
         result2 = self.service.sync_events_to_db([self.sample_event_raw])
-        self.assertEqual(result2["gigs_created"], 0)
-        self.assertEqual(result2["gigs_updated"], 1)
+        self.assertEqual(result2["Gigss_created"], 0)
+        self.assertEqual(result2["Gigss_updated"], 1)
 
         # Total baris di database tetap 1
-        self.assertEqual(Gig.objects.filter(title="Radiohead - Live at Gelora Arena 2026").count(), 1)
+        self.assertEqual(Gigs.objects.filter(title="Radiohead - Live at Gelora Arena 2026").count(), 1)
 
     def test_mock_sync_workflow(self):
         """Uji mode simulasi/mock dapat berjalan tanpa error."""
         res = self.service.sync(use_mock=True)
         self.assertTrue(res["success"])
         self.assertGreater(res["total_events_processed"], 0)
-        self.assertGreater(Gig.objects.count(), 0)
+        self.assertGreater(Gigs.objects.count(), 0)
 
     def test_api_endpoint_sync_ticketmaster(self):
-        """Uji endpoint API POST /api/gigs/sync-ticketmaster/."""
-        response = self.client.post('/api/gigs/sync-ticketmaster/', {
+        """Uji endpoint API POST /api/Gigss/sync-ticketmaster/."""
+        response = self.client.post('/api/Gigss/sync-ticketmaster/', {
             "city": "Jakarta",
             "use_mock": True
         }, format='json')

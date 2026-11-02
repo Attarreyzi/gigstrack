@@ -4,25 +4,25 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.artists.models import Artist, Genre
 from apps.venues.models import Venue
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.gigs.models import Gigs, GigsLineup, GigsStatus
 
 class Command(BaseCommand):
-    help = "Sync and automatically populate live gigs, tour schedules, and band line-ups"
+    help = "Sync and automatically populate live Gigss, tour schedules, and band line-ups"
 
     def add_arguments(self, parser):
         parser.add_argument(
             '--clear',
             action='store_true',
-            help='Hapus semua gig lama sebelum sinkronisasi data baru',
+            help='Hapus semua Gigs lama sebelum sinkronisasi data baru',
         )
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.MIGRATE_HEADING("=== [GigTrack] Memulai Mesin Sinkronisasi Gig Otomatis ==="))
+        self.stdout.write(self.style.MIGRATE_HEADING("=== [GigsSTRACK] Memulai Mesin Sinkronisasi Gigs Otomatis ==="))
 
         if options['clear']:
-            self.stdout.write(self.style.WARNING("Membersihkan data gig lama..."))
-            Gig.objects.all().delete()
-            self.stdout.write(self.style.SUCCESS("[OK] Data gig lama berhasil dibersihkan."))
+            self.stdout.write(self.style.WARNING("Membersihkan data Gigs lama..."))
+            Gigs.objects.all().delete()
+            self.stdout.write(self.style.SUCCESS("[OK] Data Gigs lama berhasil dibersihkan."))
 
         # 1. Sinkronisasi Genre Musik
         genres_data = [
@@ -228,7 +228,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f"[OK] Berhasil memverifikasi {len(venue_map)} venue di berbagai kota.")
 
-        # 4. Sinkronisasi Jadwal Acara / Gigs (Live Realtime Context)
+        # 4. Sinkronisasi Jadwal Acara / Gigss (Live Realtime Context)
         now = timezone.now()
         local_today = timezone.localdate()
 
@@ -238,7 +238,7 @@ class Command(BaseCommand):
         # 3. Akhir pekan (Sabtu ini / Minggu ini)
         # 4. Minggu depan
 
-        gigs_schedule = [
+        Gigss_schedule = [
             {
                 "title": "M Bloc Noise & Soundwave Showcase",
                 "venue_name": "M Bloc Live House",
@@ -338,7 +338,7 @@ class Command(BaseCommand):
         ]
 
         synced_count = 0
-        for item in gigs_schedule:
+        for item in Gigss_schedule:
             venue = venue_map.get(item["venue_name"])
             if not venue:
                 continue
@@ -349,7 +349,7 @@ class Command(BaseCommand):
 
             slug_base = slugify(f"{item['title']}-{target_date.strftime('%Y%m%d')}")
 
-            gig, created = Gig.objects.update_or_create(
+            Gigs, created = Gigs.objects.update_or_create(
                 slug=slug_base,
                 defaults={
                     "title": item["title"],
@@ -362,7 +362,7 @@ class Command(BaseCommand):
                     "description": item["description"],
                     "poster_url": item["poster_url"],
                     "ticket_url": item["ticket_url"],
-                    "status": GigStatus.SCHEDULED
+                    "status": GigsStatus.SCHEDULED
                 }
             )
 
@@ -370,8 +370,8 @@ class Command(BaseCommand):
             for lineup_data in item["lineup"]:
                 artist = artist_map.get(lineup_data["artist"])
                 if artist:
-                    GigLineup.objects.update_or_create(
-                        gig=gig,
+                    GigsLineup.objects.update_or_create(
+                        Gigs=Gigs,
                         artist=artist,
                         defaults={
                             "set_time": lineup_data["set_time"],
@@ -382,7 +382,7 @@ class Command(BaseCommand):
 
             synced_count += 1
             action_label = "Dibuat baru" if created else "Diperbarui"
-            self.stdout.write(f"  [+] {gig.title} @ {venue.name} ({target_date.strftime('%d %b %Y')}) -> {action_label}")
+            self.stdout.write(f"  [+] {Gigs.title} @ {venue.name} ({target_date.strftime('%d %b %Y')}) -> {action_label}")
 
-        self.stdout.write(self.style.SUCCESS(f"\n[OK] Sinkronisasi Berhasil! {synced_count} gig live aktif dan terjadwal."))
+        self.stdout.write(self.style.SUCCESS(f"\n[OK] Sinkronisasi Berhasil! {synced_count} Gigs live aktif dan terjadwal."))
         self.stdout.write(self.style.SUCCESS("[OK] Data radar Hari Ini, Besok, dan Akhir Pekan sudah terisi otomatis.\n"))

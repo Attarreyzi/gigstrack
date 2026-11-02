@@ -1,1 +1,1 @@
-# Migrations for gigs app
+# Migrations for Gigss app

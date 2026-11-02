@@ -15,10 +15,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Gig',
+            name='Gigs',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=250, verbose_name='Nama Acara / Gig')),
+                ('title', models.CharField(max_length=250, verbose_name='Nama Acara / Gigs')),
                 ('slug', models.SlugField(blank=True, max_length=250, unique=True)),
                 ('start_datetime', models.DateTimeField(db_index=True, verbose_name='Waktu Mulai Acara')),
                 ('end_datetime', models.DateTimeField(blank=True, null=True, verbose_name='Waktu Selesai (Opsional)')),
@@ -33,29 +33,31 @@ class Migration(migrations.Migration):
                 ('is_featured', models.BooleanField(default=False, verbose_name='Tampilkan di Banner Utama (Featured)')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('venue', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='gigs', to='venues.venue', verbose_name='Lokasi / Venue')),
+                ('venue', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='Gigss', to='venues.venue', verbose_name='Lokasi / Venue')),
             ],
             options={
-                'verbose_name': 'Gig / Acara Musik',
-                'verbose_name_plural': 'Daftar Gig / Acara Musik',
+                'db_table': 'gigs_gig',
+                'verbose_name': 'Gigs / Acara Musik',
+                'verbose_name_plural': 'Daftar Gigs / Acara Musik',
                 'ordering': ['start_datetime'],
             },
         ),
         migrations.CreateModel(
-            name='GigLineup',
+            name='GigsLineup',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('set_time', models.CharField(blank=True, help_text='Contoh: 19:30 - 20:15 WIB', max_length=100, verbose_name='Jadwal Tampil')),
                 ('is_headliner', models.BooleanField(default=False, verbose_name='Headliner')),
                 ('order', models.PositiveIntegerField(default=1, verbose_name='Urutan Tampil')),
-                ('artist', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='gig_appearances', to='artists.artist')),
-                ('gig', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lineups', to='gigs.gig')),
+                ('artist', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='Gigs_appearances', to='artists.artist')),
+                ('Gigs', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lineups', to='gigs.Gigs')),
             ],
             options={
+                'db_table': 'gigs_giglineup',
                 'verbose_name': 'Line-up Band',
                 'verbose_name_plural': 'Line-up Band',
                 'ordering': ['order', 'id'],
-                'unique_together': {('gig', 'artist')},
+                'unique_together': {('Gigs', 'artist')},
             },
         ),
     ]

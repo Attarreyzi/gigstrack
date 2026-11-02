@@ -3,6 +3,7 @@ from .models import Venue
 
 class VenueSerializer(serializers.ModelSerializer):
     display_image = serializers.ReadOnlyField()
+    maps_url = serializers.CharField(source='resolved_maps_url', read_only=True)
 
     class Meta:
         model = Venue

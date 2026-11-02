@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.artists.models import Artist, Genre
 from apps.venues.models import Venue
-from apps.gigs.models import Gig, GigLineup, GigStatus
+from apps.Gigss.models import Gigs, GigsLineup, GigsStatus
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ JABODETABEK_CITIES = [
 ]
 
 JABODETABEK_VENUES_POOL = [
-    # Jakarta Selatan (Jantung Skena Gig & Live House)
+    # Jakarta Selatan (Jantung Skena Gigs & Live House)
     {
         "name": "M Bloc Live House",
         "city": "Jakarta Selatan",
@@ -313,8 +313,8 @@ class BandsintownService:
         Mencari data ke Bandsintown, lalu otomatis membuat/mengupdate:
         - Artist
         - Venue
-        - Gig
-        - GigLineup
+        - Gigs
+        - GigsLineup
         """
         if app_id:
             self.app_id = app_id
@@ -352,12 +352,12 @@ class BandsintownService:
                 "artist": artist_name,
                 "source": source,
                 "events_count": 0,
-                "gigs_created": 0,
-                "gigs_updated": 0,
+                "Gigss_created": 0,
+                "Gigss_updated": 0,
                 "message": f"Tidak ditemukan jadwal konser mendatang untuk {artist_name} di Bandsintown."
             }
 
-        # 2. Sinkronkan ke Database GigTrack
+        # 2. Sinkronkan ke Database GigsSTRACK
         # A. Pastikan Artist ada
         artist_obj, _ = Artist.objects.get_or_create(
             name=artist_name,
@@ -369,9 +369,9 @@ class BandsintownService:
             }
         )
 
-        gigs_created = 0
-        gigs_updated = 0
-        synced_gigs_info = []
+        Gigss_created = 0
+        Gigss_updated = 0
+        synced_Gigss_info = []
 
         for ev in events:
             # B. Venue Mapping
@@ -423,7 +423,7 @@ class BandsintownService:
             event_title = ev.get("title") or f"{artist_name} Live at {v_name}"
             slug_val = slugify(f"{event_title}-{start_dt.strftime('%Y%m%d')}")
 
-            gig_obj, created = Gig.objects.update_or_create(
+            Gigs_obj, created = Gigs.objects.update_or_create(
                 slug=slug_val,
                 defaults={
                     "title": event_title,
@@ -435,15 +435,15 @@ class BandsintownService:
                     "ticket_url": ticket_url,
                     "description": ev.get("description") or f"Penampilan live spektakuler {artist_name} di {v_name}.",
                     "poster_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
-                    "status": GigStatus.SCHEDULED,
-                    "is_featured": (gigs_created + gigs_updated == 0) # jadikan featured untuk acara pertama
+                    "status": GigsStatus.SCHEDULED,
+                    "is_featured": (Gigss_created + Gigss_updated == 0) # jadikan featured untuk acara pertama
                 }
             )
 
             if created:
-                gigs_created += 1
+                Gigss_created += 1
             else:
-                gigs_updated += 1
+                Gigss_updated += 1
 
             # E. Lineup Mapping
             lineup_artists = ev.get("lineup", [artist_name])
@@ -456,8 +456,8 @@ class BandsintownService:
                         "hometown": "Indonesia"
                     }
                 )
-                GigLineup.objects.update_or_create(
-                    gig=gig_obj,
+                GigsLineup.objects.update_or_create(
+                    Gigs=Gigs_obj,
                     artist=l_artist,
                     defaults={
                         "set_time": f"{start_dt.strftime('%H:%M')} - {(start_dt + datetime.timedelta(hours=1, minutes=30)).strftime('%H:%M')} WIB",
@@ -466,9 +466,9 @@ class BandsintownService:
                     }
                 )
 
-            synced_gigs_info.append({
-                "id": gig_obj.id,
-                "title": gig_obj.title,
+            synced_Gigss_info.append({
+                "id": Gigs_obj.id,
+                "title": Gigs_obj.title,
                 "venue": venue_obj.name,
                 "city": venue_obj.city,
                 "datetime": start_dt.strftime("%d %b %Y, %H:%M"),
@@ -480,8 +480,8 @@ class BandsintownService:
             "artist": artist_name,
             "source": source,
             "events_count": len(events),
-            "gigs_created": gigs_created,
-            "gigs_updated": gigs_updated,
-            "synced_gigs": synced_gigs_info,
+            "Gigss_created": Gigss_created,
+            "Gigss_updated": Gigss_updated,
+            "synced_Gigss": synced_Gigss_info,
             "message": f"Berhasil menyinkronkan {len(events)} jadwal konser untuk {artist_name} ({source})."
         }

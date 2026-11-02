@@ -1,5 +1,5 @@
 """
-Django settings for GigTrack project.
+Django settings for GigsSTRACK project.
 """
 from pathlib import Path
 import os
@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env
 load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-gigtrack-secret-key-music-radar-2026')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-GigsSTRACK-secret-key-music-radar-2026')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 
@@ -22,6 +22,10 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
+    'unfold.contrib.inlines',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,6 +35,7 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'rest_framework_simplejwt',
     'django_filters',
     'corsheaders',
 
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'apps.artists',
     'apps.venues',
     'apps.gigs',
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -122,6 +128,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Django REST Framework
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
@@ -132,12 +145,101 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
 }
 
+# JWT Configuration
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
-# Bandsintown Integration API Configuration
-BANDSINTOWN_APP_ID = os.getenv('BANDSINTOWN_APP_ID', '')
-BANDSINTOWN_BASE_URL = 'https://rest.bandsintown.com'
 
-# Ticketmaster Discovery API Configuration
-TICKETMASTER_API_KEY = os.getenv('TICKETMASTER_API_KEY', '')
-TICKETMASTER_BASE_URL = os.getenv('TICKETMASTER_BASE_URL', 'https://app.ticketmaster.com/discovery/v2')
+# Django Unfold Theme Configuration
+UNFOLD = {
+    "SITE_TITLE": "GigTrack Admin",
+    "SITE_HEADER": "GigTrack Radar Control Center",
+    "SITE_SUBHEADER": "Manajemen Konser, Artis, Venue & User",
+    "THEME": "dark",
+    "SITE_SYMBOL": "speed",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": False,
+    "COLORS": {
+        "primary": {
+            "50": "255 240 245",
+            "100": "255 224 233",
+            "200": "255 194 212",
+            "300": "255 143 179",
+            "400": "255 71 133",
+            "500": "255 0 85",
+            "600": "230 0 77",
+            "700": "194 0 65",
+            "800": "161 0 54",
+            "900": "133 0 44",
+            "950": "82 0 25",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Radar & Konser",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Jadwal Gigs & Konser",
+                        "icon": "event",
+                        "link": lambda request: "/admin/gigs/gigs/",
+                    },
+                ],
+            },
+            {
+                "title": "Direktori Musik",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Artis & Band",
+                        "icon": "mic",
+                        "link": lambda request: "/admin/artists/artist/",
+                    },
+                    {
+                        "title": "Genre Musik",
+                        "icon": "category",
+                        "link": lambda request: "/admin/artists/genre/",
+                    },
+                    {
+                        "title": "Venue Pertunjukan",
+                        "icon": "stadium",
+                        "link": lambda request: "/admin/venues/venue/",
+                    },
+                ],
+            },
+            {
+                "title": "Manajemen Pengguna",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Daftar User & Staff",
+                        "icon": "person",
+                        "link": lambda request: "/admin/auth/user/",
+                    },
+                    {
+                        "title": "Grup & Izin Akses",
+                        "icon": "badge",
+                        "link": lambda request: "/admin/auth/group/",
+                    },
+                ],
+            },
+        ],
+    },
+}
+
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/admin/login/'
 

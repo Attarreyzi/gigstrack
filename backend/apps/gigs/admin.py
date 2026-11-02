@@ -1,65 +1,112 @@
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
-from .models import Gig, GigLineup, GigTicketTier
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import display
+from .models import Gigs, GigsLineup, GigsTicketTier, GigsTicketLink
 
-class GigLineupInline(admin.TabularInline):
-    model = GigLineup
-    extra = 2
+class GigsLineupInline(TabularInline):
+    model = GigsLineup
+    extra = 1
     autocomplete_fields = ['artist']
-    fields = ('order', 'artist', 'set_time', 'is_headliner')
+    fields = ('order', 'artist', 'day', 'set_time', 'is_headliner')
     ordering = ('order',)
 
 
-class GigTicketTierInline(admin.TabularInline):
-    model = GigTicketTier
-    extra = 1
+@admin.register(GigsLineup)
+class GigsLineupAdmin(ModelAdmin):
+    list_display = ('Gigs', 'artist', 'day', 'set_time', 'is_headliner', 'order')
+    list_filter = ('day', 'is_headliner', 'Gigs')
+    search_fields = ('artist__name', 'Gigs__title', 'day')
+    autocomplete_fields = ['artist']
+    ordering = ('Gigs', 'order')
+
+
+class GigsTicketTierInline(TabularInline):
+    model = GigsTicketTier
+    extra = 0
     fields = ('order', 'tier_name', 'price', 'is_sold_out', 'description', 'ticket_url')
     ordering = ('order', 'price')
 
 
-@admin.register(Gig)
-class GigAdmin(admin.ModelAdmin):
+class GigsTicketLinkInline(TabularInline):
+    model = GigsTicketLink
+    extra = 1
+    fields = ('order', 'platform_name', 'url')
+    ordering = ('order',)
+
+
+@admin.register(Gigs)
+class GigsAdmin(ModelAdmin):
     list_display = (
         'poster_preview', 'title', 'venue', 'start_datetime',
-        'doors_open', 'price_display', 'status_badge', 'is_featured', 'today_badge'
+        'doors_open', 'price_display', 'status_badge', 'is_featured', 'edit_action'
     )
-    list_filter = ('status', 'venue__city', 'is_featured', 'start_datetime')
+    list_display_links = ('title', 'edit_action')
+    list_filter = ('status', 'venue__city', 'is_featured', 'start_datetime', 'is_free')
     search_fields = ('title', 'venue__name', 'venue__city', 'lineups__artist__name')
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [GigLineupInline, GigTicketTierInline]
+    inlines = [GigsTicketLinkInline, GigsLineupInline, GigsTicketTierInline]
     date_hierarchy = 'start_datetime'
+    list_filter_submit = True
 
+    fieldsets = (
+        ("Informasi Acara", {
+            "fields": (
+                "title", "slug", "venue",
+                ("start_datetime", "end_datetime"),
+                ("doors_open", "status"),
+                "is_featured",
+            ),
+        }),
+        ("Pengaturan Harga & Tiket", {
+            "fields": (
+                ("is_free", "ticket_price"),
+                "ticket_url",
+            ),
+            "description": "Jika acara berbayar namun nominal di poster tidak tertera, biarkan 'Gratis' tidak dicentang dan isi 'Link Pembelian Tiket'.",
+        }),
+        ("Media & Deskripsi", {
+            "fields": (
+                "poster", "poster_url", "description",
+            ),
+        }),
+    )
 
+    @display(description="Aksi")
+    def edit_action(self, obj):
+        url = reverse(f'admin:{obj._meta.app_label}_{obj._meta.model_name}_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; background: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.4); color: #00F0FF; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 12px;">'
+            '✏️ Edit'
+            '</a>',
+            url
+        )
+
+    @display(description="Poster")
     def poster_preview(self, obj):
         return format_html(
-            '<img src="{}" style="width: 50px; height: 65px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" />',
+            '<img src="{}" style="width: 44px; height: 56px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />',
             obj.display_poster
         )
-    poster_preview.short_description = "Poster"
 
+    @display(description="Harga Tiket")
     def price_display(self, obj):
-        if obj.is_free or obj.ticket_price == 0:
-            return format_html('<span style="color: #00E676; font-weight: bold;">FREE</span>')
-        return f"Rp {obj.ticket_price:,.0f}".replace(',', '.')
-    price_display.short_description = "Harga Tiket"
+        if obj.is_free:
+            return format_html('<span style="color: #00E676; font-weight: 700; background: rgba(0,230,118,0.15); padding: 3px 8px; border-radius: 6px;">GRATIS</span>')
+        if obj.ticket_price and obj.ticket_price > 0:
+            return f"Rp {obj.ticket_price:,.0f}".replace(',', '.')
+        return format_html('<span style="color: #FFB300; font-weight: 600; background: rgba(255,179,0,0.15); padding: 3px 8px; border-radius: 6px;">Berbayar / Cek Tiket</span>')
 
-    def status_badge(self, obj):
-        colors = {
-            'scheduled': '#2196F3',
-            'live_now': '#FF1744',
-            'completed': '#9E9E9E',
-            'postponed': '#FF9100',
-            'cancelled': '#D50000',
+    @display(
+        description="Status",
+        label={
+            "scheduled": "info",
+            "live_now": "danger",
+            "completed": "success",
+            "postponed": "warning",
+            "cancelled": "danger",
         }
-        color = colors.get(obj.status, '#757575')
-        return format_html(
-            '<span style="background-color: {}; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase;">{}</span>',
-            color, obj.get_status_display()
-        )
-    status_badge.short_description = "Status"
-
-    def today_badge(self, obj):
-        if obj.is_happening_today:
-            return format_html('<span style="background: #FF0055; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;">🔥 HARI INI</span>')
-        return "-"
-    today_badge.short_description = "Live Hari Ini"
+    )
+    def status_badge(self, obj):
+        return obj.status

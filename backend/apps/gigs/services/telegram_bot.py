@@ -6,7 +6,7 @@ import threading
 import requests
 from django.conf import settings
 from django.core.files.base import ContentFile
-from apps.gigs.models import Gig
+from apps.gigs.models import Gigs
 from apps.gigs.services.poster_ai import PosterAIService
 
 logger = logging.getLogger(__name__)
@@ -83,21 +83,29 @@ class TelegramPosterBot:
         return r.content, file_name
 
     def format_review_card(self, extracted: dict, is_corrected: bool = False, photo_count: int = 1) -> str:
-        # 1. Kategori Tiket & HTM
+        # 1. Kategori Tiket & HTM (Ringkas: Rentang Harga)
         tiers = extracted.get("ticket_tiers", [])
-        if tiers:
-            tier_lines = []
-            for t in tiers:
-                status = " 🔴 [SOLD OUT]" if t.get("is_sold_out") else " 🟢 [TERSEDIA]"
-                desc = f" ({t['description']})" if t.get("description") else ""
-                tier_lines.append(f"   • {t['tier_name']}: <b>Rp {t.get('price', 0):,}</b>{status}{desc}")
-            price_str = "\n" + "\n".join(tier_lines)
+        prices = [t.get("price", 0) for t in tiers if isinstance(t, dict) and t.get("price", 0) > 0]
+        if prices:
+            min_p = min(prices)
+            max_p = max(prices)
+            if min_p == max_p:
+                price_str = f"<b>Rp {min_p:,}</b>"
+            else:
+                price_str = f"<b>Rp {min_p:,} - Rp {max_p:,}</b>"
         elif extracted.get("is_free"):
             price_str = "<b>GRATIS / Free Entry</b>"
         elif extracted.get("ticket_price", 0) > 0:
             price_str = f"<b>Rp {extracted.get('ticket_price', 0):,}</b>"
         else:
-            price_str = "<i>TBA</i>"
+            platforms = extracted.get("ticket_platforms", [])
+            if platforms:
+                p_text = ", ".join(platforms)
+                price_str = f"<b>Berbayar (Tiket via {p_text})</b>"
+            else:
+                price_str = "<b>Berbayar (Cek Tiket di Platform Resmi)</b>"
+
+
 
         # 2. Open Gate
         doors = str(extracted.get("doors_open") or "TBA").strip()
@@ -111,7 +119,27 @@ class TelegramPosterBot:
         time_display = f" ({time_val} WIB)" if time_val and str(time_val).upper() != "TBA" else ""
         date_display = f"{extracted.get('date')}{time_display}"
 
-        lineup_str = ", ".join(extracted.get("artists", [])) or "Belum terdeteksi"
+        # 4. Lineup & Rundown Festival (Multi-day Support)
+        lineups = extracted.get("lineups", [])
+        days_dict = {}
+        if isinstance(lineups, list) and len(lineups) > 0:
+            for l in lineups:
+                if isinstance(l, dict) and l.get("artist_name"):
+                    d = l.get("day") or "Lineup"
+                    days_dict.setdefault(d, []).append(l)
+
+        if len(days_dict) > 1 or any(k.lower().startswith("day") for k in days_dict.keys()):
+            lineup_section = "👥 <b>Lineup & Rundown:</b>\n"
+            for day_title, items in days_dict.items():
+                lineup_section += f"  <b>{day_title}:</b>\n"
+                for item in items:
+                    t_str = f" ({item['set_time']})" if item.get('set_time') and item['set_time'] != 'TBA' else ""
+                    hl_str = " ⭐" if item.get('is_headliner') else ""
+                    lineup_section += f"  - {item['artist_name']}{t_str}{hl_str}\n"
+        else:
+            lineup_str = ", ".join(extracted.get("artists", [])) or "Belum terdeteksi"
+            lineup_section = f"👥 <b>Lineup:</b> {lineup_str}\n"
+
         confidence = int(extracted.get("confidence_score", 0.9) * 100)
 
         if is_corrected:
@@ -124,7 +152,7 @@ class TelegramPosterBot:
         review_text = (
             f"{header}"
             f"🎸 <b>Acara:</b> {extracted.get('title')}\n"
-            f"👥 <b>Lineup:</b> {lineup_str}\n"
+            f"{lineup_section}"
             f"📍 <b>Venue:</b> {extracted.get('venue_name')}, {extracted.get('city')}\n"
             f"📅 <b>Tanggal:</b> {date_display}\n"
             f"🚪 <b>Open Gate:</b> {doors_display}\n"
@@ -152,15 +180,15 @@ class TelegramPosterBot:
         # Command /start or /help
         if text.startswith("/start") or text.startswith("/help"):
             welcome_text = (
-                "👋 <b>Selamat datang di GigTrack Scanner Bot!</b>\n\n"
+                "👋 <b>Selamat datang di GigsSTRACK Scanner Bot!</b>\n\n"
                 "📸 <b>Cara Penggunaan:</b>\n"
                 "1. Kirim foto poster (1 foto atau multi-foto / album Instagram sekaligus).\n"
                 "2. AI Gemini Vision akan otomatis membaca poster utama + rincian tiket.\n"
                 "3. Foto pertama yang Anda kirim otomatis menjadi <b>foto cover utama di website</b>.\n"
                 "4. Jika ada koreksi, <b>cukup ketik pesan di chat ini</b> (misal: <i>tiket beli di aplikasi BBO</i>).\n"
-                "5. Klik tombol <b>Simpan ke GigTrack</b> untuk langsung menampilkannya di website.\n\n"
+                "5. Klik tombol <b>Simpan ke GigsSTRACK</b> untuk langsung menampilkannya di website.\n\n"
                 "📋 <b>Command Lain:</b>\n"
-                "• <code>/list</code> : Melihat daftar konser terbaru di GigTrack\n"
+                "• <code>/list</code> : Melihat daftar konser terbaru di GigsSTRACK\n"
                 "• <code>/delete &lt;id&gt;</code> : Menghapus konser dari database"
             )
             self.send_message(chat_id, welcome_text)
@@ -168,17 +196,17 @@ class TelegramPosterBot:
 
         # Command /list
         if text.startswith("/list"):
-            recent_gigs = Gig.objects.select_related('venue').order_by('-id')[:5]
-            if not recent_gigs.exists():
-                self.send_message(chat_id, "ℹ️ Belum ada konser tersimpan di database GigTrack.")
+            recent_Gigss = Gigs.objects.select_related('venue').order_by('-id')[:5]
+            if not recent_Gigss.exists():
+                self.send_message(chat_id, "ℹ️ Belum ada konser tersimpan di database GigsSTRACK.")
                 return
 
-            list_text = "📋 <b>DAFTAR KONSER TERBARU DI GIGTRACK:</b>\n\n"
+            list_text = "📋 <b>DAFTAR KONSER TERBARU DI GigsSTRACK:</b>\n\n"
             inline_keyboard = []
-            for g in recent_gigs:
+            for g in recent_Gigss:
                 list_text += f"• <b>[ID: {g.id}]</b> {g.title} @ {g.venue.name} ({g.start_datetime.strftime('%d %b %Y')})\n"
                 inline_keyboard.append([
-                    {"text": f"🗑️ Hapus ID {g.id} ({g.title[:15]}...)", "callback_data": f"delgig:{g.id}"}
+                    {"text": f"🗑️ Hapus ID {g.id} ({g.title[:15]}...)", "callback_data": f"delGigs:{g.id}"}
                 ])
             
             self.send_message(chat_id, list_text, reply_markup={"inline_keyboard": inline_keyboard})
@@ -188,12 +216,12 @@ class TelegramPosterBot:
         if text.startswith("/delete"):
             parts = text.split()
             if len(parts) > 1 and parts[1].isdigit():
-                gig_id = int(parts[1])
-                deleted, _ = Gig.objects.filter(id=gig_id).delete()
+                Gigs_id = int(parts[1])
+                deleted, _ = Gigs.objects.filter(id=Gigs_id).delete()
                 if deleted:
-                    self.send_message(chat_id, f"✅ Konser <b>ID {gig_id}</b> berhasil dihapus dari GigTrack.")
+                    self.send_message(chat_id, f"✅ Konser <b>ID {Gigs_id}</b> berhasil dihapus dari GigsSTRACK.")
                 else:
-                    self.send_message(chat_id, f"❌ Konser <b>ID {gig_id}</b> tidak ditemukan.")
+                    self.send_message(chat_id, f"❌ Konser <b>ID {Gigs_id}</b> tidak ditemukan.")
             else:
                 self.send_message(chat_id, "⚠️ Format salah. Gunakan: <code>/delete 123</code>")
             return
@@ -300,7 +328,7 @@ class TelegramPosterBot:
             inline_keyboard = {
                 "inline_keyboard": [
                     [
-                        {"text": "✅ Simpan ke GigTrack", "callback_data": f"save:{session_id}"},
+                        {"text": "✅ Simpan ke GigsSTRACK", "callback_data": f"save:{session_id}"},
                         {"text": "❌ Batal", "callback_data": f"cancel:{session_id}"}
                     ]
                 ]
@@ -342,7 +370,7 @@ class TelegramPosterBot:
             inline_keyboard = {
                 "inline_keyboard": [
                     [
-                        {"text": "✅ Simpan ke GigTrack", "callback_data": f"save:{session_id}"},
+                        {"text": "✅ Simpan ke GigsSTRACK", "callback_data": f"save:{session_id}"},
                         {"text": "❌ Batal", "callback_data": f"cancel:{session_id}"}
                     ]
                 ]
@@ -371,13 +399,13 @@ class TelegramPosterBot:
 
         action, payload = data.split(":", 1)
 
-        # Handle Delete Gig from list
-        if action == "delgig":
+        # Handle Delete Gigs from list
+        if action == "delGigs":
             if payload.isdigit():
-                gig_id = int(payload)
-                Gig.objects.filter(id=gig_id).delete()
-                self.answer_callback_query(cq_id, f"Konser ID {gig_id} dihapus!", show_alert=True)
-                self.edit_message(chat_id, message_id, f"🗑️ <b>Konser ID {gig_id} telah dihapus dari GigTrack.</b>")
+                Gigs_id = int(payload)
+                Gigs.objects.filter(id=Gigs_id).delete()
+                self.answer_callback_query(cq_id, f"Konser ID {Gigs_id} dihapus!", show_alert=True)
+                self.edit_message(chat_id, message_id, f"🗑️ <b>Konser ID {Gigs_id} telah dihapus dari GigsSTRACK.</b>")
             return
 
         session_id = payload
@@ -400,31 +428,31 @@ class TelegramPosterBot:
             try:
                 ai_service = PosterAIService()
                 poster_file = ContentFile(scan_item["photo_bytes"], name=scan_item["file_name"])
-                gig = ai_service.save_gig_to_database(scan_item["data"], poster_file=poster_file)
+                Gigs = ai_service.save_Gigs_to_database(scan_item["data"], poster_file=poster_file)
                 
                 self.pending_scans.pop(session_id, None)
                 if self.active_chat_sessions.get(chat_id) == session_id:
                     self.active_chat_sessions.pop(chat_id, None)
 
                 success_text = (
-                    "🎉 <b>BERHASIL DITAMBAHKAN KE GIGTRACK!</b>\n\n"
-                    f"🎸 <b>Acara:</b> {gig.title}\n"
-                    f"📍 <b>Venue:</b> {gig.venue.name} ({gig.venue.city})\n"
-                    f"📅 <b>Jadwal:</b> {gig.start_datetime.strftime('%d %B %Y')}\n"
-                    f"👥 <b>Total Lineup:</b> {gig.lineups.count()} Band\n"
-                    f"🎟️ <b>HTM:</b> {gig.price_range_display}\n\n"
-                    f"🌐 <i>Konser sekarang sudah aktif dan tayang di website GigTrack!</i>\n"
+                    "🎉 <b>BERHASIL DITAMBAHKAN KE GigsSTRACK!</b>\n\n"
+                    f"🎸 <b>Acara:</b> {Gigs.title}\n"
+                    f"📍 <b>Venue:</b> {Gigs.venue.name} ({Gigs.venue.city})\n"
+                    f"📅 <b>Jadwal:</b> {Gigs.start_datetime.strftime('%d %B %Y')}\n"
+                    f"👥 <b>Total Lineup:</b> {Gigs.lineups.count()} Band\n"
+                    f"🎟️ <b>HTM:</b> {Gigs.price_range_display}\n\n"
+                    f"🌐 <i>Konser sekarang sudah aktif dan tayang di website GigsSTRACK!</i>\n"
                     f"💡 <i>Ketik <code>/list</code> untuk melihat atau mengelola daftar konser.</i>"
                 )
                 self.edit_message(chat_id, message_id, success_text)
 
             except Exception as e:
-                logger.error(f"Error saving gig from Telegram callback: {e}")
+                logger.error(f"Error saving Gigs from Telegram callback: {e}")
                 err_str = str(e).lower()
                 if "duplicate" in err_str or "unique" in err_str or "integrityerror" in err_str:
                     msg = "ℹ️ <b>Konser sudah ada di database.</b> Data berhasil disinkronkan dengan pembaruan terbaru!"
                 else:
-                    msg = "⚠️ <b>Terjadi kendala saat menyimpan.</b> Silakan coba klik tombol <b>✅ Simpan ke GigTrack</b> sekali lagi."
+                    msg = "⚠️ <b>Terjadi kendala saat menyimpan.</b> Silakan coba klik tombol <b>✅ Simpan ke GigsSTRACK</b> sekali lagi."
                 self.edit_message(chat_id, message_id, msg)
 
     def run_polling(self):

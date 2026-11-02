@@ -35,7 +35,13 @@ class Venue(models.Model):
     def display_image(self):
         if self.image:
             return self.image.url
-        return self.image_url or "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80"
+    @property
+    def resolved_maps_url(self):
+        if self.maps_url:
+            return self.maps_url
+        import urllib.parse
+        q = urllib.parse.quote(f"{self.name} {self.city}")
+        return f"https://www.google.com/maps/search/?api=1&query={q}"
 
     def __str__(self):
         return f"{self.name} ({self.city})"

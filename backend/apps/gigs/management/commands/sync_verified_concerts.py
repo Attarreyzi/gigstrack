@@ -8,7 +8,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--clean',
             action='store_true',
-            help='Hapus seluruh data gig dummy/simulasi lama sebelum memasukkan data nyata.',
+            help='Hapus seluruh data Gigs dummy/simulasi lama sebelum memasukkan data nyata.',
         )
 
     def handle(self, *args, **options):
@@ -19,8 +19,8 @@ class Command(BaseCommand):
         result = service.sync_all_verified(clean_dummy=clean_dummy)
 
         if clean_dummy:
-            self.stdout.write(self.style.SUCCESS(f"[OK] Berhasil membersihkan {result['deleted_dummy_count']} data gig dummy lama."))
+            self.stdout.write(self.style.SUCCESS(f"[OK] Berhasil membersihkan {result['deleted_dummy_count']} data Gigs dummy lama."))
 
         self.stdout.write(self.style.SUCCESS(f"[OK] Berhasil menyinkronkan {result['total_synced']} konser nyata terverifikasi!"))
-        for g in result['gigs']:
+        for g in result['Gigss']:
             self.stdout.write(f"  * [{g['date']}] {g['title']} @ {g['venue']} ({g['city']}) -> {g['ticket_url']}")
