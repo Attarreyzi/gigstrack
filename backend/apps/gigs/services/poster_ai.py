@@ -1,3 +1,5 @@
+import io
+from PIL import Image
 import os
 import json
 import re
@@ -78,12 +80,11 @@ class PosterAIService:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY belum dikonfigurasi di file .env atau settings.")
         self.client = genai.Client(api_key=self.api_key)
-        self.primary_model = 'gemini-3.8-flash'
+        self.primary_model = 'gemini-3.6-flash'
         self.fallback_models = [
-            'gemini-3.8-flash',
             'gemini-3.6-flash',
-            'gemini-2.5-flash',
-            'gemini-1.5-flash'
+            'gemini-3.5-flash',
+            'gemini-3.8-flash'
         ]
 
 
@@ -115,6 +116,22 @@ class PosterAIService:
 
         raise last_exception or RuntimeError("Seluruh server model Gemini sedang sibuk. Silakan coba kembali dalam beberapa detik.")
 
+    @staticmethod
+    def _optimize_image(image_bytes: bytes, max_dim: int = 1600) -> tuple[bytes, str]:
+        try:
+            im = Image.open(io.BytesIO(image_bytes))
+            if im.mode in ('RGBA', 'P'):
+                im = im.convert('RGB')
+            w, h = im.size
+            if max(w, h) > max_dim:
+                scale = max_dim / float(max(w, h))
+                im = im.resize((int(w * scale), int(h * scale)), Image.Resampling.LANCZOS)
+            out = io.BytesIO()
+            im.save(out, format='JPEG', quality=85, optimize=True)
+            return out.getvalue(), 'image/jpeg'
+        except Exception:
+            return image_bytes, 'image/jpeg'
+
     def analyze_poster(self, image_bytes: bytes = None, images_list: list = None, mime_type: str = 'image/jpeg') -> dict:
         """
         Menganalisis satu atau beberapa gambar poster sekaligus menggunakan Gemini Vision API.
@@ -128,9 +145,11 @@ class PosterAIService:
                         b_data, m_type = item
                         image_parts.append(types.Part.from_bytes(data=b_data, mime_type=m_type or mime_type))
                     elif isinstance(item, bytes):
-                        image_parts.append(types.Part.from_bytes(data=item, mime_type=mime_type))
+                        opt_data, opt_mime = self._optimize_image(item)
+                        image_parts.append(types.Part.from_bytes(data=opt_data, mime_type=opt_mime))
             elif image_bytes:
-                image_parts.append(types.Part.from_bytes(data=image_bytes, mime_type=mime_type))
+                opt_data, opt_mime = self._optimize_image(image_bytes)
+                image_parts.append(types.Part.from_bytes(data=opt_data, mime_type=opt_mime))
             else:
                 return {
                     "success": False,
@@ -472,9 +491,9 @@ class PosterAIService:
         title = normalized_data["title"]
         slug_candidate = slugify(f"{title}-{start_datetime.strftime('%Y%m%d')}")
         
-        Gigs = Gigs.objects.filter(slug=slug_candidate).first()
-        if not Gigs:
-            Gigs = Gigs.objects.create(
+        gig_obj = Gigs.objects.filter(slug=slug_candidate).first()
+        if not gig_obj:
+            gig_obj = Gigs.objects.create(
                 slug=slug_candidate,
                 title=title,
                 venue=venue,
@@ -488,19 +507,19 @@ class PosterAIService:
                 is_featured=True
             )
         else:
-            Gigs.title = title
-            Gigs.venue = venue
-            Gigs.start_datetime = start_datetime
-            Gigs.doors_open = normalized_data.get("doors_open", Gigs.doors_open)
-            Gigs.ticket_price = normalized_data.get("ticket_price", Gigs.ticket_price)
-            Gigs.is_free = normalized_data.get("is_free", Gigs.is_free)
-            Gigs.ticket_url = normalized_data.get("ticket_url", Gigs.ticket_url)
-            Gigs.description = normalized_data.get("description", Gigs.description)
+            gig_obj.title = title
+            gig_obj.venue = venue
+            gig_obj.start_datetime = start_datetime
+            gig_obj.doors_open = normalized_data.get("doors_open", gig_obj.doors_open)
+            gig_obj.ticket_price = normalized_data.get("ticket_price", gig_obj.ticket_price)
+            gig_obj.is_free = normalized_data.get("is_free", gig_obj.is_free)
+            gig_obj.ticket_url = normalized_data.get("ticket_url", gig_obj.ticket_url)
+            gig_obj.description = normalized_data.get("description", gig_obj.description)
 
         if poster_file:
-            Gigs.poster = poster_file
+            gig_obj.poster = poster_file
         
-        Gigs.save()
+        gig_obj.save()
 
         # 5. Lineups (dengan dukungan multi-day & rundown waktu)
         lineups_meta = normalized_data.get("lineups", [])
@@ -513,10 +532,10 @@ class PosterAIService:
             set_time_val = artist_meta.get("set_time") or f"{(17 + (order % 6)):02d}:00 WIB"
             is_hl = artist_meta.get("is_headliner", (headliner_name and headliner_name.lower() in artist.name.lower()) or (order == 1))
 
-            lineup_obj = GigsLineup.objects.filter(Gigs=Gigs, artist=artist).first()
+            lineup_obj = GigsLineup.objects.filter(Gigs=gig_obj, artist=artist).first()
             if not lineup_obj:
                 GigsLineup.objects.create(
-                    Gigs=Gigs,
+                    Gigs=gig_obj,
                     artist=artist,
                     order=order,
                     day=day_val,
@@ -535,10 +554,10 @@ class PosterAIService:
         # 6. Ticket Tiers
         for tier_data in normalized_data.get("ticket_tiers", []):
             tier_name = tier_data["tier_name"]
-            tier_obj = GigsTicketTier.objects.filter(Gigs=Gigs, tier_name__iexact=tier_name).first()
+            tier_obj = GigsTicketTier.objects.filter(Gigs=gig_obj, tier_name__iexact=tier_name).first()
             if not tier_obj:
                 GigsTicketTier.objects.create(
-                    Gigs=Gigs,
+                    Gigs=gig_obj,
                     tier_name=tier_name,
                     price=tier_data.get("price", 0),
                     is_sold_out=tier_data.get("is_sold_out", False),
@@ -557,14 +576,14 @@ class PosterAIService:
             for idx, p_name in enumerate(platforms, start=1):
                 p_clean = str(p_name).strip()
                 p_url = normalized_data.get("ticket_url") or f"https://www.google.com/search?q={title}+{p_clean}"
-                if not GigsTicketLink.objects.filter(Gigs=Gigs, platform_name__iexact=p_clean).exists():
+                if not GigsTicketLink.objects.filter(Gigs=gig_obj, platform_name__iexact=p_clean).exists():
                     GigsTicketLink.objects.create(
-                        Gigs=Gigs,
+                        Gigs=gig_obj,
                         platform_name=p_clean,
                         url=p_url,
                         order=idx
                     )
 
-        return Gigs
+        return gig_obj
 
 

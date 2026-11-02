@@ -428,7 +428,7 @@ class TelegramPosterBot:
             try:
                 ai_service = PosterAIService()
                 poster_file = ContentFile(scan_item["photo_bytes"], name=scan_item["file_name"])
-                Gigs = ai_service.save_Gigs_to_database(scan_item["data"], poster_file=poster_file)
+                gig_saved = ai_service.save_Gigs_to_database(scan_item["data"], poster_file=poster_file)
                 
                 self.pending_scans.pop(session_id, None)
                 if self.active_chat_sessions.get(chat_id) == session_id:
@@ -436,11 +436,11 @@ class TelegramPosterBot:
 
                 success_text = (
                     "🎉 <b>BERHASIL DITAMBAHKAN KE GigsSTRACK!</b>\n\n"
-                    f"🎸 <b>Acara:</b> {Gigs.title}\n"
-                    f"📍 <b>Venue:</b> {Gigs.venue.name} ({Gigs.venue.city})\n"
-                    f"📅 <b>Jadwal:</b> {Gigs.start_datetime.strftime('%d %B %Y')}\n"
-                    f"👥 <b>Total Lineup:</b> {Gigs.lineups.count()} Band\n"
-                    f"🎟️ <b>HTM:</b> {Gigs.price_range_display}\n\n"
+                    f"🎸 <b>Acara:</b> {gig_saved.title}\n"
+                    f"📍 <b>Venue:</b> {gig_saved.venue.name} ({gig_saved.venue.city})\n"
+                    f"📅 <b>Jadwal:</b> {gig_saved.start_datetime.strftime('%d %B %Y')}\n"
+                    f"👥 <b>Total Lineup:</b> {gig_saved.lineups.count()} Band\n"
+                    f"🎟️ <b>HTM:</b> {gig_saved.price_range_display}\n\n"
                     f"🌐 <i>Konser sekarang sudah aktif dan tayang di website GigsSTRACK!</i>\n"
                     f"💡 <i>Ketik <code>/list</code> untuk melihat atau mengelola daftar konser.</i>"
                 )
