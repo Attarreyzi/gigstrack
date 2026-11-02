@@ -277,14 +277,14 @@ def seed():
 
     for g_data in Gigss_data:
         lineup_data = g_data.pop("lineup")
-        Gigs, created = Gigs.objects.get_or_create(
+        gig_obj, created = Gigs.objects.get_or_create(
             title=g_data["title"],
             defaults=g_data
         )
         if created:
             for item in lineup_data:
                 GigsLineup.objects.create(
-                    Gigs=Gigs,
+                    Gigs=gig_obj,
                     artist=item["artist"],
                     set_time=item["set_time"],
                     is_headliner=item["is_headliner"],

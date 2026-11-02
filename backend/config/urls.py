@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/venues/', include('apps.venues.urls')),
     path('api/gigs/', include('apps.gigs.urls')),
     path('api/Gigss/', include('apps.gigs.urls')),
+    path('api/telegram/', include('apps.gigs.telegram_urls')),
 
     # Auth endpoints
     path('api/auth/', include('apps.accounts.urls')),
