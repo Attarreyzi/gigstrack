@@ -1,0 +1,3494 @@
+[
+{
+  "model": "gigs.gigs",
+  "pk": 239,
+  "fields": {
+    "title": "Remember Fest 2026 x Cube Concert",
+    "slug": "remember-fest-2026-x-cube-concert-20261107",
+    "venue": 40,
+    "start_datetime": "2026-11-07T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "TBA",
+    "description": "Remember Fest - Konser eksklusif berlangsung selama 2 hari di Open Space & Gambir Expo, Kemayoran, Jakarta.",
+    "poster": "posters/file_4.jpg",
+    "poster_url": null,
+    "ticket_price": 0,
+    "is_free": false,
+    "ticket_url": "https://www.loket.com",
+    "referral_code": "REMEMBERFEST10",
+    "status": "scheduled",
+    "is_featured": true,
+    "created_at": "2026-10-10T20:00:11.779Z",
+    "updated_at": "2026-10-12T13:07:14.945Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 240,
+  "fields": {
+    "title": "Big Bang Festival 2026",
+    "slug": "big-bang-festival-2026-20261225",
+    "venue": 38,
+    "start_datetime": "2026-12-25T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "TBA",
+    "description": "Big Bang Festival merupakan pameran cuci gudang terbesar ke-9 dan festival musik akbar akhir tahun yang berlangsung di JIEXPO Kemayoran, Jakarta.",
+    "poster": "posters/file_6.jpg",
+    "poster_url": null,
+    "ticket_price": 5000,
+    "is_free": false,
+    "ticket_url": "https://www.loket.com/search?q=NDX AKA",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": true,
+    "created_at": "2026-10-11T10:26:25.202Z",
+    "updated_at": "2026-10-12T15:09:45.514Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 241,
+  "fields": {
+    "title": "Subculture Sound Vol. 8: Midweek Noise",
+    "slug": "subculture-sound-vol-8-midweek-noise-20261102",
+    "venue": 1,
+    "start_datetime": "2026-11-02T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "18:30 WIB",
+    "description": "Pesta musik independen tengah pekan menampilkan perpaduan distorsi gitar energetik dan melodi alternatif di panggung utama M Bloc Live House!",
+    "poster": "",
+    "poster_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "ticket_price": 75000,
+    "is_free": false,
+    "ticket_url": "https://loket.com/event/subculture-sound",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": true,
+    "created_at": "2026-11-02T10:29:04.168Z",
+    "updated_at": "2026-11-02T10:29:04.168Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 242,
+  "fields": {
+    "title": "Duck Down Secret Session",
+    "slug": "duck-down-secret-session-20261102",
+    "venue": 5,
+    "start_datetime": "2026-11-02T13:30:00Z",
+    "end_datetime": null,
+    "doors_open": "20:00 WIB",
+    "description": "Intimate show gratis tanpa tiket! Siapkan energimu untuk moshpit santai sambil menikmati pizza dan bir dingin.",
+    "poster": "",
+    "poster_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "ticket_price": 0,
+    "is_free": true,
+    "ticket_url": "",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": false,
+    "created_at": "2026-11-02T10:29:04.217Z",
+    "updated_at": "2026-11-02T10:29:04.217Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 243,
+  "fields": {
+    "title": "Bandung Distortion Collective",
+    "slug": "bandung-distortion-collective-20261103",
+    "venue": 3,
+    "start_datetime": "2026-11-03T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "18:00 WIB",
+    "description": "Eksplorasi soundscape berat dan atmosferik di aula Gudang Selatan yang ikonik.",
+    "poster": "",
+    "poster_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80",
+    "ticket_price": 60000,
+    "is_free": false,
+    "ticket_url": "https://goersapp.com/e/bdg-distortion",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": false,
+    "created_at": "2026-11-02T10:29:04.235Z",
+    "updated_at": "2026-11-02T10:29:04.235Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 244,
+  "fields": {
+    "title": "Sunset Grooves & Nostalgia Night",
+    "slug": "sunset-grooves-nostalgia-night-20261105",
+    "venue": 25,
+    "start_datetime": "2026-11-05T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "17:30 WITA",
+    "description": "Suasana tropis Bali berbalut irama retro jazz dan melodi city pop yang syahdu di bawah langit senja Seminyak.",
+    "poster": "",
+    "poster_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80",
+    "ticket_price": 120000,
+    "is_free": false,
+    "ticket_url": "https://megatix.co.id/events/sunset-grooves",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": true,
+    "created_at": "2026-11-02T10:29:04.264Z",
+    "updated_at": "2026-11-02T10:29:04.264Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 245,
+  "fields": {
+    "title": "Raw Underground Movement",
+    "slug": "raw-underground-movement-20261109",
+    "venue": 2,
+    "start_datetime": "2026-11-09T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "19:00 WIB",
+    "description": "Panggung DIY legendaris Rossi Fatmawati kembali bergetar dengan band-band indie lokal terbaik ibukota.",
+    "poster": "",
+    "poster_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "ticket_price": 50000,
+    "is_free": false,
+    "ticket_url": "",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": false,
+    "created_at": "2026-11-02T10:29:04.293Z",
+    "updated_at": "2026-11-02T10:29:04.293Z"
+  }
+},
+{
+  "model": "gigs.gigs",
+  "pk": 247,
+  "fields": {
+    "title": "CLOSMAN 2026",
+    "slug": "closman-2026-20261115",
+    "venue": 42,
+    "start_datetime": "2026-11-15T12:00:00Z",
+    "end_datetime": null,
+    "doors_open": "TBA",
+    "description": "An exciting night of live music featuring Sore Ze Band under the warm and vibrant atmosphere.",
+    "poster": "posters/file_11.jpg",
+    "poster_url": null,
+    "ticket_price": 0,
+    "is_free": false,
+    "ticket_url": "https://www.loket.com/search?q=SORE ZE BAND",
+    "referral_code": "",
+    "status": "scheduled",
+    "is_featured": true,
+    "created_at": "2026-11-02T13:57:33.972Z",
+    "updated_at": "2026-11-06T13:14:30.775Z"
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 298,
+  "fields": {
+    "Gigs": 239,
+    "artist": 46,
+    "day": "Day 1",
+    "set_time": "14:00 WIB",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 299,
+  "fields": {
+    "Gigs": 239,
+    "artist": 49,
+    "day": "Day 1",
+    "set_time": "14:35 WIB",
+    "is_headliner": false,
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 300,
+  "fields": {
+    "Gigs": 239,
+    "artist": 55,
+    "day": "Day 1",
+    "set_time": "15:10 WIB",
+    "is_headliner": false,
+    "order": 3
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 301,
+  "fields": {
+    "Gigs": 239,
+    "artist": 56,
+    "day": "Day 1",
+    "set_time": "15:45 WIB",
+    "is_headliner": false,
+    "order": 4
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 302,
+  "fields": {
+    "Gigs": 239,
+    "artist": 3,
+    "day": "Day 1",
+    "set_time": "16:20 WIB",
+    "is_headliner": false,
+    "order": 5
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 303,
+  "fields": {
+    "Gigs": 239,
+    "artist": 65,
+    "day": "Day 1",
+    "set_time": "17:00 WIB",
+    "is_headliner": false,
+    "order": 6
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 304,
+  "fields": {
+    "Gigs": 239,
+    "artist": 66,
+    "day": "Day 1",
+    "set_time": "17:40 WIB",
+    "is_headliner": false,
+    "order": 7
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 305,
+  "fields": {
+    "Gigs": 239,
+    "artist": 47,
+    "day": "Day 1",
+    "set_time": "18:20 WIB",
+    "is_headliner": false,
+    "order": 8
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 306,
+  "fields": {
+    "Gigs": 239,
+    "artist": 48,
+    "day": "Day 1",
+    "set_time": "19:00 WIB",
+    "is_headliner": false,
+    "order": 9
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 307,
+  "fields": {
+    "Gigs": 239,
+    "artist": 50,
+    "day": "Day 1",
+    "set_time": "19:40 WIB",
+    "is_headliner": false,
+    "order": 10
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 308,
+  "fields": {
+    "Gigs": 239,
+    "artist": 51,
+    "day": "Day 1",
+    "set_time": "20:20 WIB",
+    "is_headliner": false,
+    "order": 11
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 309,
+  "fields": {
+    "Gigs": 239,
+    "artist": 52,
+    "day": "Day 1",
+    "set_time": "21:00 WIB",
+    "is_headliner": false,
+    "order": 12
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 310,
+  "fields": {
+    "Gigs": 239,
+    "artist": 53,
+    "day": "Day 1",
+    "set_time": "21:40 WIB",
+    "is_headliner": false,
+    "order": 13
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 311,
+  "fields": {
+    "Gigs": 239,
+    "artist": 54,
+    "day": "Day 1",
+    "set_time": "22:20 WIB",
+    "is_headliner": false,
+    "order": 14
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 312,
+  "fields": {
+    "Gigs": 239,
+    "artist": 57,
+    "day": "Day 1",
+    "set_time": "23:00 WIB",
+    "is_headliner": false,
+    "order": 15
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 313,
+  "fields": {
+    "Gigs": 239,
+    "artist": 58,
+    "day": "Day 2",
+    "set_time": "14:00 WIB",
+    "is_headliner": false,
+    "order": 16
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 314,
+  "fields": {
+    "Gigs": 239,
+    "artist": 59,
+    "day": "Day 2",
+    "set_time": "14:35 WIB",
+    "is_headliner": false,
+    "order": 17
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 315,
+  "fields": {
+    "Gigs": 239,
+    "artist": 60,
+    "day": "Day 2",
+    "set_time": "15:10 WIB",
+    "is_headliner": false,
+    "order": 18
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 316,
+  "fields": {
+    "Gigs": 239,
+    "artist": 61,
+    "day": "Day 2",
+    "set_time": "15:45 WIB",
+    "is_headliner": false,
+    "order": 19
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 317,
+  "fields": {
+    "Gigs": 239,
+    "artist": 62,
+    "day": "Day 2",
+    "set_time": "16:20 WIB",
+    "is_headliner": false,
+    "order": 20
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 318,
+  "fields": {
+    "Gigs": 239,
+    "artist": 63,
+    "day": "Day 2",
+    "set_time": "17:00 WIB",
+    "is_headliner": false,
+    "order": 21
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 319,
+  "fields": {
+    "Gigs": 239,
+    "artist": 64,
+    "day": "Day 2",
+    "set_time": "17:40 WIB",
+    "is_headliner": false,
+    "order": 22
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 320,
+  "fields": {
+    "Gigs": 239,
+    "artist": 18,
+    "day": "Day 2",
+    "set_time": "18:20 WIB",
+    "is_headliner": false,
+    "order": 23
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 321,
+  "fields": {
+    "Gigs": 239,
+    "artist": 17,
+    "day": "Day 2",
+    "set_time": "19:00 WIB",
+    "is_headliner": false,
+    "order": 24
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 322,
+  "fields": {
+    "Gigs": 239,
+    "artist": 67,
+    "day": "Day 2",
+    "set_time": "19:40 WIB",
+    "is_headliner": false,
+    "order": 25
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 323,
+  "fields": {
+    "Gigs": 239,
+    "artist": 68,
+    "day": "Day 2",
+    "set_time": "20:20 WIB",
+    "is_headliner": false,
+    "order": 26
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 324,
+  "fields": {
+    "Gigs": 239,
+    "artist": 69,
+    "day": "Day 2",
+    "set_time": "21:00 WIB",
+    "is_headliner": false,
+    "order": 27
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 325,
+  "fields": {
+    "Gigs": 239,
+    "artist": 42,
+    "day": "Day 2",
+    "set_time": "21:40 WIB",
+    "is_headliner": false,
+    "order": 28
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 326,
+  "fields": {
+    "Gigs": 239,
+    "artist": 38,
+    "day": "Day 2",
+    "set_time": "22:20 WIB",
+    "is_headliner": false,
+    "order": 29
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 327,
+  "fields": {
+    "Gigs": 239,
+    "artist": 70,
+    "day": "Day 2",
+    "set_time": "23:00 WIB",
+    "is_headliner": false,
+    "order": 30
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 328,
+  "fields": {
+    "Gigs": 239,
+    "artist": 73,
+    "day": "Day 2",
+    "set_time": "23:45 WIB",
+    "is_headliner": false,
+    "order": 31
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 329,
+  "fields": {
+    "Gigs": 240,
+    "artist": 37,
+    "day": "Day 1",
+    "set_time": "16:30 WIB",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 330,
+  "fields": {
+    "Gigs": 240,
+    "artist": 38,
+    "day": "Day 1",
+    "set_time": "18:15 WIB",
+    "is_headliner": false,
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 331,
+  "fields": {
+    "Gigs": 240,
+    "artist": 39,
+    "day": "Day 1",
+    "set_time": "20:00 WIB",
+    "is_headliner": false,
+    "order": 3
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 332,
+  "fields": {
+    "Gigs": 240,
+    "artist": 1,
+    "day": "Day 1",
+    "set_time": "21:30 WIB",
+    "is_headliner": false,
+    "order": 4
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 333,
+  "fields": {
+    "Gigs": 240,
+    "artist": 40,
+    "day": "Day 2",
+    "set_time": "16:00 WIB",
+    "is_headliner": false,
+    "order": 5
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 334,
+  "fields": {
+    "Gigs": 240,
+    "artist": 41,
+    "day": "Day 2",
+    "set_time": "17:45 WIB",
+    "is_headliner": false,
+    "order": 6
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 335,
+  "fields": {
+    "Gigs": 240,
+    "artist": 42,
+    "day": "Day 2",
+    "set_time": "19:30 WIB",
+    "is_headliner": false,
+    "order": 7
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 336,
+  "fields": {
+    "Gigs": 240,
+    "artist": 43,
+    "day": "Day 2",
+    "set_time": "21:15 WIB",
+    "is_headliner": false,
+    "order": 8
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 337,
+  "fields": {
+    "Gigs": 240,
+    "artist": 44,
+    "day": "Day 3",
+    "set_time": "17:00 WIB",
+    "is_headliner": false,
+    "order": 9
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 338,
+  "fields": {
+    "Gigs": 240,
+    "artist": 45,
+    "day": "Day 3",
+    "set_time": "19:00 WIB",
+    "is_headliner": false,
+    "order": 10
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 339,
+  "fields": {
+    "Gigs": 241,
+    "artist": 1,
+    "day": "",
+    "set_time": "21:00 - 22:15 WIB",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 340,
+  "fields": {
+    "Gigs": 241,
+    "artist": 4,
+    "day": "",
+    "set_time": "19:45 - 20:45 WIB",
+    "is_headliner": false,
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 341,
+  "fields": {
+    "Gigs": 241,
+    "artist": 5,
+    "day": "",
+    "set_time": "19:00 - 19:35 WIB",
+    "is_headliner": false,
+    "order": 3
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 342,
+  "fields": {
+    "Gigs": 242,
+    "artist": 2,
+    "day": "",
+    "set_time": "21:30 - 22:45 WIB",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 343,
+  "fields": {
+    "Gigs": 243,
+    "artist": 7,
+    "day": "",
+    "set_time": "21:00 - 22:00 WIB",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 344,
+  "fields": {
+    "Gigs": 243,
+    "artist": 5,
+    "day": "",
+    "set_time": "19:30 - 20:30 WIB",
+    "is_headliner": false,
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 345,
+  "fields": {
+    "Gigs": 244,
+    "artist": 6,
+    "day": "",
+    "set_time": "20:00 - 21:30 WITA",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 346,
+  "fields": {
+    "Gigs": 244,
+    "artist": 3,
+    "day": "",
+    "set_time": "18:30 - 19:45 WITA",
+    "is_headliner": false,
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 347,
+  "fields": {
+    "Gigs": 245,
+    "artist": 1,
+    "day": "",
+    "set_time": "21:15 - 22:30 WIB",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 348,
+  "fields": {
+    "Gigs": 245,
+    "artist": 2,
+    "day": "",
+    "set_time": "20:00 - 21:00 WIB",
+    "is_headliner": false,
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigslineup",
+  "pk": 350,
+  "fields": {
+    "Gigs": 247,
+    "artist": 74,
+    "day": "",
+    "set_time": "TBA",
+    "is_headliner": true,
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 14,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Pameran Keluarga (1 Hari)",
+    "price": 5000,
+    "is_sold_out": false,
+    "description": "Per orang, min 5 orang, bebas pilih 1 hari, masuk sebelum jam 16.00",
+    "ticket_url": "",
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 15,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Pameran (1 Hari)",
+    "price": 15000,
+    "is_sold_out": false,
+    "description": "Bebas pilih 1 hari",
+    "ticket_url": "",
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 16,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Konser Reguler Grup (1 Hari)",
+    "price": 40000,
+    "is_sold_out": false,
+    "description": "Per orang, minimal pembelian 3 orang",
+    "ticket_url": "",
+    "order": 3
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 17,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Konser Reguler (1 Hari)",
+    "price": 50000,
+    "is_sold_out": false,
+    "description": "Sudah termasuk akses pameran",
+    "ticket_url": "",
+    "order": 4
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 18,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Konser Bebas Hari Grup (1 Hari)",
+    "price": 90000,
+    "is_sold_out": false,
+    "description": "Per orang, minimal pembelian 3 orang",
+    "ticket_url": "",
+    "order": 5
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 19,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Konser Bebas Hari (1 Hari)",
+    "price": 100000,
+    "is_sold_out": false,
+    "description": "Sudah termasuk akses pameran",
+    "ticket_url": "",
+    "order": 6
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 20,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Terusan Konser & Pameran (12 Hari)",
+    "price": 265000,
+    "is_sold_out": false,
+    "description": "Akses 12 hari konser dan pameran",
+    "ticket_url": "",
+    "order": 7
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 21,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Konser Premium Grup (12 Hari)",
+    "price": 800000,
+    "is_sold_out": false,
+    "description": "Per orang, minimal pembelian 3 orang, akses 12 hari",
+    "ticket_url": "",
+    "order": 8
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 22,
+  "fields": {
+    "Gigs": 240,
+    "tier_name": "Tiket Konser Premium (12 Hari)",
+    "price": 1000000,
+    "is_sold_out": false,
+    "description": "Akses 12 hari konser premium",
+    "ticket_url": "",
+    "order": 9
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 23,
+  "fields": {
+    "Gigs": 239,
+    "tier_name": "Presale 1 (2 Days Pass)",
+    "price": 250000,
+    "is_sold_out": true,
+    "description": "Akses penuh 2 hari festival",
+    "ticket_url": "",
+    "order": 1
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 24,
+  "fields": {
+    "Gigs": 239,
+    "tier_name": "Presale 2 (2 Days Pass)",
+    "price": 350000,
+    "is_sold_out": false,
+    "description": "Akses penuh 2 hari festival",
+    "ticket_url": "",
+    "order": 2
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 25,
+  "fields": {
+    "Gigs": 239,
+    "tier_name": "Daily Pass - Day 1",
+    "price": 180000,
+    "is_sold_out": false,
+    "description": "Akses hari Sabtu, 7 Nov 2026",
+    "ticket_url": "",
+    "order": 3
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 26,
+  "fields": {
+    "Gigs": 239,
+    "tier_name": "Daily Pass - Day 2",
+    "price": 180000,
+    "is_sold_out": false,
+    "description": "Akses hari Minggu, 8 Nov 2026",
+    "ticket_url": "",
+    "order": 4
+  }
+},
+{
+  "model": "gigs.gigstickettier",
+  "pk": 27,
+  "fields": {
+    "Gigs": 239,
+    "tier_name": "VIP Festival Pass",
+    "price": 550000,
+    "is_sold_out": false,
+    "description": "Akses lounge VIP & viewing area",
+    "ticket_url": "",
+    "order": 5
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 1,
+  "fields": {
+    "name": "M Bloc Space - Live House",
+    "slug": "m-bloc-space-live-house",
+    "address": "Jl. Panglima Polim No.37, Melawai, Kebayoran Baru",
+    "city": "Jakarta Selatan",
+    "province": "DKI Jakarta",
+    "maps_url": "https://maps.google.com/?q=M+Bloc+Space+Jakarta",
+    "capacity": 650,
+    "instagram_url": "https://instagram.com/mblocspace",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.490Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 2,
+  "fields": {
+    "name": "Rossi Musik Fatmawati",
+    "slug": "rossi-musik-fatmawati",
+    "address": "Jl. RS. Fatmawati Raya No.30B, Cilandak Barat",
+    "city": "Jakarta Selatan",
+    "province": "DKI Jakarta",
+    "maps_url": "https://maps.google.com/?q=Rossi+Musik+Fatmawati",
+    "capacity": 350,
+    "instagram_url": "https://instagram.com/rossimusik",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.512Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 3,
+  "fields": {
+    "name": "Spasial / Gudang Selatan 22",
+    "slug": "spasial-gudang-selatan-22",
+    "address": "Jl. Gudang Selatan No.22, Malabar, Lengkong",
+    "city": "Bandung",
+    "province": "Jawa Barat",
+    "maps_url": "https://maps.google.com/?q=Gudang+Selatan+Bandung",
+    "capacity": 500,
+    "instagram_url": "https://instagram.com/spasial_",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.526Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 5,
+  "fields": {
+    "name": "Duck Down Pizza Party",
+    "slug": "duck-down-pizza-party",
+    "address": "Jl. Senopati No.44, Selong, Kebayoran Baru",
+    "city": "Jakarta Selatan",
+    "province": "DKI Jakarta",
+    "maps_url": "https://maps.google.com/?q=Duck+Down+Bar+Jakarta",
+    "capacity": 200,
+    "instagram_url": "https://instagram.com/duckdownbar",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.551Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 6,
+  "fields": {
+    "name": "M Bloc Live House",
+    "slug": "m-bloc-live-house-jakarta",
+    "address": "Jl. Panglima Polim No.37, Melawai, Kebayoran Baru, Jakarta Selatan",
+    "city": "Jakarta",
+    "province": "DKI Jakarta",
+    "maps_url": "https://maps.google.com/?q=M+Bloc+Space+Jakarta",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T18:13:44.711Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 7,
+  "fields": {
+    "name": "Spasial Bandung",
+    "slug": "spasial-bandung-bandung",
+    "address": "Jl. Gudang Selatan No.22, Merdeka, Kec. Sumur Bandung, Kota Bandung",
+    "city": "Bandung",
+    "province": "Jawa Barat",
+    "maps_url": "https://maps.google.com/?q=Spasial+Bandung",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T18:13:44.717Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 11,
+  "fields": {
+    "name": "Spasial Hall",
+    "slug": "spasial-hall-bandung",
+    "address": "Spasial Hall, Bandung, Jawa Barat",
+    "city": "Bandung",
+    "province": "Jawa Barat",
+    "maps_url": "https://www.google.com/maps?q=-6.9214,107.6071",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T19:57:05.813Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 13,
+  "fields": {
+    "name": "Graha Bhakti Budaya (TIM)",
+    "slug": "graha-bhakti-budaya-tim-jakarta-pusat",
+    "address": "Graha Bhakti Budaya (TIM), Jakarta Pusat, DKI Jakarta",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.1903,106.8398",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.093Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 14,
+  "fields": {
+    "name": "ICE BSD City Hall 1",
+    "slug": "ice-bsd-city-hall-1-tangerang",
+    "address": "ICE BSD City Hall 1, Tangerang, Banten",
+    "city": "Tangerang",
+    "province": "Banten",
+    "maps_url": "https://www.google.com/maps?q=-6.3015,106.6372",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.115Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 15,
+  "fields": {
+    "name": "Balairung UI Depok Stage",
+    "slug": "balairung-ui-depok-stage-depok",
+    "address": "Balairung UI Depok Stage, Depok, Jawa Barat",
+    "city": "Depok",
+    "province": "Jawa Barat",
+    "maps_url": "https://www.google.com/maps?q=-6.3628,106.8272",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.135Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 16,
+  "fields": {
+    "name": "Kopi Nako Sangrai Live Stage",
+    "slug": "kopi-nako-sangrai-live-stage-bogor",
+    "address": "Kopi Nako Sangrai Live Stage, Bogor, Jawa Barat",
+    "city": "Bogor",
+    "province": "Jawa Barat",
+    "maps_url": "https://www.google.com/maps?q=-6.6083,106.8122",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.156Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 17,
+  "fields": {
+    "name": "Tennis Indoor Senayan",
+    "slug": "tennis-indoor-senayan-jakarta-pusat",
+    "address": "Tennis Indoor Senayan, Jakarta Pusat, DKI Jakarta",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.2163,106.8016",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.224Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 18,
+  "fields": {
+    "name": "JIExpo Hall B Kemayoran",
+    "slug": "jiexpo-hall-b-kemayoran-jakarta-pusat",
+    "address": "JIExpo Hall B Kemayoran, Jakarta Pusat, DKI Jakarta",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.1483,106.8482",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.244Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 19,
+  "fields": {
+    "name": "Krapela Blok M",
+    "slug": "krapela-blok-m-jakarta-selatan",
+    "address": "Krapela Blok M, Jakarta Selatan, DKI Jakarta",
+    "city": "Jakarta Selatan",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.2440,106.7985",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.266Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 20,
+  "fields": {
+    "name": "Bintaro Creative District",
+    "slug": "bintaro-creative-district-tangerang-selatan",
+    "address": "Bintaro Creative District, Tangerang Selatan, Banten",
+    "city": "Tangerang Selatan",
+    "province": "Banten",
+    "maps_url": "https://www.google.com/maps?q=-6.2750,106.7280",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.414Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 21,
+  "fields": {
+    "name": "Revo Town Rooftop Ground",
+    "slug": "revo-town-rooftop-ground-bekasi",
+    "address": "Revo Town Rooftop Ground, Bekasi, Jawa Barat",
+    "city": "Bekasi",
+    "province": "Jawa Barat",
+    "maps_url": "https://www.google.com/maps?q=-6.2520,106.9925",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-14T20:14:25.973Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 22,
+  "fields": {
+    "name": "Gambir Expo Kemayoran",
+    "slug": "gambir-expo-kemayoran-jakarta-pusat",
+    "address": "Arena JIExpo, Gedung Pusat Niaga, Kemayoran, Jakarta Pusat",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://maps.google.com/?q=Gambir Expo Kemayoran+Jakarta Pusat",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-09-14T20:55:52.369Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 23,
+  "fields": {
+    "name": "Rossi Fatmawati",
+    "slug": "rossi-fatmawati-jakarta-selatan",
+    "address": "Rossi Fatmawati, Jakarta Selatan",
+    "city": "Jakarta Selatan",
+    "province": "DKI Jakarta",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-09-14T20:56:55.527Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 24,
+  "fields": {
+    "name": "M Bloc",
+    "slug": "m-bloc-jakarta-selatan",
+    "address": "M Bloc, Jakarta Selatan",
+    "city": "Jakarta Selatan",
+    "province": "DKI Jakarta",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-09-14T20:58:16.894Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 25,
+  "fields": {
+    "name": "The Orchard Bar & Restaurant",
+    "slug": "the-orchard-bar-restaurant",
+    "address": "Jl. Nakula Gg. Baik-Baik No.99x, Seminyak",
+    "city": "Bali",
+    "province": "Bali",
+    "maps_url": "https://maps.google.com/?q=The+Orchard+Bar+Bali",
+    "capacity": 300,
+    "instagram_url": "https://instagram.com/theorchardbali",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-15T12:56:58.165Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 26,
+  "fields": {
+    "name": "Indonesia Arena GBK Senayan",
+    "slug": "indonesia-arena-gbk-senayan-jakarta-pusat",
+    "address": "Kawasan Gelora Bung Karno, Jl. Pintu Satu Senayan",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.2185,106.8024",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.484Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 27,
+  "fields": {
+    "name": "JIExpo Kemayoran Arena",
+    "slug": "jiexpo-kemayoran-arena-jakarta-pusat",
+    "address": "Gedung Pusat Niaga Arena JIEXPO Kemayoran",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.1492,106.8528",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.534Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 28,
+  "fields": {
+    "name": "Carnaval Ancol Circuit Stage",
+    "slug": "carnaval-ancol-circuit-stage-jakarta-utara",
+    "address": "Pantai Carnaval Ancol, Pademangan",
+    "city": "Jakarta Utara",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.1218,106.8456",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.578Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 29,
+  "fields": {
+    "name": "GBK Baseball Stadium & Plains",
+    "slug": "gbk-baseball-stadium-plains-jakarta-pusat",
+    "address": "Gelora Bung Karno, Senayan",
+    "city": "Jakarta Pusat",
+    "province": "DKI Jakarta",
+    "maps_url": "https://www.google.com/maps?q=-6.2162,106.8018",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.626Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 30,
+  "fields": {
+    "name": "Crest Theater",
+    "slug": "crest-theater-sacramento",
+    "address": "1013 K Street",
+    "city": "Sacramento",
+    "province": "California",
+    "maps_url": "https://www.google.com/maps?q=38.57913700,-121.49341200",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.503Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 31,
+  "fields": {
+    "name": "Harrah's Showroom at Harrah's Las Vegas",
+    "slug": "harrahs-showroom-at-harrahs-las-vegas-las-vegas",
+    "address": "3475 Las Vegas Blvd S",
+    "city": "Las Vegas",
+    "province": "Nevada",
+    "maps_url": "https://www.google.com/maps?q=36.11955071,-115.17201830",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.561Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 32,
+  "fields": {
+    "name": "X Rocks Theater at Horseshoe Las Vegas",
+    "slug": "x-rocks-theater-at-horseshoe-las-vegas-las-vegas",
+    "address": "3645 S Las Vegas Blvd",
+    "city": "Las Vegas",
+    "province": "Nevada",
+    "maps_url": "https://www.google.com/maps?q=36.11406600,-115.17078600",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.591Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 33,
+  "fields": {
+    "name": "Blue Moon Saloon",
+    "slug": "blue-moon-saloon-lafayette",
+    "address": "215 E Convent St",
+    "city": "Lafayette",
+    "province": "Louisiana",
+    "maps_url": "https://www.google.com/maps?q=30.220444,-92.016281",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.648Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 34,
+  "fields": {
+    "name": "Bethel Woods Center for the Arts",
+    "slug": "bethel-woods-center-for-the-arts-bethel",
+    "address": "200 Hurd Road ",
+    "city": "Bethel",
+    "province": "New York",
+    "maps_url": "https://www.google.com/maps?q=41.69688884,-74.87797380",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dbimages/19069v.jpg",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.776Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 35,
+  "fields": {
+    "name": "Five Flags Center",
+    "slug": "five-flags-center-dubuque",
+    "address": "405 Main Street",
+    "city": "Dubuque",
+    "province": "Iowa",
+    "maps_url": "https://www.google.com/maps?q=42.49761400,-90.66545040",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dbimages/18904v.jpg",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.813Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 36,
+  "fields": {
+    "name": "Bugsy's Cabaret at Flamingo",
+    "slug": "bugsys-cabaret-at-flamingo-las-vegas",
+    "address": "3555 Las Vegas Blvd",
+    "city": "Las Vegas",
+    "province": "Nevada",
+    "maps_url": "https://www.google.com/maps?q=36.11726269,-115.17272405",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.889Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 37,
+  "fields": {
+    "name": "GBK Basketball Hall Senayan",
+    "slug": "gbk-basketball-hall-senayan",
+    "address": "GBK Basketball Hall Senayan, Jakarta",
+    "city": "Jakarta",
+    "province": "Provinsi Jakarta",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-09-17T13:46:09.243Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 38,
+  "fields": {
+    "name": "JIEXPO Kemayoran",
+    "slug": "jiexpo-kemayoran",
+    "address": "JIEXPO Kemayoran, Jakarta",
+    "city": "Jakarta",
+    "province": "Provinsi Jakarta",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.708Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 39,
+  "fields": {
+    "name": "Gambir Expo Kemayoran",
+    "slug": "gambir-expo-kemayoran",
+    "address": "Kemayoran, Jakarta",
+    "city": "Jakarta",
+    "province": "DKI Jakarta",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-09-17T15:01:55.563Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 40,
+  "fields": {
+    "name": "Open Space & Gambir Expo Kemayoran",
+    "slug": "open-space-gambir-expo-kemayoran",
+    "address": "Open Space & Gambir Expo Kemayoran, Jakarta Pusat, DKI Jakarta",
+    "city": "Jakarta",
+    "province": "Provinsi Jakarta",
+    "maps_url": "https://maps.google.com/?q=Open+Space+Gambir+Expo+Kemayoran+Jakarta",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.693Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 41,
+  "fields": {
+    "name": "M Bloc Space",
+    "slug": "m-bloc-space",
+    "address": "M Bloc Space, Jakarta Selatan",
+    "city": "Jakarta Selatan",
+    "province": "Provinsi Jakarta Selatan",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-11-02T12:56:23.405Z"
+  }
+},
+{
+  "model": "venues.venue",
+  "pk": 42,
+  "fields": {
+    "name": "Bengkel Hall",
+    "slug": "bengkel-hall",
+    "address": "Bengkel Hall, SCBD, Jakarta",
+    "city": "Jakarta",
+    "province": "Provinsi Jakarta",
+    "maps_url": "",
+    "capacity": null,
+    "instagram_url": "",
+    "image": "",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-11-02T13:57:33.932Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 1,
+  "fields": {
+    "name": "Indie Rock",
+    "slug": "indie-rock",
+    "color": "#FF3366",
+    "created_at": "2026-09-14T13:46:57.408Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 2,
+  "fields": {
+    "name": "City Pop / Retro",
+    "slug": "city-pop-retro",
+    "color": "#FF9900",
+    "created_at": "2026-09-14T13:46:57.417Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 3,
+  "fields": {
+    "name": "Post-Punk / Alternative",
+    "slug": "post-punk-alternative",
+    "color": "#7928CA",
+    "created_at": "2026-09-14T13:46:57.433Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 4,
+  "fields": {
+    "name": "Dream Pop / Shoegaze",
+    "slug": "dream-pop-shoegaze",
+    "color": "#00DFD8",
+    "created_at": "2026-09-14T13:46:57.443Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 5,
+  "fields": {
+    "name": "Hardcore / Punk",
+    "slug": "hardcore-punk",
+    "color": "#E53E3E",
+    "created_at": "2026-09-14T13:46:57.452Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 6,
+  "fields": {
+    "name": "Folk / Acoustic",
+    "slug": "folk-acoustic",
+    "color": "#38A169",
+    "created_at": "2026-09-14T13:46:57.461Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 7,
+  "fields": {
+    "name": "Jazz / Neo-Soul",
+    "slug": "jazz-neo-soul",
+    "color": "#D69E2E",
+    "created_at": "2026-09-14T13:46:57.467Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 8,
+  "fields": {
+    "name": "Electronic / Synthwave",
+    "slug": "electronic-synthwave",
+    "color": "#0070F3",
+    "created_at": "2026-09-14T13:46:57.478Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 9,
+  "fields": {
+    "name": "Post-Punk",
+    "slug": "post-punk",
+    "color": "#9B51E0",
+    "created_at": "2026-09-14T18:10:05.970Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 10,
+  "fields": {
+    "name": "Alternative Rock",
+    "slug": "alternative-rock",
+    "color": "#00F0FF",
+    "created_at": "2026-09-14T18:10:05.977Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 11,
+  "fields": {
+    "name": "Synthpop",
+    "slug": "synthpop",
+    "color": "#FF007A",
+    "created_at": "2026-09-14T18:10:05.983Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 12,
+  "fields": {
+    "name": "Hardcore / Metal",
+    "slug": "hardcore-metal",
+    "color": "#FF4500",
+    "created_at": "2026-09-14T18:10:05.989Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 13,
+  "fields": {
+    "name": "Pop / Neo-Soul",
+    "slug": "pop-neo-soul",
+    "color": "#FFB800",
+    "created_at": "2026-09-14T18:10:05.995Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 14,
+  "fields": {
+    "name": "Rock",
+    "slug": "rock",
+    "color": "#E63946",
+    "created_at": "2026-09-17T12:22:40.505Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 15,
+  "fields": {
+    "name": "Jazz",
+    "slug": "jazz",
+    "color": "#70D6FF",
+    "created_at": "2026-09-17T12:22:40.551Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 16,
+  "fields": {
+    "name": "Contemporary Jazz",
+    "slug": "contemporary-jazz",
+    "color": "#FF3366",
+    "created_at": "2026-09-17T12:22:40.561Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 17,
+  "fields": {
+    "name": "Metal",
+    "slug": "metal",
+    "color": "#D00000",
+    "created_at": "2026-09-17T12:22:40.596Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 18,
+  "fields": {
+    "name": "Heavy Metal",
+    "slug": "heavy-metal",
+    "color": "#FF3366",
+    "created_at": "2026-09-17T12:22:40.607Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 19,
+  "fields": {
+    "name": "Indie Pop",
+    "slug": "indie-pop",
+    "color": "#FF9770",
+    "created_at": "2026-09-17T12:22:40.649Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 20,
+  "fields": {
+    "name": "Live Music",
+    "slug": "live-music",
+    "color": "#FF3366",
+    "created_at": "2026-09-17T13:02:22.532Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 21,
+  "fields": {
+    "name": "Rock & Roll",
+    "slug": "rock-roll",
+    "color": "#FF3366",
+    "created_at": "2026-09-17T13:02:22.625Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 22,
+  "fields": {
+    "name": "Pop",
+    "slug": "pop",
+    "color": "#FF70A6",
+    "created_at": "2026-09-17T13:02:22.916Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 24,
+  "fields": {
+    "name": "Alternative",
+    "slug": "alternative",
+    "color": "#3B82F6",
+    "created_at": "2026-09-17T13:46:09.253Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 25,
+  "fields": {
+    "name": "Dangdut Koplo",
+    "slug": "dangdut-koplo",
+    "color": "#FF3366",
+    "created_at": "2026-09-17T14:57:26.721Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 26,
+  "fields": {
+    "name": "Ska",
+    "slug": "ska",
+    "color": "#8B5CF6",
+    "created_at": "2026-09-17T14:57:26.730Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 27,
+  "fields": {
+    "name": "Edm",
+    "slug": "edm",
+    "color": "#F59E0B",
+    "created_at": "2026-09-17T14:57:26.735Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 28,
+  "fields": {
+    "name": "Post-Hardcore",
+    "slug": "post-hardcore",
+    "color": "#EC4899",
+    "created_at": "2026-09-17T14:57:26.741Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 29,
+  "fields": {
+    "name": "Festival",
+    "slug": "festival",
+    "color": "#FF3366",
+    "created_at": "2026-09-17T15:22:24.377Z"
+  }
+},
+{
+  "model": "artists.genre",
+  "pk": 30,
+  "fields": {
+    "name": "Indie",
+    "slug": "indie",
+    "color": "#10B981",
+    "created_at": "2026-10-10T18:39:24.715Z"
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 1,
+  "fields": {
+    "name": "The Adams",
+    "slug": "the-adams",
+    "bio": "Grup indie rock / power pop legendaris asal Jakarta yang terkenal dengan harmonisasi vokal empat bagian.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/the_adams",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.575Z",
+    "genres": [
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 2,
+  "fields": {
+    "name": ".Feast",
+    "slug": "feast",
+    "bio": "Band rock alternatif asal Jakarta dengan lirik kritis sosial politik dan riff distorsi energik.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/feast",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.635Z",
+    "genres": [
+      10,
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 3,
+  "fields": {
+    "name": "Hindia",
+    "slug": "hindia",
+    "bio": "Proyek solo Baskara Putra yang memadukan spoken word, indie pop, dan introspeksi personal.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/hindia",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.706Z",
+    "genres": [
+      24,
+      6,
+      30,
+      1,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 4,
+  "fields": {
+    "name": "Reality Club",
+    "slug": "reality-club",
+    "bio": "Grup indie rock dengan melodi sinematik dan sentuhan pop 60-an bernuansa modern.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/reality_club",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.774Z",
+    "genres": [
+      4,
+      1,
+      11
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 5,
+  "fields": {
+    "name": "Grrrl Gang",
+    "slug": "grrrl-gang",
+    "bio": "Trio indie-pop berkecepatan tinggi asal Yogyakarta dengan hook catchy dan vokal raw.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1526478806334-5fd488fcaabc?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Yogyakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/grrrl_gang",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.864Z",
+    "genres": [
+      5,
+      1,
+      9
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 6,
+  "fields": {
+    "name": "White Shoes & The Couples Company",
+    "slug": "white-shoes-the-couples-company",
+    "bio": "Ensemble retro pop / city pop dengan sentuhan swing jazz dan atmosfer sinema Indonesia tempo dulu.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/wsatcc",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:57.922Z",
+    "genres": [
+      2,
+      7,
+      13,
+      11
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 7,
+  "fields": {
+    "name": "Avhath",
+    "slug": "avhath",
+    "bio": "Grup blackened hardcore / post-metal dari Jakarta dengan visual gelap dan performa panggung katarsis.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/avhath",
+    "is_active": true,
+    "created_at": "2026-09-14T13:46:58.031Z",
+    "genres": [
+      12,
+      5,
+      9,
+      3
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 8,
+  "fields": {
+    "name": "racing mind",
+    "slug": "racing-mind",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T16:40:11.620Z",
+    "genres": [
+      4
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 9,
+  "fields": {
+    "name": "Efek Rumah Kaca",
+    "slug": "efek-rumah-kaca",
+    "bio": "Trio art-rock pionir pergerakan musik independen Indonesia dengan lirik puitis sarat kritik sosial.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "https://instagram.com/sebelahmata_erk",
+    "spotify_url": "https://open.spotify.com/artist/3K2Z5G9LhXQ4w3k9Y7z1e4",
+    "is_active": true,
+    "created_at": "2026-09-14T18:13:44.627Z",
+    "genres": [
+      10,
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 10,
+  "fields": {
+    "name": "Morfem",
+    "slug": "morfem",
+    "bio": "Kuartet fuzzy indie rock besutan Jimi Multhazam dengan distorsi garang dan energi panggung liar.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Jakarta",
+    "instagram_url": "https://instagram.com/morfem_band",
+    "spotify_url": "https://open.spotify.com/artist/1Zg9rC3q7eZ3L7D1Y9sN6",
+    "is_active": true,
+    "created_at": "2026-09-14T18:13:44.657Z",
+    "genres": [
+      10,
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 11,
+  "fields": {
+    "name": "Skandal",
+    "slug": "skandal",
+    "bio": "Kuartet indie pop/rock asal Yogyakarta dengan riff catchy 90-an dan semangat panggung hangat.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Yogyakarta",
+    "instagram_url": "https://instagram.com/skandal_yk",
+    "spotify_url": "https://open.spotify.com/artist/8Zg9rC3q7eZ3L7D1Y9sN4",
+    "is_active": true,
+    "created_at": "2026-09-14T18:13:44.684Z",
+    "genres": [
+      10,
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 12,
+  "fields": {
+    "name": "Pamungkas",
+    "slug": "pamungkas",
+    "bio": "Profil resmi musisi Pamungkas tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T19:57:05.770Z",
+    "genres": [
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 14,
+  "fields": {
+    "name": "Barasuara",
+    "slug": "barasuara",
+    "bio": "Profil resmi musisi Barasuara tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:51.237Z",
+    "genres": [
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 15,
+  "fields": {
+    "name": "The Sigit",
+    "slug": "the-sigit",
+    "bio": "Profil resmi musisi The Sigit tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:51.621Z",
+    "genres": [
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 16,
+  "fields": {
+    "name": "Bernadya",
+    "slug": "bernadya",
+    "bio": "Profil resmi musisi Bernadya tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:52.285Z",
+    "genres": [
+      6
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 17,
+  "fields": {
+    "name": "Sal Priadi",
+    "slug": "sal-priadi",
+    "bio": "Profil resmi musisi Sal Priadi tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:53.646Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 18,
+  "fields": {
+    "name": "Nadin Amizah",
+    "slug": "nadin-amizah",
+    "bio": "Profil resmi musisi Nadin Amizah tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:53.731Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 19,
+  "fields": {
+    "name": "Bilal Indrajaya",
+    "slug": "bilal-indrajaya",
+    "bio": "Profil resmi musisi Bilal Indrajaya tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:53.806Z",
+    "genres": []
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 20,
+  "fields": {
+    "name": "Danilla",
+    "slug": "danilla",
+    "bio": "Profil resmi musisi Danilla tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:53.889Z",
+    "genres": [
+      7
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 21,
+  "fields": {
+    "name": "Kunto Aji",
+    "slug": "kunto-aji",
+    "bio": "Profil resmi musisi Kunto Aji tersinkronisasi via Bandsintown.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+    "hometown": "Indonesia",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-14T20:02:53.974Z",
+    "genres": [
+      6
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 22,
+  "fields": {
+    "name": "Arctic Monkeys",
+    "slug": "arctic-monkeys",
+    "bio": "Artis resmi konser 'Arctic Monkeys - Asia Arena Tour 2026' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.499Z",
+    "genres": [
+      1,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 23,
+  "fields": {
+    "name": "Java Jazz Superband",
+    "slug": "java-jazz-superband",
+    "bio": "Artis resmi konser 'Java Jazz Festival 2026 - Special Live Experience' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.546Z",
+    "genres": [
+      16,
+      15
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 24,
+  "fields": {
+    "name": "Avhath & Heavyweights",
+    "slug": "avhath-heavyweights",
+    "bio": "Artis resmi konser 'Hammersonic Live - Metal & Hardcore Summit 2026' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.589Z",
+    "genres": [
+      18,
+      17
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 25,
+  "fields": {
+    "name": "The Adams & International Friends",
+    "slug": "the-adams-international-friends",
+    "bio": "Artis resmi konser 'Joyland Festival Weekend Experience 2026' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T12:22:40.641Z",
+    "genres": [
+      10,
+      19
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 26,
+  "fields": {
+    "name": "Remember When",
+    "slug": "remember-when",
+    "bio": "Artis resmi konser 'Remember When - The Ultimate Tribute to Alan Jackson' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/e/e7d/cf6534fd-ad56-4226-8f67-732c0299ee7d_SOURCE",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.523Z",
+    "genres": [
+      20
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 27,
+  "fields": {
+    "name": "MJ LIVE – Michael Jackson Tribute Concert",
+    "slug": "mj-live-michael-jackson-tribute-concert",
+    "bio": "Artis resmi konser 'MJ Live | Official Caesars Ticket + Hotel Packages' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/a/1d0/08a0bdf1-3b24-4f8d-962b-d302610e51d0_SOURCE",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.579Z",
+    "genres": []
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 28,
+  "fields": {
+    "name": "Sin City Stones",
+    "slug": "sin-city-stones",
+    "bio": "Artis resmi konser 'Sin City Stones | Official Caesars Ticket + Hotel Packages' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/a/40c/f83c37d8-a779-4029-9389-5bba5d1ab40c_SOURCE",
+    "hometown": "",
+    "instagram_url": "https://www.instagram.com/sincitystonesband/#",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.610Z",
+    "genres": [
+      14,
+      21
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 29,
+  "fields": {
+    "name": "BLUE FRIDAY SPECIAL! Entry to All Shows at the Blue Moon for 2026!",
+    "slug": "blue-friday-special-entry-to-all-shows-at-the-blue-moon-for-2026",
+    "bio": "Artis resmi konser 'BLUE FRIDAY SPECIAL! Entry to All Shows at the Blue Moon for 2026!' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/c/548/5fefbd1c-973b-4b0e-9b2e-d78e4ce37548_106111_TABLET_LANDSCAPE_LARGE_16_9.jpg",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.669Z",
+    "genres": [
+      20
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 30,
+  "fields": {
+    "name": "I'm On the List! + 1 (Entry to all shows at the Blue Moon in 2026 for you and a guest and your first drink is on us!)",
+    "slug": "im-on-the-list-1-entry-to-all-shows-at-the-blue-moon-in-2026-for-you-and-a-guest-and-your-first-drink-is-on-us",
+    "bio": "Artis resmi konser 'I'm On the List! + 1 (Entry to all shows at the Blue Moon in 2026 for you and a guest and your first drink is on us!)' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/c/548/5fefbd1c-973b-4b0e-9b2e-d78e4ce37548_106111_TABLET_LANDSCAPE_LARGE_16_9.jpg",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.706Z",
+    "genres": [
+      20
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 31,
+  "fields": {
+    "name": "Jazz At Lincoln Center",
+    "slug": "jazz-at-lincoln-center",
+    "bio": "Artis resmi konser 'Jazz at Lincoln Center Presents: 2026 Jazz Series at Bethel Woods' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/c/bea/03d47f66-d37b-4aca-aa17-0135be64dbea_105801_TABLET_LANDSCAPE_LARGE_16_9.jpg",
+    "hometown": "",
+    "instagram_url": "http://instagram.com/jazzdotorg",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.790Z",
+    "genres": [
+      15
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 32,
+  "fields": {
+    "name": "90s Country Gold Series: Kathy Mattea, Collin Raye, & Pam Tillis",
+    "slug": "90s-country-gold-series-kathy-mattea-collin-raye-pam-tillis",
+    "bio": "Artis resmi konser '90s Country Gold Series: Kathy Mattea, Collin Raye, & Pam Tillis' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/c/677/c58dd0af-cda8-49b2-bdaf-068540c3a677_106541_TABLET_LANDSCAPE_LARGE_16_9.jpg",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.828Z",
+    "genres": [
+      20
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 33,
+  "fields": {
+    "name": "Rock & Roots Series: 3 Concert Package Event",
+    "slug": "rock-roots-series-3-concert-package-event",
+    "bio": "Artis resmi konser 'Rock & Roots Series: 3 Concert Package Event' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/c/779/d4bc7e11-1b50-4aa4-a2be-0a21569f5779_106531_TABLET_LANDSCAPE_LARGE_16_9.jpg",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.862Z",
+    "genres": [
+      20
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 34,
+  "fields": {
+    "name": "Wayne Newton",
+    "slug": "wayne-newton",
+    "bio": "Artis resmi konser 'Wayne Newton | Official Caesars Ticket + Hotel Packages' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/a/4df/204c2bb1-567a-446d-bffa-630ddaf064df_SOURCE",
+    "hometown": "",
+    "instagram_url": "",
+    "spotify_url": "https://open.spotify.com/artist/5NX29TmuYrENlpvz6IgYMJ?autoplay=true",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.907Z",
+    "genres": [
+      22
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 35,
+  "fields": {
+    "name": "Donny Osmond (Las Vegas)",
+    "slug": "donny-osmond-las-vegas",
+    "bio": "Artis resmi konser 'Donny Osmund  | Official Caesars Ticket + Hotel Packages' terverifikasi Ticketmaster.",
+    "image": "",
+    "image_url": "https://s1.ticketm.net/dam/a/808/d921e7cc-fe95-4e4a-9372-be7febb1e808_SOURCE",
+    "hometown": "",
+    "instagram_url": "https://www.instagram.com/donnyosmond/",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:02:22.964Z",
+    "genres": [
+      22
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 36,
+  "fields": {
+    "name": "Lomba Sihir",
+    "slug": "lomba-sihir",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T13:46:09.299Z",
+    "genres": [
+      24,
+      1
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 37,
+  "fields": {
+    "name": "NDX AKA",
+    "slug": "ndx-aka",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.750Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 38,
+  "fields": {
+    "name": "Juicy Luicy",
+    "slug": "juicy-luicy",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.778Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 39,
+  "fields": {
+    "name": "Denny Caknan",
+    "slug": "denny-caknan",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.789Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 40,
+  "fields": {
+    "name": "Whisnu Santika",
+    "slug": "whisnu-santika",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.812Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 41,
+  "fields": {
+    "name": "Guyon Waton",
+    "slug": "guyon-waton",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.823Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 42,
+  "fields": {
+    "name": "For Revenge",
+    "slug": "for-revenge",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.833Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 43,
+  "fields": {
+    "name": "Tipe-X",
+    "slug": "tipe-x",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.844Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 44,
+  "fields": {
+    "name": "Aftershine",
+    "slug": "aftershine",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.859Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 45,
+  "fields": {
+    "name": "Feel Koplo",
+    "slug": "feel-koplo",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-09-17T14:57:26.877Z",
+    "genres": [
+      25,
+      27,
+      1,
+      22,
+      28,
+      26
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 46,
+  "fields": {
+    "name": "Dewa 19",
+    "slug": "dewa-19",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.734Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 47,
+  "fields": {
+    "name": "Virzha",
+    "slug": "virzha",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.768Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 48,
+  "fields": {
+    "name": "Tyo Nugros",
+    "slug": "tyo-nugros",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.797Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 49,
+  "fields": {
+    "name": "Ada Band",
+    "slug": "ada-band",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.822Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 50,
+  "fields": {
+    "name": "Baim",
+    "slug": "baim",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.846Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 51,
+  "fields": {
+    "name": "Donnie Sibarani",
+    "slug": "donnie-sibarani",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.877Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 52,
+  "fields": {
+    "name": "Krishna Balagita",
+    "slug": "krishna-balagita",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.901Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 53,
+  "fields": {
+    "name": "Pas Band",
+    "slug": "pas-band",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.927Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 54,
+  "fields": {
+    "name": "Bondan Prakoso",
+    "slug": "bondan-prakoso",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.956Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 55,
+  "fields": {
+    "name": "Padi Reborn",
+    "slug": "padi-reborn",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:24.978Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 56,
+  "fields": {
+    "name": "Jamrud",
+    "slug": "jamrud",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.012Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 57,
+  "fields": {
+    "name": "Yovie & Nuno",
+    "slug": "yovie-nuno",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.045Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 58,
+  "fields": {
+    "name": "Rossa",
+    "slug": "rossa",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.073Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 59,
+  "fields": {
+    "name": "Aldi Taher Gallagher",
+    "slug": "aldi-taher-gallagher",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.096Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 60,
+  "fields": {
+    "name": "Atta Rumnan",
+    "slug": "atta-rumnan",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.119Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 61,
+  "fields": {
+    "name": "The Changcuters",
+    "slug": "the-changcuters",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.145Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 62,
+  "fields": {
+    "name": "El Rumi",
+    "slug": "el-rumi",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.175Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 63,
+  "fields": {
+    "name": "Ghea Indrawari",
+    "slug": "ghea-indrawari",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.199Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 64,
+  "fields": {
+    "name": "New Pusat Dunia",
+    "slug": "new-pusat-dunia",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.227Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 65,
+  "fields": {
+    "name": "Tulus",
+    "slug": "tulus",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.266Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 66,
+  "fields": {
+    "name": "Kahitna",
+    "slug": "kahitna",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.303Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 67,
+  "fields": {
+    "name": "Mahalini",
+    "slug": "mahalini",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.351Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 68,
+  "fields": {
+    "name": "Alkateri",
+    "slug": "alkateri",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.380Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 69,
+  "fields": {
+    "name": "Idgitaf",
+    "slug": "idgitaf",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.410Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 70,
+  "fields": {
+    "name": "Teenage Death Star",
+    "slug": "teenage-death-star",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.484Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 71,
+  "fields": {
+    "name": "Sukses Lancar Rezeki",
+    "slug": "sukses-lancar-rezeki",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T18:39:25.507Z",
+    "genres": [
+      10,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 72,
+  "fields": {
+    "name": "Sukses Lancar Rejeki",
+    "slug": "sukses-lancar-rejeki",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T19:14:17.281Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 73,
+  "fields": {
+    "name": "Sukses x Lancar Rejeki",
+    "slug": "sukses-x-lancar-rejeki",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-10-10T19:33:16.415Z",
+    "genres": [
+      24,
+      30,
+      22,
+      14
+    ]
+  }
+},
+{
+  "model": "artists.artist",
+  "pk": 74,
+  "fields": {
+    "name": "SORE ZE BAND",
+    "slug": "sore-ze-band",
+    "bio": "",
+    "image": "",
+    "image_url": null,
+    "hometown": "Jakarta",
+    "instagram_url": "",
+    "spotify_url": "",
+    "is_active": true,
+    "created_at": "2026-11-02T13:57:33.949Z",
+    "genres": [
+      19,
+      1
+    ]
+  }
+}
+]
