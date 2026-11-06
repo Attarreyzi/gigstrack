@@ -1,6 +1,7 @@
 import os
 import time
 import uuid
+import html
 import logging
 import threading
 import requests
@@ -51,7 +52,11 @@ class TelegramPosterBot:
         }
         if reply_markup:
             payload["reply_markup"] = reply_markup
-        return self.send_request("sendMessage", data=payload)
+        res = self.send_request("sendMessage", data=payload)
+        if not res.get("ok") and parse_mode:
+            payload["parse_mode"] = None
+            res = self.send_request("sendMessage", data=payload)
+        return res
 
     def edit_message(self, chat_id: int, message_id: int, text: str, reply_markup: dict = None, parse_mode: str = "HTML") -> dict:
         payload = {
@@ -62,7 +67,11 @@ class TelegramPosterBot:
         }
         if reply_markup:
             payload["reply_markup"] = reply_markup
-        return self.send_request("editMessageText", data=payload)
+        res = self.send_request("editMessageText", data=payload)
+        if not res.get("ok") and parse_mode:
+            payload["parse_mode"] = None
+            res = self.send_request("editMessageText", data=payload)
+        return res
 
     def answer_callback_query(self, callback_query_id: str, text: str = None, show_alert: bool = False):
         payload = {"callback_query_id": callback_query_id}
@@ -87,6 +96,9 @@ class TelegramPosterBot:
         return r.content, file_name
 
     def format_review_card(self, extracted: dict, is_corrected: bool = False, photo_count: int = 1) -> str:
+        def esc(val):
+            return html.escape(str(val)) if val is not None else ""
+
         # 1. Kategori Tiket & HTM (Ringkas: Rentang Harga)
         tiers = extracted.get("ticket_tiers", [])
         prices = [t.get("price", 0) for t in tiers if isinstance(t, dict) and t.get("price", 0) > 0]
@@ -104,24 +116,22 @@ class TelegramPosterBot:
         else:
             platforms = extracted.get("ticket_platforms", [])
             if platforms:
-                p_text = ", ".join(platforms)
+                p_text = esc(", ".join(platforms))
                 price_str = f"<b>Berbayar (Tiket via {p_text})</b>"
             else:
                 price_str = "<b>Berbayar (Cek Tiket di Platform Resmi)</b>"
-
-
 
         # 2. Open Gate
         doors = str(extracted.get("doors_open") or "TBA").strip()
         if not doors or doors.upper() in ["TBA", "NONE", "NULL", "BELUM ADA", "BELUM DIUMUMKAN"]:
             doors_display = "<i>TBA</i>"
         else:
-            doors_display = doors
+            doors_display = esc(doors)
 
         # 3. Waktu Jam Mulai
         time_val = extracted.get("time")
-        time_display = f" ({time_val} WIB)" if time_val and str(time_val).upper() != "TBA" else ""
-        date_display = f"{extracted.get('date')}{time_display}"
+        time_display = f" ({esc(time_val)} WIB)" if time_val and str(time_val).upper() != "TBA" else ""
+        date_display = f"{esc(extracted.get('date'))}{time_display}"
 
         # 4. Lineup & Rundown Festival (Multi-day Support)
         lineups = extracted.get("lineups", [])
@@ -135,13 +145,14 @@ class TelegramPosterBot:
         if len(days_dict) > 1 or any(k.lower().startswith("day") for k in days_dict.keys()):
             lineup_section = "👥 <b>Lineup & Rundown:</b>\n"
             for day_title, items in days_dict.items():
-                lineup_section += f"  <b>{day_title}:</b>\n"
+                lineup_section += f"  <b>{esc(day_title)}:</b>\n"
                 for item in items:
-                    t_str = f" ({item['set_time']})" if item.get('set_time') and item['set_time'] != 'TBA' else ""
+                    t_str = f" ({esc(item['set_time'])})" if item.get('set_time') and item['set_time'] != 'TBA' else ""
                     hl_str = " ⭐" if item.get('is_headliner') else ""
-                    lineup_section += f"  - {item['artist_name']}{t_str}{hl_str}\n"
+                    lineup_section += f"  - {esc(item['artist_name'])}{t_str}{hl_str}\n"
         else:
-            lineup_str = ", ".join(extracted.get("artists", [])) or "Belum terdeteksi"
+            raw_artists = extracted.get("artists", [])
+            lineup_str = esc(", ".join(raw_artists)) if raw_artists else "Belum terdeteksi"
             lineup_section = f"👥 <b>Lineup:</b> {lineup_str}\n"
 
         confidence = int(extracted.get("confidence_score", 0.9) * 100)
@@ -155,13 +166,13 @@ class TelegramPosterBot:
 
         review_text = (
             f"{header}"
-            f"🎸 <b>Acara:</b> {extracted.get('title')}\n"
+            f"🎸 <b>Acara:</b> {esc(extracted.get('title'))}\n"
             f"{lineup_section}"
-            f"📍 <b>Venue:</b> {extracted.get('venue_name')}, {extracted.get('city')}\n"
+            f"📍 <b>Venue:</b> {esc(extracted.get('venue_name'))}, {esc(extracted.get('city'))}\n"
             f"📅 <b>Tanggal:</b> {date_display}\n"
             f"🚪 <b>Open Gate:</b> {doors_display}\n"
             f"🎟️ <b>HTM / Tiket:</b> {price_str}\n"
-            f"🔗 <b>Tiket:</b> {extracted.get('ticket_url')}\n"
+            f"🔗 <b>Tiket:</b> {esc(extracted.get('ticket_url'))}\n"
             f"🎯 <b>AI Confidence:</b> {confidence}%\n\n"
             "💡 <i>Ada yang salah? Ketik saja langsung koreksinya di chat ini!\n"
             "Contoh: <code>tiket beli di aplikasi BBO</code> atau <code>ubah tanggal jadi 25 Des</code></i>"
@@ -441,12 +452,13 @@ class TelegramPosterBot:
 
                 success_text = (
                     "🎉 <b>BERHASIL DITAMBAHKAN KE GigsSTRACK!</b>\n\n"
-                    f"🎸 <b>Acara:</b> {gig_saved.title}\n"
-                    f"📍 <b>Venue:</b> {gig_saved.venue.name} ({gig_saved.venue.city})\n"
+                    f"🎸 <b>Acara:</b> {html.escape(gig_saved.title)}\n"
+                    f"📍 <b>Venue:</b> {html.escape(gig_saved.venue.name)} ({html.escape(gig_saved.venue.city)})\n"
                     f"📅 <b>Jadwal:</b> {gig_saved.start_datetime.strftime('%d %B %Y')}\n"
                     f"👥 <b>Total Lineup:</b> {gig_saved.lineups.count()} Band\n"
-                    f"🎟️ <b>HTM:</b> {gig_saved.price_range_display}\n\n"
+                    f"🎟️ <b>HTM:</b> {html.escape(gig_saved.price_range_display)}\n\n"
                     f"🌐 <i>Konser sekarang sudah aktif dan tayang di website GigsSTRACK!</i>\n"
+                    f"🔗 <b>Lihat di Website:</b> http://localhost:5173\n"
                     f"💡 <i>Ketik <code>/list</code> untuk melihat atau mengelola daftar konser.</i>"
                 )
                 self.edit_message(chat_id, message_id, success_text)

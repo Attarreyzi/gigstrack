@@ -24,9 +24,6 @@ class GigViewSet(viewsets.ModelViewSet):
         qs = Gig.objects.select_related('venue').prefetch_related('lineups__artist__genres')
         params = self.request.query_params
 
-        # Hanya tampilkan wilayah Jabodetabek
-        qs = qs.filter(venue__city__in=JABODETABEK_CITIES)
-
         # Filter by search keyword
         search_param = params.get('search')
         if search_param:
@@ -58,11 +55,12 @@ class GigViewSet(viewsets.ModelViewSet):
                 qs = qs.filter(start_datetime__date__gte=local_today, start_datetime__date__lte=end_of_week)
             elif d_lower == 'weekend':
                 # Akhir pekan (Jumat, Sabtu, Minggu) mendatang
-                # Di Django ORM: week_day 1=Minggu, 6=Jumat, 7=Sabtu
                 qs = qs.filter(
                     start_datetime__date__gte=local_today,
                     start_datetime__week_day__in=[1, 6, 7]
                 )
+            elif d_lower in ['all', 'semua']:
+                pass  # Tampilkan semua jadwal mendatang
             else:
                 try:
                     parsed_date = timezone.datetime.strptime(date_param, '%Y-%m-%d').date()
@@ -76,7 +74,13 @@ class GigViewSet(viewsets.ModelViewSet):
         # Filter by city
         city_param = params.get('city')
         if city_param:
-            qs = qs.filter(venue__city__iexact=city_param)
+            c_clean = city_param.strip()
+            if c_clean.lower() in ['jakarta', 'dki jakarta']:
+                qs = qs.filter(Q(venue__city__icontains='jakarta') | Q(venue__province__icontains='jakarta'))
+            elif c_clean.lower() == 'jabodetabek':
+                qs = qs.filter(venue__city__iregex=r'jakarta|bogor|depok|tangerang|bekasi')
+            else:
+                qs = qs.filter(venue__city__iexact=c_clean)
 
         # Filter by genre (slug or name)
         genre_param = params.get('genre')
@@ -148,17 +152,28 @@ class GigViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def cities(self, request):
-        """Daftar kota Jabodetabek."""
-        return Response(['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi'])
+        """Daftar seluruh kota yang memiliki acara/venue aktif di database."""
+        db_cities = Venue.objects.filter(is_active=True).values_list('city', flat=True).distinct()
+        cleaned_cities = set()
+        for c in db_cities:
+            if c:
+                cleaned_cities.add(c.strip())
+        
+        priority = ['Jakarta', 'Jakarta Selatan', 'Bandung', 'Yogyakarta', 'Surabaya', 'Bali', 'Bogor', 'Depok', 'Tangerang', 'Bekasi']
+        result = [c for c in priority if c in cleaned_cities]
+        for c in sorted(cleaned_cities):
+            if c not in result:
+                result.append(c)
+        return Response(result or ['Jakarta', 'Bandung', 'Surabaya', 'Yogyakarta', 'Bali'])
 
     @action(detail=False, methods=['get'])
     def summary_stats(self, request):
         """Statistik ringkas untuk dashboard radar."""
         today_date = timezone.localdate()
-        active_gigs = Gig.objects.filter(venue__city__in=JABODETABEK_CITIES).exclude(status=GigStatus.CANCELLED)
+        active_gigs = Gig.objects.exclude(status=GigStatus.CANCELLED)
 
         total_artists = Artist.objects.filter(is_active=True).count()
-        total_venues = Venue.objects.filter(is_active=True, city__in=JABODETABEK_CITIES).count()
+        total_venues = Venue.objects.filter(is_active=True).count()
 
         return Response({
             'gigs_today': active_gigs.filter(start_datetime__date=today_date).count(),
