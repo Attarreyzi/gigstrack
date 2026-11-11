@@ -60,16 +60,14 @@ class GigViewSet(viewsets.ModelViewSet):
                     start_datetime__week_day__in=[1, 6, 7]
                 )
             elif d_lower in ['all', 'semua']:
-                pass  # Tampilkan semua jadwal mendatang
+                pass  # Tampilkan seluruh jadwal yang pernah dimasukkan
             else:
                 try:
                     parsed_date = timezone.datetime.strptime(date_param, '%Y-%m-%d').date()
                     qs = qs.filter(start_datetime__date=parsed_date)
                 except ValueError:
                     pass
-        elif not include_past:
-            # Sembunyikan konser yang sudah lewat kemarin
-            qs = qs.filter(start_datetime__date__gte=local_today)
+        # Default 'Semua Jadwal': jangan sembunyikan poster yang sudah pernah dimasukkan agar selalu tampil di website!
 
         # Filter by city
         city_param = params.get('city')

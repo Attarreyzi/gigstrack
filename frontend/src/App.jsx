@@ -59,6 +59,7 @@ export default function App() {
     if (dateFilter === 'tomorrow') return 'tomorrow';
     if (dateFilter === 'this_week') return 'this_week';
     if (dateFilter === 'weekend') return 'weekend';
+    if (dateFilter === 'all') return 'all';
     return '';
   }, [dateFilter]);
 
@@ -153,11 +154,15 @@ export default function App() {
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     } else if (menuKey === 'artists') {
-      setActiveTab('artists');
+      setActiveTab('gigs');
       setTimeout(() => {
         const el = document.getElementById('artists-section');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 80);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          setActiveTab('artists');
+        }
+      }, 100);
     } else if (menuKey === 'about') {
       setActiveTab('about');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -323,6 +328,9 @@ export default function App() {
               </div>
             )}
           </main>
+
+          {/* Katalog Band & Musisi Lokal bawaan langsung tampil terintegrasi */}
+          <ArtistsCatalog onSelectArtist={handleSelectArtistFromCatalog} />
         </>
       )}
 

@@ -6,7 +6,7 @@
     "title": "Remember Fest 2026 x Cube Concert",
     "slug": "remember-fest-2026-x-cube-concert-20261107",
     "venue": 40,
-    "start_datetime": "2026-11-07T12:00:00Z",
+    "start_datetime": "2026-11-14T08:00:00Z",
     "end_datetime": null,
     "doors_open": "TBA",
     "description": "Remember Fest - Konser eksklusif berlangsung selama 2 hari di Open Space & Gambir Expo, Kemayoran, Jakarta.",
@@ -19,7 +19,7 @@
     "status": "scheduled",
     "is_featured": true,
     "created_at": "2026-10-10T20:00:11.779Z",
-    "updated_at": "2026-10-12T13:07:14.945Z"
+    "updated_at": "2026-11-11T17:25:55.713Z"
   }
 },
 {
@@ -29,7 +29,7 @@
     "title": "Big Bang Festival 2026",
     "slug": "big-bang-festival-2026-20261225",
     "venue": 38,
-    "start_datetime": "2026-12-25T12:00:00Z",
+    "start_datetime": "2026-12-25T05:00:00Z",
     "end_datetime": null,
     "doors_open": "TBA",
     "description": "Big Bang Festival merupakan pameran cuci gudang terbesar ke-9 dan festival musik akbar akhir tahun yang berlangsung di JIEXPO Kemayoran, Jakarta.",
@@ -42,7 +42,7 @@
     "status": "scheduled",
     "is_featured": true,
     "created_at": "2026-10-11T10:26:25.202Z",
-    "updated_at": "2026-10-12T15:09:45.514Z"
+    "updated_at": "2026-11-11T17:25:55.834Z"
   }
 },
 {
@@ -52,7 +52,7 @@
     "title": "Subculture Sound Vol. 8: Midweek Noise",
     "slug": "subculture-sound-vol-8-midweek-noise-20261102",
     "venue": 1,
-    "start_datetime": "2026-11-02T12:00:00Z",
+    "start_datetime": "2026-11-12T12:00:00Z",
     "end_datetime": null,
     "doors_open": "18:30 WIB",
     "description": "Pesta musik independen tengah pekan menampilkan perpaduan distorsi gitar energetik dan melodi alternatif di panggung utama M Bloc Live House!",
@@ -65,7 +65,7 @@
     "status": "scheduled",
     "is_featured": true,
     "created_at": "2026-11-02T10:29:04.168Z",
-    "updated_at": "2026-11-02T10:29:04.168Z"
+    "updated_at": "2026-11-11T17:25:55.658Z"
   }
 },
 {
@@ -75,7 +75,7 @@
     "title": "Duck Down Secret Session",
     "slug": "duck-down-secret-session-20261102",
     "venue": 5,
-    "start_datetime": "2026-11-02T13:30:00Z",
+    "start_datetime": "2026-11-13T13:30:00Z",
     "end_datetime": null,
     "doors_open": "20:00 WIB",
     "description": "Intimate show gratis tanpa tiket! Siapkan energimu untuk moshpit santai sambil menikmati pizza dan bir dingin.",
@@ -88,7 +88,7 @@
     "status": "scheduled",
     "is_featured": false,
     "created_at": "2026-11-02T10:29:04.217Z",
-    "updated_at": "2026-11-02T10:29:04.217Z"
+    "updated_at": "2026-11-11T17:25:55.693Z"
   }
 },
 {
@@ -98,7 +98,7 @@
     "title": "Bandung Distortion Collective",
     "slug": "bandung-distortion-collective-20261103",
     "venue": 3,
-    "start_datetime": "2026-11-03T12:00:00Z",
+    "start_datetime": "2026-11-21T09:30:00Z",
     "end_datetime": null,
     "doors_open": "18:00 WIB",
     "description": "Eksplorasi soundscape berat dan atmosferik di aula Gudang Selatan yang ikonik.",
@@ -111,7 +111,7 @@
     "status": "scheduled",
     "is_featured": false,
     "created_at": "2026-11-02T10:29:04.235Z",
-    "updated_at": "2026-11-02T10:29:04.235Z"
+    "updated_at": "2026-11-11T17:25:55.795Z"
   }
 },
 {
@@ -121,7 +121,7 @@
     "title": "Sunset Grooves & Nostalgia Night",
     "slug": "sunset-grooves-nostalgia-night-20261105",
     "venue": 25,
-    "start_datetime": "2026-11-05T12:00:00Z",
+    "start_datetime": "2026-11-28T12:00:00Z",
     "end_datetime": null,
     "doors_open": "17:30 WITA",
     "description": "Suasana tropis Bali berbalut irama retro jazz dan melodi city pop yang syahdu di bawah langit senja Seminyak.",
@@ -134,7 +134,7 @@
     "status": "scheduled",
     "is_featured": true,
     "created_at": "2026-11-02T10:29:04.264Z",
-    "updated_at": "2026-11-02T10:29:04.264Z"
+    "updated_at": "2026-11-11T17:25:55.809Z"
   }
 },
 {
@@ -144,7 +144,7 @@
     "title": "Raw Underground Movement",
     "slug": "raw-underground-movement-20261109",
     "venue": 2,
-    "start_datetime": "2026-11-09T12:00:00Z",
+    "start_datetime": "2026-11-19T11:00:00Z",
     "end_datetime": null,
     "doors_open": "19:00 WIB",
     "description": "Panggung DIY legendaris Rossi Fatmawati kembali bergetar dengan band-band indie lokal terbaik ibukota.",
@@ -157,7 +157,7 @@
     "status": "scheduled",
     "is_featured": false,
     "created_at": "2026-11-02T10:29:04.293Z",
-    "updated_at": "2026-11-02T10:29:04.293Z"
+    "updated_at": "2026-11-11T17:25:55.765Z"
   }
 },
 {
@@ -167,7 +167,7 @@
     "title": "CLOSMAN 2026",
     "slug": "closman-2026-20261115",
     "venue": 42,
-    "start_datetime": "2026-11-15T12:00:00Z",
+    "start_datetime": "2026-11-15T06:00:00Z",
     "end_datetime": null,
     "doors_open": "TBA",
     "description": "An exciting night of live music featuring Sore Ze Band under the warm and vibrant atmosphere.",
@@ -180,7 +180,7 @@
     "status": "scheduled",
     "is_featured": true,
     "created_at": "2026-11-02T13:57:33.972Z",
-    "updated_at": "2026-11-06T13:14:30.775Z"
+    "updated_at": "2026-11-11T17:25:55.744Z"
   }
 },
 {
